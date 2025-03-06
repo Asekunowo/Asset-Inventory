@@ -1,0 +1,121 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+body { display: flex; height: 100vh; background: #f4f4f4; }
+
+thead{ width: 10rem;}
+
+/* Sidebar */
+.sidebar { width: 250px; background: #2c3e50; color: white; padding: 20px; }
+.sidebar h2 { text-align: center; margin-bottom: 20px; }
+.sidebar ul { list-style: none; }
+.sidebar ul li {border-radius: 5px; border-left: 2px solid transparent; padding: 10px; margin: 10px 0; cursor: pointer; }
+.sidebar ul li a { color: white; text-decoration: none; display: flex; align-items: center; }
+.sidebar ul li a i { margin-right: 10px; }
+.sidebar ul li:hover { background: #34495e;  }
+.sidein .side { border-left: 5px solid white;}
+
+
+
+/* Main Content */
+.main-content { flex: 1; padding: 20px; position: relative; }
+.navbar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.section { display: none; }
+.active { display: block; }
+.cards { display: flex; gap: 20px; }
+.card { background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1; text-align: center; }
+.card h3 { margin-bottom: 10px; }
+
+
+.showedit{
+    display: block;
+    position: absolute;
+    top: 25%;
+    left: 25%;
+}
+.hideedit{
+    display: none;
+}
+
+.edit_form{
+    /* display: flex; */
+    gap: 10rem;
+    background-color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.edit_form input{
+    padding: 0.2rem;
+    outline: none;
+    margin: 10px;
+    height: 30px;
+}
+.edit_form label{
+    font-weight: 600;
+}
+
+.edit_form button{
+    padding: 0.3rem;
+    border: 0;
+    border-radius: 3px;
+    float: right;
+    margin-right: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.edit_form button:hover{
+    background: #999da1;
+}
+
+.editbtn, .deletebtn{
+    padding: 0.3rem;
+    border: 0;
+    border-radius: 3px;
+    cursor: pointer;
+
+}
+.editbtn {
+    background-color: green;
+}
+.deletebtn {
+    background-color: red;
+}
+
+td{
+    width: 7rem;
+}
+
+tbody{
+    text-align: center;
+}
+
+.spinner {
+    border: 8px solid #f3f3f3; /* Light gray */
+    border-top: 8px solid #3498db; /* Blue color */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 30px auto; /* Center it horizontally */
+  }
+
+  /* Keyframe animation to rotate the spinner */
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .show{
+    display: block;
+  }
+  .hide{
+    display: none;
+  }
+
+  #assets button{
+    cursor: pointer;
+  }
