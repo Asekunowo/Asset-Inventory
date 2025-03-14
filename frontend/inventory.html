@@ -187,7 +187,7 @@
         <div id="dashboard" class="section active">
             <h2>Dashboard</h2>
             <div class="cards">
-                <div class="card"><h3>Total Assets</h3><p id="total-assets">Loading...</p></div>
+                <div class="card" ><h3>Total Assets</h3><p id="total-assets">Loading...</p></div>
                 <div class="card"><h3>Under Repair</h3><p id="under-repair">Loading...</p></div>
                 <div class="card"><h3>Assigned to Users</h3><p id="assigned-users">Loading...</p></div>
             </div>
@@ -195,19 +195,19 @@
         
         <div id="assets" class="section">
             <h2>Assets</h2>
-            <button id="add">Add New</button>
+            <button id="add" class="addbtn">Add New</button>
             <table>
-                <thead><tr><th>ID</th><th>Name</th><th>Brand</th><th>Status</th><th>Actions</th></tr></thead>
-                <tbody id="assetTable"></tbody>
+                <thead><tr><th>ID</th><th>Name</th><th>Brand</th><th>Tag</th><th>Serial No.</th><th>Status</th><th>State</th><th>Custodian</th><th>Vendor</th><th>Actions</th></tr></thead>
+                <tbody id="assetTable" class="spinner" ></tbody>
             </table>
             <form id="newasset" class="newasset show">
-            
-                <label for="asset_name">Name:</label>
-                <input name="asset_name" placeholder="Name" id="asset_name" />
-            
+            <h3>ADD NEW ASSET</h3>
 
+                <div>
+                    <label for="asset_name">Name:</label>
+                    <input name="asset_name" type="text" placeholder="Name" id="asset_name" />
+                </div>
             <div>
-
                 <label for="asset_brand">Brand:</label>
                 <select name="asset_brand" id="asset_id">
                     <option value="hp">HP</option>
@@ -218,15 +218,14 @@
                 
             </div>
             <div>
-                <label for="asset_issue">Issue</label>
-                <select name="asset_issue" id="asset_issue" >
+                <label for="asset_issue">Issue:</label>
+                <select name="asset_issue" id="asset_issue">
                     <option value="trapping cards">Trapping cards</option>
                     <option value="faulty keyboard">Faulty keyboard</option>
                     <option value="broken screen">Broken Screen</option>
                 </select>
             </div>
             <div>
-
                 <label for="asset_status">Status:</label>
                 <select name="asset_status" id="asset_status">
                     <option value="awaiting repairs">Awaiting repairs</option>
@@ -235,8 +234,36 @@
                 </select>
             </div>
             
-            <button type="submit" id="new_asset_submit">Save</button>
+            <button type="submit" class="addbtn savebtn" id="new_asset_submit">Save</button>
         </form>
+        <form id="edit_form" class="newasset editform">
+            <h3>EDIT ASSET</h3>
+        <div>
+            <label for="asset_name">Name:</label>
+            <input name="asset_name" placeholder="Name" type="text" id="e_asset_name" disabled />
+        </div>
+        
+        <div>
+            <label for="asset_brand">Brand:</label>
+            <select name="asset_brand" id="e_asset_brand" disabled>
+                <option value="hp">HP</option>
+                <option value="dell">DELL</option>
+                <option value="lenovo">LENOVO</option>
+                <option value="macbook">MACBOOK</option>
+            </select>
+            
+        </div>
+        <div>
+            <label for="asset_status">Status:</label>
+            <select name="asset_status" id="e_asset_status" >
+                <option value="awaiting repairs">Awaiting repairs</option>
+                <option value="repairing">Undergoing repairs</option>
+                <option value="fixed">Fixed</option>
+            </select>
+        </div>
+        
+        <button type="submit" id="edit_submit" class="addbtn savebtn">Save</button>
+    </form>
         </div>
         
         <div id="repairs" class="section">
@@ -264,26 +291,7 @@
 
         <!-- pops up when edit button clicked-->
         <!-- conditionally render this form-->
-        <form id="edit_form" class="edit_form showedit hide">
-            
-                <label for="asset_name">Name:</label>
-                <input name="asset_name" placeholder="Name" id="asset_name" />
-            
-
-            <div>
-
-                <label for="asset_brand">Brand:</label>
-                <input name="asset_brand" placeholder="Brand" id="asset_brand" />
-                
-            </div>
-            <div>
-
-                <label for="asset_status">Status:</label>
-                <input name="asset_status" placeholder="Status" id="asset_status" />
-            </div>
-            
-            <button type="submit" id="edit_submit">Save</button>
-        </form>
+ 
     </div>
     
     <script type="module" src="./index.js"></script>

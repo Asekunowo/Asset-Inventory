@@ -1,5 +1,5 @@
 const sql = require('mssql')
-
+const mongoose = require('mongoose')
 
 const config = {
     user: 'tireddev',
@@ -27,6 +27,20 @@ const poolPromise = new sql.ConnectionPool(config)
     throw err
 })
 
-module.exports = {
- poolPromise, sql
+
+
+
+const dbConn = async () => {
+    try{
+        const conn = await mongoose.connect(process.env.MONGO_URI)
+        console.log(conn.connection.host)
+    } catch (error){
+        console.log(error)
+        process.exit(1)
+    }
 }
+
+
+module.exports = {
+    poolPromise, sql, dbConn
+   }
