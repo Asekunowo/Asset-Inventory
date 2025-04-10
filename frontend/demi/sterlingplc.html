@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IT Asset Inventory</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="login-page" class="login-container">
+      <div class="login-box">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username" />
+        <input type="password" id="password" placeholder="Password" />
+        <button onclick="login()">Login</button>
+        <p id="error-message" style="color: red; display: none">
+          Invalid credentials!
+        </p>
+      </div>
+    </div>
+
+    <div id="dashboard-page" style="display: flex; width: 100%; height: 100vh">
+      <div class="sidebar">
+        <h2>IT Inventory</h2>
+        <ul>
+          <li onclick="showSection('dashboard')">
+            <a href="#"><i class="fa fa-home"></i> Dashboard</a>
+          </li>
+          <li onclick="showSection('assets')">
+            <a href="#"><i class="fa fa-desktop"></i> Assets</a>
+          </li>
+          <li onclick="showSection('repairs')">
+            <a href="#"><i class="fa fa-tools"></i> Repairs</a>
+          </li>
+          <li onclick="showSection('settings')">
+            <a href="#"><i class="fa fa-cog"></i> Settings</a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="main-content">
+        <div class="navbar">
+          <h1>IT Asset Inventory</h1>
+          <p id="user-greeting">Welcome, Admin</p>
+          <button class="logout" onclick="logout()">Log Out</button>
+        </div>
+
+        <div id="dashboard" class="section active">
+          <h2>Dashboard</h2>
+
+          <div id="profile" class="profile-box">
+            <h3>Profile</h3>
+            <p id="profile-name">User details will appear here...</p>
+            <p id="profile-role">Role: Admin</p>
+            <p id="profile-email">Email: admin@company.com</p>
+          </div>
+
+          <div class="daily-report-container">
+            <div class="daily-report-box" id="asset-daily-update">
+              <h3>Assets Report</h3>
+              <p>Total Assets Logged: <span id="total-assets">0</span></p>
+            </div>
+
+            <div class="daily-report-box" id="repair-daily-update">
+              <h3>Repairs Report</h3>
+              <p>Total Repairs Completed: <span id="total-repairs">0</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div id="assets" class="section active">
+          <h2>Assets</h2>
+          <h3>Laptop Section</h3>
+          <form>
+            <input type="text" placeholder="User" />
+            <input type="text" placeholder="Asset Tag" />
+            <input type="text" placeholder="Serial Number" />
+            <input type="text" placeholder="Asset Model" />
+            <input type="text" placeholder="Group" />
+            <input type="text" placeholder="Role" />
+            <input type="text" placeholder="Location" />
+            <select>
+              <option value="Alternative Bank">Alternative Bank</option>
+              <option value="Sterling Bank">Sterling Bank</option>
+            </select>
+            <button type="submit">Submit</button>
+          </form>
+          <h3>Others Section</h3>
+          <form>
+            <input type="text" placeholder="Asset Model" />
+            <input type="text" placeholder="Asset Tag" />
+            <input type="text" placeholder="Serial Number" />
+            <input type="text" placeholder="Vendor" />
+            <input type="text" placeholder="Branch" />
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+        <div id="repairs" class="section">
+          <h2>Repair Requests</h2>
+          <form>
+            <input type="text" placeholder="Serial Number" />
+            <input type="text" placeholder="Asset Tag" />
+            <input type="text" placeholder="Branch" />
+            <input type="date" placeholder="Date Received" />
+            <input type="text" placeholder="Vendor" />
+            <input type="text" placeholder="Fault" />
+            <input type="text" placeholder="Cost of Repair" />
+            <select>
+              <option value="Cheque Scanner">Cheque Scanner</option>
+              <option value="Evolis Card Printer">Evolis Card Printer</option>
+              <option value="Zebra Card Printer">Zebra Card Printer</option>
+              <option value="Twig-POS">Twig-POS</option>
+            </select>
+            <button type="submit">Submit</button>
+          </form>
+        </div>
+        <div id="settings" class="section">
+          <h2>Settings</h2>
+          <button onclick="showSubSection('change-account')">
+            Change User Account
+          </button>
+          <button onclick="showSubSection('change-password')">
+            Change Password
+          </button>
+          <button onclick="showSubSection('profile')">Profile</button>
+          <button onclick="logout()">Log Out</button>
+          <div id="change-account" class="sub-section">
+            <h3>Change User Account</h3>
+            <input type="text" placeholder="New Username" />
+            <button type="submit">Update</button>
+          </div>
+          <div id="change-password" class="sub-section">
+            <h3>Change Password</h3>
+            <input type="password" placeholder="New Password" />
+            <button type="submit">Update</button>
+          </div>
+          <div id="profile" class="sub-section">
+            <h3>Profile</h3>
+            <p>User details here...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.querySelectorAll("form").forEach((form) => {
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+          alert("Form submitted successfully!");
+        });
+      });
+
+      const validusers = {
+        ADMIN: "1234",
+        USER: "5678",
+      };
+
+      function checkLogin() {
+        const sessionData = localStorage.getItem("username");
+        if (sessionData) {
+          document.getElementById("login-page").style.display = "flex";
+          document.getElementById("dashboard-page").style.display = "none";
+        }
+      }
+
+      function login() {
+        let username = document.getElementById("username").value.toUpperCase();
+        let password = document.getElementById("password").value;
+
+        if (validusers[username] && validusers[username] === password) {
+          //sessionStorage.setItem("loggedInUser", username);
+          localStorage.setItem("loggedInUser", username);
+          document.getElementById("login-page").style.display = "none";
+          document.getElementById("dashboard-page").style.display = "flex";
+          document.getElementById(
+            "user-greeting"
+          ).innerText = `Welcome, ${username}`;
+
+          showSection("dashboard");
+        } else {
+          document.getElementById("error-message").style.display = "block";
+        }
+      }
+
+      function showSection(sectionId) {
+        document.querySelectorAll(".section").forEach((section) => {
+          section.classList.remove("active");
+        });
+        document.getElementById(sectionId).classList.add("active");
+      }
+
+      function showSubSection(subSectionId) {
+        document.querySelectorAll(".sub-section").forEach((sub) => {
+          sub.style.display = "none";
+        });
+        document.getElementById(subSectionId).style.display = "block";
+      }
+
+      function logout() {
+        alert("Logging out...");
+        document.getElementById("dashboard-page").style.display = "none";
+        document.getElementById("login-page").style.display = "flex";
+      }
+    </script>
+  </body>
+</html>

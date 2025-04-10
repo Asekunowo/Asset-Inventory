@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 
-const AssetSchema = mongoose.Schema({
+const {Schema, model, models} = mongoose
+
+const AssetSchema = new Schema({
     asset_name: {
         type: String,
         required: true
@@ -34,6 +36,6 @@ const AssetSchema = mongoose.Schema({
 }, {timestamps: true}) 
 
 
-const Asset = mongoose.model('assets', AssetSchema)
+const Asset = models.Asset || model('assets', AssetSchema)
 
 module.exports = Asset
