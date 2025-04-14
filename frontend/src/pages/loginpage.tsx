@@ -1,3 +1,5 @@
+import { Toaster, toaster } from "@/components/ui/toaster";
+import useLogin from "@/hooks/useLogin";
 import {
   Box,
   Button,
@@ -9,21 +11,43 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { BsEyeFill, BsEyeSlash } from "react-icons/bs";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
   const [LoginData, setLoginData] = useState({
     email: "",
     password: "",
   });
+
+  const { loading, loginUser } = useLogin();
+
   const [pass, showPass] = useState(true);
   const disabled: Boolean = true;
 
-  function handleSignIn(): void {
-    console.log("Sign in");
+  const navigate = useNavigate();
+
+  async function handleSignIn() {
+    if (!LoginData.email && !LoginData.password) {
+      toaster.create({
+        type: "error",
+        description: "Please fill in all fields",
+      });
+      return;
+    }
+
+    const { success, message } = await loginUser(LoginData);
+
+    toaster.create({
+      type: success ? "success" : "warning",
+      description: message,
+    });
+
+    setTimeout(() => navigate("/dashboard"), 500);
   }
 
   return (
     <Container maxW={"2xl"} minH={"100vh"} mt={""}>
+      <Toaster />
       <VStack
         minH={"80vh"}
         w={"full"}
