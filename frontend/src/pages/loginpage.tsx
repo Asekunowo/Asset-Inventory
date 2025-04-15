@@ -1,15 +1,18 @@
+import { useAuth } from "@/auth/auth";
+import Spin from "@/components/spinner";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import useLogin from "@/hooks/useLogin";
 import {
   Box,
   Button,
   Container,
+  Field,
   Heading,
   HStack,
   Input,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsEyeFill, BsEyeSlash } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
@@ -18,13 +21,30 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+  const { isAuthenticated } = useAuth();
 
   const { loading, loginUser } = useLogin();
 
-  const [pass, showPass] = useState(true);
-  const disabled: Boolean = true;
+  const [pass, showPass] = useState(false);
+
+  const [disabled, setDisabled] = useState<Boolean>(true);
 
   const navigate = useNavigate();
+
+  const [invalid, setInvalid] = useState({
+    password: false,
+    email: false,
+  });
+
+  useEffect(() => {
+    if (LoginData.email.includes("@") && LoginData.email.includes(".")) {
+      setInvalid({ ...invalid, email: false });
+    } else if (LoginData.email === "") {
+      setInvalid({ ...invalid, email: false });
+    } else {
+      setInvalid({ ...invalid, email: true });
+    }
+  }, [LoginData]);
 
   async function handleSignIn() {
     if (!LoginData.email && !LoginData.password) {
@@ -42,7 +62,9 @@ const LoginPage = () => {
       description: message,
     });
 
-    setTimeout(() => navigate("/dashboard"), 500);
+    if (success === true) {
+      setTimeout(() => navigate("/dashboard"), 500);
+    }
   }
 
   return (
@@ -70,40 +92,50 @@ const LoginPage = () => {
               Enter Login Details
             </Heading>
             <VStack p={6} spaceY={3} color={"black"}>
-              <Input
-                type="text"
-                placeholder="Email"
-                value={LoginData.email}
-                onChange={(e) =>
-                  setLoginData({ ...LoginData, email: e.target.value })
-                }
-              />
-              <HStack w={"full"} position={"relative"}>
+              <Field.Root invalid={invalid.email}>
+                <Field.Label>Email </Field.Label>
                 <Input
-                  autoComplete="current_password"
-                  type={pass ? "text" : "password"}
-                  placeholder="Password"
-                  value={LoginData.password}
+                  type="text"
+                  placeholder="Provide Your Email"
+                  value={LoginData.email}
                   onChange={(e) =>
-                    setLoginData({ ...LoginData, password: e.target.value })
+                    setLoginData({ ...LoginData, email: e.target.value })
                   }
-                  minLength={8}
-                  maxLength={16}
                 />
-                <Button
-                  bg={"transparent"}
-                  pos={"absolute"}
-                  variant={"solid"}
-                  zIndex={2}
-                  right={0}
-                  onClick={() => showPass((prevPass) => !prevPass)}
-                >
-                  {pass ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
-                </Button>
-              </HStack>
+                <Field.ErrorText>Enter a valid email address</Field.ErrorText>
+              </Field.Root>
+
+              <Field.Root invalid={invalid.password}>
+                <Field.Label>Password</Field.Label>
+                <HStack w={"full"} position={"relative"}>
+                  <Input
+                    autoComplete="current_password"
+                    type={pass ? "text" : "password"}
+                    placeholder="Provide Your Password"
+                    value={LoginData.password}
+                    onChange={(e) =>
+                      setLoginData({ ...LoginData, password: e.target.value })
+                    }
+                    minLength={8}
+                    maxLength={16}
+                  />
+                  <Button
+                    bg={"transparent"}
+                    pos={"absolute"}
+                    variant={"solid"}
+                    zIndex={2}
+                    right={0}
+                    bottom={0}
+                    onClick={() => showPass((prevPass) => !prevPass)}
+                  >
+                    {pass ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
+                  </Button>
+                </HStack>
+                <Field.ErrorText>Password is required</Field.ErrorText>
+              </Field.Root>
 
               <Button
-                disabled={!disabled}
+                disabled={loading}
                 w={"full"}
                 mt={5}
                 variant={"subtle"}
@@ -113,7 +145,7 @@ const LoginPage = () => {
                 colorScheme="blue"
                 onClick={() => handleSignIn()}
               >
-                Login
+                {loading ? <Spin /> : <>Login</>}
               </Button>
             </VStack>
           </Box>

@@ -4,7 +4,7 @@ import { useAuth } from "../auth/auth.tsx";
 const useLogin = () => {
   const { login, url } = useAuth();
   const [error, setError] = useState<null | String>(null);
-  const [loading, setLoading] = useState<null | Boolean>(null);
+  const [loading, setLoading] = useState<undefined | boolean>(undefined);
 
   const loginUser = async (values: any) => {
     if (!values) {

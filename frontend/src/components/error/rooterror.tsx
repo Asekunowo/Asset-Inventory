@@ -19,7 +19,7 @@ const Rooterror = ({}) => {
           <EmptyState.Description>
             <VStack spaceY={4}>
               <Text>An unexpected error occured.</Text>
-              <Button onClick={() => window.location.replace("/dashboard")}>
+              <Button onClick={() => window.location.reload()}>
                 Try Again?
               </Button>
             </VStack>

@@ -1,3 +1,4 @@
+"use client";
 import {
   Box,
   Button,
@@ -7,30 +8,21 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
-
-const assetModels = [
-  "DELL LATITUDE 3420",
-  "DELL LATITUDE 5420",
-  "DELL LATTITUDE 5520",
-  "DELL LATITUDE 3430",
-  "DELL LATITUDE 3400",
-  "DELL LATITUDE 5440",
-  "DELL LATITUDE 3490",
-  "DELL LATITUDE 5320",
-  "DELL LATITUDE 5580",
-  "HP ELITEBOOK 640 G9",
-  "HP ELITEBOOK 450 G10",
-  "HP ELITEBOOK 840 G9",
-  "HP ELITEBOOK X360 1040 G6",
-  "HP PROBOOK 440 G9",
-  "HP PROBOOK 440 G11",
-  "MACBOOK  ***",
-];
+import { useState, useEffect } from "react";
+import { assetModels } from "@/store/data";
+import { useAuth } from "@/auth/auth";
+import Spin from "./spinner";
+import { useAssetStore } from "@/store/store";
+import { toaster, Toaster } from "./ui/toaster";
 
 const Asset = () => {
+  const { userData } = useAuth();
+  const [load, SetLoad] = useState(true);
+  const { addAsset } = useAssetStore();
+
   const [AssetData, setAssetData] = useState({
     user: "",
+    type: "Laptop",
     tag: "",
     serial_no: "",
     model: "",
@@ -39,10 +31,55 @@ const Asset = () => {
     location: "",
   });
 
-  console.log(AssetData);
+  useEffect(() => {
+    const data = async () => {
+      try {
+        await userData;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        SetLoad(false);
+      }
+    };
+
+    setTimeout(() => {
+      data();
+    }, 700);
+  }, []);
+
+  const handleAddAsset = async (pid: String) => {
+    console.log(pid, AssetData);
+    return;
+
+    const { success, message } = await addAsset(pid, AssetData);
+    toaster.create({
+      type: success ? "success" : "error",
+      description: message,
+    });
+  };
+
+  if (load) {
+    return (
+      <VStack
+        className="backdrop-brightness-50"
+        position={"absolute"}
+        left={0}
+        top={2}
+        h={"full"}
+        minH={"100vh"}
+        minW={"full"}
+        justifyContent={"center"}
+      >
+        <div className="scale-150">
+          <Spin />
+        </div>
+      </VStack>
+    );
+  }
 
   return (
     <VStack textAlign={"left"} alignItems={"left"}>
+      <Toaster />
       <Box>
         <Heading display={"block"} float={"left"} size={"2xl"} padding={"1rem"}>
           Asset
@@ -73,6 +110,20 @@ const Asset = () => {
               <Text fontWeight={"bold"}>Laptop Section</Text>
             </VStack>
           </Box>
+          <Input
+            value={"SUBMITTED BY: " + userData.firstname}
+            disabled
+            textTransform={"uppercase"}
+            fontWeight={"bold"}
+            _disabled={{ bg: "gray.400" }}
+          />
+          <Input
+            value={"TYPE: " + AssetData.type}
+            disabled
+            fontWeight={"bold"}
+            textTransform={"uppercase"}
+            _disabled={{ bg: "gray.400" }}
+          />
           <Input
             placeholder="User"
             value={AssetData.user}
@@ -105,8 +156,10 @@ const Asset = () => {
             <option disabled className="" value={"default"}>
               --ASSET MODEL--
             </option>
-            {assetModels.map((model) => (
-              <option value={model}>{model}</option>
+            {assetModels.map((model, index) => (
+              <option key={index} value={model}>
+                {model}
+              </option>
             ))}
             DELL
           </select>
@@ -133,12 +186,18 @@ const Asset = () => {
           />
 
           <HStack float={"right"}>
-            <Button variant={"outline"} colorScheme={"gray"}>
+            <Button
+              variant={"outline"}
+              colorScheme={"gray"}
+              onClick={() => handleAddAsset(userData._id)}
+            >
               Submit
             </Button>
             <Button colorPalette={"gray"}>Clear</Button>
           </HStack>
         </VStack>
+
+        {/* OTHERS SECTION */}
 
         <VStack
           rounded={"md"}

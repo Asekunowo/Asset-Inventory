@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { dbConn } = require("../config/dbconfig");
-const { hashSync } = require("bcrypt");
+const { hashSync, compareSync } = require("bcrypt");
 const User = require("../models/user.model");
 
 const getUsers = async (req, res) => {
@@ -112,9 +112,49 @@ const deleteUser = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  const { id } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid id" });
+    return;
+  }
+
+  try {
+    await dbConn();
+    const checkPassword = await User.findById(id);
+
+    if (!compareSync(oldPassword, checkPassword.password)) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Old password incorrect" });
+    }
+
+    await User.findByIdAndUpdate(
+      id,
+      {
+        $set: { password: hashSync(newPassword, 10) },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({ success: true, message: "Password changed!" });
+  } catch (error) {
+    console.log(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Unable to change password" });
+    return;
+  } finally {
+    mongoose.disconnect();
+  }
+};
+
 module.exports = {
   getUsers,
   createUser,
   getOneUser,
   deleteUser,
+  changePassword,
 };

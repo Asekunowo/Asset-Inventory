@@ -21,7 +21,7 @@ const login = async (req, res) => {
 
     if (!compareSync(password, user.password)) {
       res
-        .status(400)
+        .status(401)
         .json({ success: false, message: "Password is incorrect" });
       return;
     }

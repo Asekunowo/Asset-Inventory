@@ -8,6 +8,9 @@ import Asset from "./components/asset";
 import Dashboard from "./components/dashboard";
 import Repairs from "./components/repairs";
 import Rooterror from "./components/error/rooterror";
+import Nopage from "./components/error/nopage";
+import Settings from "./components/settings";
+import Passwordchange from "./components/passwordchange";
 
 function App() {
   return (
@@ -34,6 +37,13 @@ function App() {
             element={<Repairs />}
             errorElement={<Rooterror />}
           />
+          <Route
+            path="settings"
+            element={<Settings />}
+            errorElement={<Nopage />}
+          >
+            <Route path="passwordchange" element={<Passwordchange />} />
+          </Route>
         </Route>
       </Routes>
     </Box>

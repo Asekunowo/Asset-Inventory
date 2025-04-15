@@ -10,7 +10,7 @@ import Rooterror from "./components/error/rooterror.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Provider>
+    <Provider defaultTheme="dark">
       <AuthProvider>
         <BrowserRouter>
           <ErrorBoundary

@@ -3,9 +3,24 @@ import { Box, Button, ButtonGroup, Heading, VStack } from "@chakra-ui/react";
 import { FaHouseChimney } from "react-icons/fa6";
 import { FaLaptop, FaTools } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/auth/auth";
+import { toaster } from "./ui/toaster";
 
 const Sidebar = () => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogOut = async () => {
+    await logout();
+    toaster.create({
+      title: "Logged Out",
+      type: "info",
+    });
+
+    navigate("/login");
+  };
+
   return (
     <VStack
       bg={"#2c3e50"}
@@ -14,6 +29,7 @@ const Sidebar = () => {
       minH={"100vh"}
       p={2}
       pt={10}
+      position={"relative"}
     >
       <Heading textTransform={"uppercase"}>IT INVENTORY</Heading>
       <VStack
@@ -43,6 +59,16 @@ const Sidebar = () => {
           </Button>
         </Link>
       </VStack>
+      <Button
+        position={"absolute"}
+        bottom={20}
+        colorPalette="gray"
+        variant={"subtle"}
+        w={"max-content"}
+        onClick={handleLogOut}
+      >
+        Logout
+      </Button>
     </VStack>
   );
 };

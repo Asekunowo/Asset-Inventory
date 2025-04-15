@@ -1,8 +1,70 @@
+"use client";
+
 import { useAuth } from "@/auth/auth";
 import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import Spin from "./spinner";
+import Notauthorized from "./error/notauthorized";
 
 const Dashboard = () => {
-  const { userData } = useAuth();
+  const { userData, isAuthenticated } = useAuth();
+
+  const [load, SetLoad] = useState(true);
+
+  useEffect(() => {
+    const data = async () => {
+      try {
+        await userData;
+      } catch (error) {
+        console.log(error);
+      } finally {
+        SetLoad(false);
+      }
+    };
+
+    setTimeout(() => {
+      data();
+    }, 700);
+  }, []);
+
+  console.log(userData);
+
+  if (load) {
+    return (
+      <VStack
+        className="backdrop-brightness-50"
+        position={"absolute"}
+        left={0}
+        top={2}
+        h={"full"}
+        minH={"100vh"}
+        minW={"full"}
+        justifyContent={"center"}
+      >
+        <div className="scale-150">
+          <Spin />
+        </div>
+      </VStack>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <VStack
+        className="backdrop-brightness-50"
+        position={"absolute"}
+        left={0}
+        top={2}
+        h={"full"}
+        minH={"100vh"}
+        minW={"full"}
+        bg={"blue.900"}
+        justifyContent={"center"}
+      >
+        <Notauthorized />;
+      </VStack>
+    );
+  }
 
   return (
     <VStack textAlign={"left"} alignItems={"left"}>
@@ -13,10 +75,12 @@ const Dashboard = () => {
       </Box>
       <Box rounded={"md"} p={"1rem"} h={"max-content"} bg={"white"}>
         <VStack float={"left"}>
-          <Text fontWeight={"bold"}>Profile</Text>
+          <Text fontWeight={"bold"} textAlign={"left"}>
+            Profile
+          </Text>
           <Box as={"ul"} listStyleType={"none"}>
-            <li>User: {userData.firstname + "" + userData.lastname}</li>
-            <li>Role: {userData.role} </li>
+            <li>User: {userData.firstname + " " + userData.lastname}</li>
+            <li>Role: {userData.role}</li>
             <li>Email: {userData.email}</li>
           </Box>
         </VStack>
