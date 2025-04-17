@@ -1,36 +1,45 @@
+const { default: mongoose } = require("mongoose");
 const { dbConn } = require("../config/dbconfig.js");
 const Asset = require("../models/asset.model.js");
-
 // //get all assets
 const getAssets = async (req, res) => {
   try {
     await dbConn();
-    const data = await Asset.find({});
+    const assets = await Asset.find({});
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Successfully fetched data",
-        data: data,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Successfully fetched data",
+      assets,
+    });
+    return;
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Unable to get data",
-        error: error.message,
-      });
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to get data",
+    });
   }
 };
 
 // // add new asset
 const addNewAsset = async (req, res) => {
-  try {
-    const data = req.body;
+  const { id } = req.params;
+  const data = req.body;
 
-    const newData = new Asset(data);
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid ID" });
+  }
+
+  if (!data) {
+    return res
+      .status(400)
+      .json({ success: false, message: "No data provided" });
+  }
+  const newData = new Asset({ ...data, custodian: id });
+
+  try {
     await dbConn();
     await newData.save();
 
@@ -38,7 +47,7 @@ const addNewAsset = async (req, res) => {
       .status(200)
       .json({ success: true, message: "New Asset Record Created" });
   } catch (err) {
-    return res.status(500).json(err.message);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -57,6 +66,8 @@ const updateAsset = async (req, res) => {
       .json({ success: true, message: "Assets data updated", data: data });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
+  } finally {
+    mongoose.disconnect();
   }
 };
 
@@ -70,13 +81,13 @@ const deleteAsset = async (req, res) => {
       .status(200)
       .json({ success: true, message: "Asset deleted", data: deleteData });
   } catch (error) {
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Unable to get data",
-        error: error.message,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Unable to get data",
+      error: error.message,
+    });
+  } finally {
+    mongoose.disconnect();
   }
 };
 

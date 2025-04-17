@@ -5,13 +5,7 @@ const { PORT } = require("./secrets.js");
 
 const app = express();
 
-app.use(
-  cors({
-    // origin: "https://bp8ntrs2-5173.uks1.devtunnels.ms",
-    origin: "http://localhost:5173",
-  })
-);
-
+app.use(cors());
 app.use(express.json());
 
 app.use("/api", routes);

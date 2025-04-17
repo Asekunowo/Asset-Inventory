@@ -1,4 +1,4 @@
-export const assetModels = [
+export const laptopModels = [
   "DELL LATITUDE 3420",
   "DELL LATITUDE 5420",
   "DELL LATTITUDE 5520",
@@ -16,3 +16,22 @@ export const assetModels = [
   "HP PROBOOK 440 G11",
   "MACBOOK  ***",
 ];
+
+export const equipmentTypes = [
+  "Cheque Scanner",
+  "Evolis Card Printer",
+  "Zebra Card Printer",
+  "Twig-POS",
+];
+
+export const Bank = ["Alternative Bank", "Sterling Bank"];
+
+export const Fault = [
+  "No Fault",
+  "Software Issue",
+  "Hardware Issue",
+  "Network Issue",
+  "Power Issue",
+];
+
+export const Branch = ["LAGOS ISLAND", "SURULERE", "IKOYI"];

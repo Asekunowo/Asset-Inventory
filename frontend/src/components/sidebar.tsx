@@ -4,7 +4,7 @@ import { FaHouseChimney } from "react-icons/fa6";
 import { FaLaptop, FaTools } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/auth/auth";
+import { useAuth } from "@/utils/auth";
 import { toaster } from "./ui/toaster";
 
 const Sidebar = () => {
@@ -59,16 +59,6 @@ const Sidebar = () => {
           </Button>
         </Link>
       </VStack>
-      <Button
-        position={"absolute"}
-        bottom={20}
-        colorPalette="gray"
-        variant={"subtle"}
-        w={"max-content"}
-        onClick={handleLogOut}
-      >
-        Logout
-      </Button>
     </VStack>
   );
 };

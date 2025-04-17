@@ -1,4 +1,3 @@
-import { useAuth } from "@/auth/auth";
 import Spin from "@/components/spinner";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import useLogin from "@/hooks/useLogin";
@@ -21,13 +20,10 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
-  const { isAuthenticated } = useAuth();
 
   const { loading, loginUser } = useLogin();
 
   const [pass, showPass] = useState(false);
-
-  const [disabled, setDisabled] = useState<Boolean>(true);
 
   const navigate = useNavigate();
 
@@ -35,6 +31,14 @@ const LoginPage = () => {
     password: false,
     email: false,
   });
+
+  const [load, setLoad] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoad(false);
+    }, 1500);
+  }, []);
 
   useEffect(() => {
     if (LoginData.email.includes("@") && LoginData.email.includes(".")) {
@@ -65,6 +69,25 @@ const LoginPage = () => {
     if (success === true) {
       setTimeout(() => navigate("/dashboard"), 500);
     }
+  }
+
+  if (load) {
+    return (
+      <VStack
+        className="backdrop-brightness-50"
+        position={"absolute"}
+        left={0}
+        top={2}
+        h={"full"}
+        minH={"100vh"}
+        minW={"full"}
+        justifyContent={"center"}
+      >
+        <div className="scale-150">
+          <Spin />
+        </div>
+      </VStack>
+    );
   }
 
   return (

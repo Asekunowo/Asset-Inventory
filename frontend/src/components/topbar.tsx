@@ -1,4 +1,4 @@
-import { useAuth } from "@/auth/auth";
+import { useAuth } from "@/utils/auth";
 import { Avatar, Button, HStack, Text, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { toaster, Toaster } from "./ui/toaster";
@@ -25,6 +25,23 @@ const Topbar = () => {
     }, 700);
   }, []);
 
+  // useEffect(() => {
+  //   if (isAuthenticated) {
+  //     setTimeout(() => {
+  //       SetLoad(true);
+  //       toaster.create({
+  //         type: "info",
+  //         description: `You have been logged out!`,
+  //         title: "Session Expired",
+  //       });
+  //       setTimeout(() => {
+  //         logout();
+  //         navigate("/login");
+  //       }, 2500);
+  //     }, 1500000);
+  //   }
+  // }, [isAuthenticated]);
+
   const handleLogOut = async () => {
     await logout();
     toaster.create({
@@ -48,6 +65,7 @@ const Topbar = () => {
         justifyContent={"center"}
       >
         <div className="scale-150">
+          <Toaster />
           <Spin />
         </div>
       </VStack>
@@ -64,16 +82,11 @@ const Topbar = () => {
       <Text fontSize={"2xl"} fontWeight={"bold"}>
         IT ASSET INVENTORY
       </Text>
+      <Text textTransform={"uppercase"} fontWeight={"bold"}>
+        {userData.firstname + " " + userData.lastname}{" "}
+      </Text>
       <HStack gap={8}>
-        <HStack>
-          <Text>Welcome </Text>
-          <Avatar.Root size={"md"}>
-            <Avatar.Fallback
-              name={userData.firstname + " " + userData.lastname}
-            />
-            <Avatar.Image src="" />
-          </Avatar.Root>
-        </HStack>
+        <HStack></HStack>
         <Button
           colorPalette="gray"
           variant={"subtle"}

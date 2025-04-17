@@ -1,12 +1,19 @@
-import { Box, Button, Heading, VStack } from "@chakra-ui/react";
+"use client";
+import { Box, Button, Heading, HStack, VStack } from "@chakra-ui/react";
 import { Link, Outlet } from "react-router-dom";
 import Spin from "./spinner";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/auth/auth";
+import { useAuth } from "@/utils/auth";
+import Notauthorized from "./error/notauthorized";
+import { useLocation } from "react-router-dom";
+import { FaChevronLeft } from "react-icons/fa";
+import { Tooltip } from "./ui/tooltip";
 
 const Settings = () => {
   const { userData, isAuthenticated } = useAuth();
   const [load, SetLoad] = useState(true);
+  const [path, setPath] = useState("");
+  const location = useLocation();
 
   useEffect(() => {
     const data = async () => {
@@ -21,8 +28,13 @@ const Settings = () => {
 
     setTimeout(() => {
       data();
-    }, 700);
+    }, 500);
   }, []);
+
+  useEffect(() => {
+    const l_path = location.pathname;
+    setPath(l_path);
+  }, [location.pathname]);
 
   if (load) {
     return (
@@ -44,10 +56,24 @@ const Settings = () => {
   }
 
   if (!isAuthenticated) {
-    return <></>;
+    return (
+      <VStack
+        className="backdrop-brightness-50"
+        position={"absolute"}
+        left={0}
+        top={2}
+        h={"full"}
+        minH={"100vh"}
+        minW={"full"}
+        bg={"blue.900"}
+        justifyContent={"center"}
+      >
+        <Notauthorized />;
+      </VStack>
+    );
   }
   return (
-    <Box>
+    <Box bg={"white"} rounded={"md"} mt={5} minH={"80vh"} p={2}>
       <VStack textAlign={"left"} alignItems={"flex-start"}>
         <Heading
           display={"block"}
@@ -59,11 +85,25 @@ const Settings = () => {
           Settings
         </Heading>
       </VStack>
-      <VStack float={"left"}>
-        <Link to={"passwordchange"}>
-          <Button>Change your password</Button>
+      {path.includes("pass") && (
+        <Link to={"/settings"}>
+          <Button ml={4} float={"left"}>
+            <FaChevronLeft /> Back
+          </Button>
         </Link>
-      </VStack>
+      )}
+      <HStack m={5} alignItems={"flex-start"}>
+        {!path.includes("password") && (
+          <Link to={"passwordchange"}>
+            <Button variant={"subtle"}>Change your password</Button>
+          </Link>
+        )}
+        <Tooltip openDelay={500} content={"This feature is not available yet"}>
+          <Button variant={"subtle"} disabled>
+            Change your account
+          </Button>
+        </Tooltip>
+      </HStack>
       <VStack mt={20}>
         <Outlet context={[userData._id]} />
       </VStack>

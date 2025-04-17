@@ -11,9 +11,11 @@ interface Props {
 
 export const AuthProvider: React.FC<Props> = ({ children }) => {
   const [token, setToken] = useState<null | String>(null);
-  const [userData, setUserData] = useState<null | any[]>(null);
-  const [isAuthenticated, setIsAuthenticated] = useState<null | Boolean>(null);
+  const [userData, setUserData] = useState<any[] | null>(null);
   const storedData = JSON.parse(sessionStorage.getItem("user_data")!);
+  const [isAuthenticated, setIsAuthenticated] = useState<null | Boolean>(
+    storedData ? true : false
+  );
 
   useEffect(() => {
     if (storedData) {

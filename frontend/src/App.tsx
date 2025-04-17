@@ -11,6 +11,7 @@ import Rooterror from "./components/error/rooterror";
 import Nopage from "./components/error/nopage";
 import Settings from "./components/settings";
 import Passwordchange from "./components/passwordchange";
+import Protected from "./utils/protected";
 
 function App() {
   return (
@@ -19,7 +20,11 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="/"
-          element={<DashboardPage />}
+          element={
+            <Protected>
+              <DashboardPage />
+            </Protected>
+          }
           errorElement={<Rooterror />}
         >
           <Route

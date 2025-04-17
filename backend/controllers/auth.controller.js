@@ -15,14 +15,12 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User does not exist. Please Sign Up",
+        message: "Invalid Credentials",
       });
     }
 
     if (!compareSync(password, user.password)) {
-      res
-        .status(401)
-        .json({ success: false, message: "Password is incorrect" });
+      res.status(401).json({ success: false, message: "Invalid Credentials" });
       return;
     }
 
