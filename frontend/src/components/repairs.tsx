@@ -19,6 +19,7 @@ import {
   laptopModels,
 } from "@/store/data";
 import { useRepairStore } from "@/store/store";
+import Cookies from "universal-cookie";
 
 type repairData = {
   type: string;
@@ -48,6 +49,24 @@ const Repairs = () => {
     cost_of_repair: "",
     bank: "--BANK--",
   });
+
+  const cookies = new Cookies();
+  const token = cookies.get("jwt_authorization");
+
+  if (!token) {
+    toaster.create({
+      type: "error",
+      description: "Session expired, please login again",
+    });
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 2000);
+    return (
+      <>
+        <Toaster />
+      </>
+    );
+  }
 
   useEffect(() => {
     const data = async () => {
@@ -158,7 +177,7 @@ const Repairs = () => {
         >
           <Text fontWeight={"bold"}>Add New Repair</Text>
         </VStack>
-        <form className="p-5 grid grid-cols-2 gap-4 w-full h-full">
+        <form className="p-5 grid grid-cols-3 gap-4 w-full h-full">
           <Input
             value={"SUBMITTED BY: " + userData.firstname}
             disabled

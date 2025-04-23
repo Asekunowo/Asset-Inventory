@@ -5,6 +5,11 @@ import {
   Heading,
   HStack,
   Input,
+  Table,
+  TableBody,
+  TableColumnHeader,
+  TableHeader,
+  TableRow,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -14,6 +19,9 @@ import { useAuth } from "@/utils/auth";
 import Spin from "./spinner";
 import { useAssetStore } from "@/store/store";
 import { toaster, Toaster } from "./ui/toaster";
+import Cookies from "universal-cookie";
+import { Link } from "react-router-dom";
+import { LightMode } from "./ui/color-mode";
 
 type Assets = {
   user: string;
@@ -30,12 +38,30 @@ type Assets = {
 const Asset = () => {
   const { userData } = useAuth();
   const [load, SetLoad] = useState<boolean>(true);
-  const { addAsset, loading } = useAssetStore();
+  const { addAsset, loading, fetchAssets, assets } = useAssetStore();
+  const cookies = new Cookies();
+  const token = cookies.get("jwt_authorization");
+
+  if (!token) {
+    toaster.create({
+      type: "error",
+      description: "Session expired, please login again",
+    });
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 2000);
+    return (
+      <>
+        <Toaster />
+      </>
+    );
+  }
 
   useEffect(() => {
     const data = async () => {
       try {
         await userData;
+        await fetchAssets(token);
       } catch (error) {
         console.log(error);
       } finally {
@@ -145,42 +171,86 @@ const Asset = () => {
         justifyContent={"space-between"}
         bg={"white"}
         rounded={"md"}
+        minH={"100vh"}
       >
-        <VStack
+        <Box
           rounded={"md"}
           w={"full"}
           p={"1rem"}
-          spaceY={"2"}
-          h={"max-content"}
+          spaceY={"4"}
           bg={"white"}
           pos={"relative"}
-          placeItems={"flex-start"}
+          // placeItems={"flex-start"}
         >
           <Heading
             float={"left"}
             size={"2xl"}
             padding={"1rem"}
             textTransform={"uppercase"}
+            w={"full"}
             ml={-2}
           >
             Assets
           </Heading>
-          <Box
-            rounded={"md"}
-            p={"1rem"}
-            outline={1}
-            outlineColor={"black"}
-            outlineStyle={"solid"}
-            h={"max-content"}
-            bg={"white"}
-            mb={5}
-          >
-            <VStack float={"left"}>
-              <Text fontWeight={"bold"}>Laptop Section</Text>
-            </VStack>
-          </Box>
+
+          <HStack w={"full"} float={"right"}>
+            <Button
+              mb={10}
+              colorPalette={"blue"}
+              float={"right"}
+              variant={"solid"}
+            >
+              <Link to={"#"}>Add New Asset</Link>
+            </Button>
+          </HStack>
+          <LightMode>
+            <Table.ScrollArea
+              borderWidth="1px"
+              maxW="9xl"
+              colorPalette={"gray"}
+            >
+              <Table.Root
+                borderRadius={"md"}
+                stickyHeader
+                variant={"outline"}
+                showColumnBorder
+              >
+                <TableHeader>
+                  <TableRow>
+                    <TableColumnHeader maxW={"10px"}>S/N</TableColumnHeader>
+                    <TableColumnHeader>USER</TableColumnHeader>
+                    <TableColumnHeader>TYPE</TableColumnHeader>
+                    <TableColumnHeader>TAG</TableColumnHeader>
+                    <TableColumnHeader>SERIAL NO</TableColumnHeader>
+                    <TableColumnHeader>MODEL</TableColumnHeader>
+                    <TableColumnHeader>GROUP</TableColumnHeader>
+                    <TableColumnHeader textAlign={"end"}>
+                      BRANCH
+                    </TableColumnHeader>
+                  </TableRow>
+                </TableHeader>
+                <TableBody cursor={"text"}>
+                  {assets.map((asset: any, index: number) => (
+                    <TableRow key={index}>
+                      <TableColumnHeader>{index + 1}</TableColumnHeader>
+                      <TableColumnHeader>{asset.user}</TableColumnHeader>
+                      <TableColumnHeader>{asset.type}</TableColumnHeader>
+                      <TableColumnHeader>{asset.tag}</TableColumnHeader>
+                      <TableColumnHeader>{asset.serial_no}</TableColumnHeader>
+                      <TableColumnHeader>{asset.model}</TableColumnHeader>
+                      <TableColumnHeader>{asset.group}</TableColumnHeader>
+                      <TableColumnHeader textAlign={"end"}>
+                        {asset.branch}
+                      </TableColumnHeader>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table.Root>
+            </Table.ScrollArea>
+          </LightMode>
+
           {/* Entry Form */}
-          <form className="p-5 grid grid-cols-2 gap-6 w-full">
+          <form className="hidden p-5 grid grid-cols-2 gap-6 w-full">
             <Input
               value={"SUBMITTED BY: " + userData.firstname}
               disabled
@@ -304,7 +374,7 @@ const Asset = () => {
               </Button>
             </HStack>
           </form>
-        </VStack>
+        </Box>
 
         {/* OTHERS SECTION */}
 

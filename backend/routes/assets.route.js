@@ -5,11 +5,12 @@ const {
   addNewAsset,
   deleteAsset,
 } = require("../controllers/assets.controller.js");
+const { verifyToken } = require("../middlewares/auth.js");
 const router = express.Router();
 
-router.get("/get", getAssets);
-router.put("/edit/:id", updateAsset);
-router.post("/new/:id", addNewAsset);
-router.delete("/del/:id", deleteAsset);
+router.get("/get", verifyToken, getAssets);
+router.put("/edit/:id", verifyToken, updateAsset);
+router.post("/new/:id", verifyToken, addNewAsset);
+router.delete("/del/:id", verifyToken, deleteAsset);
 
 module.exports = router;

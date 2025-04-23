@@ -1,4 +1,5 @@
 import React, { useContext, createContext, useState, useEffect } from "react";
+import Cookies from "universal-cookie";
 
 const AuthContext = createContext<any>(null);
 // const url = 'https://product-store-back.onrender.com';
@@ -10,18 +11,18 @@ interface Props {
 }
 
 export const AuthProvider: React.FC<Props> = ({ children }) => {
-  const [token, setToken] = useState<null | String>(null);
   const [userData, setUserData] = useState<any[] | null>(null);
   const storedData = JSON.parse(sessionStorage.getItem("user_data")!);
   const [isAuthenticated, setIsAuthenticated] = useState<null | Boolean>(
     storedData ? true : false
   );
 
+  const cookies = new Cookies();
+
   useEffect(() => {
     if (storedData) {
-      const { userToken, user } = storedData;
+      const { user } = storedData;
       setUserData(user);
-      setToken(userToken);
       setIsAuthenticated(true);
     }
   }, []);
@@ -30,27 +31,27 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     sessionStorage.setItem(
       "user_data",
       JSON.stringify({
-        userToken: newToken,
         user: newData,
       })
     );
 
-    setToken(newToken);
+    cookies.set("jwt_authorization", newToken, {
+      expires: new Date(Date.now() + 7200 * 1000), // 10 seconds for testings  });
+    });
     setUserData(newData);
     setIsAuthenticated(true);
   };
 
   const logout = () => {
     sessionStorage.removeItem("user_data");
-    setToken(null);
     setUserData(null);
     setIsAuthenticated(false);
+    cookies.remove("jwt_authorization");
   };
 
   return (
     <AuthContext.Provider
       value={{
-        token,
         isAuthenticated,
         login,
         logout,

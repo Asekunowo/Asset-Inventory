@@ -9,12 +9,37 @@ type resData = {
   repairs?: [];
 };
 
+import Cookies from "universal-cookie";
+const cookies = new Cookies();
+const token = cookies.get("jwt_authorization");
+
 export const useAssetStore: any = create((set) => ({
   assets: [],
   setAssets: (assets: []) => set({ assets }),
-  fetchAssets: async () => {
-    const res: Response = await fetch(`${url}/api/assets/get`);
+  fetchAssets: async (token: string) => {
+    const res: Response = await fetch(`${url}/api/assets/get`, {
+      method: "GET",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     const data: resData = await res.json();
+
+    if (!res) {
+      return { success: false, message: "Unable to communicate with server" };
+    }
+
+    if (res.status === 401) {
+      return { success: false, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
 
     set({ assets: data.assets });
   },
@@ -22,6 +47,7 @@ export const useAssetStore: any = create((set) => ({
     const res = await fetch(`${url}/api/assets/new/${pid}`, {
       method: "POST",
       headers: {
+        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(assetData),
@@ -33,6 +59,17 @@ export const useAssetStore: any = create((set) => ({
 
     const data = await res.json();
 
+    if (res.status === 401) {
+      return { success: false, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
+
     set((state: any) => ({ assets: [...state.assets, data.asset] }));
 
     return { success: data.success, message: data.message };
@@ -41,14 +78,26 @@ export const useAssetStore: any = create((set) => ({
     const res = await fetch(`${url}/api/assets/edit/${pid}`, {
       method: "PUT",
       headers: {
+        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedAsset),
     });
+    if (!res) {
+      return { success: false, message: "Unable to communicate with server" };
+    }
+
     const data = await res.json();
 
-    if (!data.success) {
+    if (res.status === 401) {
       return { success: false, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
     }
 
     //updates UI immediately without refresh
@@ -57,15 +106,32 @@ export const useAssetStore: any = create((set) => ({
         asset._id === pid ? data.data : asset
       ),
     }));
-    // console.log(profileProducts)
     return { success: data.success, message: data.message };
   },
   deleteAsset: async (pid: string) => {
     const res = await fetch(`${url}/api/assets/delete/${pid}`, {
       method: "DELETE",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     });
+
+    if (!res) {
+      return { success: false, message: "Unable to communicate with server" };
+    }
+
     const data = await res.json();
-    if (!data.success) return { success: false, message: data.message };
+
+    if (res.status === 401) {
+      return { success: false, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
 
     //updates UI immediately without refresh
     set((state: any) => ({
@@ -82,14 +148,26 @@ export const userStore: any = create((set) => ({
     const res: Response = await fetch(`${url}/api/users/passchg/${pid}`, {
       method: "PUT",
       headers: {
+        authorization: `Bearer token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(pass),
     });
-    const data: resData = await res.json();
-
     if (!res) {
       return { success: false, message: "Unable to communicate with server" };
+    }
+
+    const data: resData = await res.json();
+
+    if (res.status === 401) {
+      return { success: false, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
     }
 
     return { success: data.success, message: data.message };
@@ -99,15 +177,27 @@ export const userStore: any = create((set) => ({
 export const useRepairStore: any = create((set) => ({
   repairs: [],
   setRepairs: (repairs: []) => set({ repairs }),
-  fetchRepairs: async () => {
-    const res: Response = await fetch(`${url}/api/repairs/get`);
-    const data: resData = await res.json();
+  fetchRepairs: async (token: string) => {
+    const res: Response = await fetch(`${url}/api/repairs/get`, {
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+    });
 
     if (!res) {
       return { success: false, message: "Unable to communicate with server" };
     }
-    if (!data.success) {
+    const data: resData = await res.json();
+
+    if (res.status === 401) {
       return { success: false, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
     }
     set({ repairs: data.repairs });
     return { success: data.success, message: data.message };
@@ -116,6 +206,7 @@ export const useRepairStore: any = create((set) => ({
     const res = await fetch(`${url}/api/repairs/new/${pid}`, {
       method: "POST",
       headers: {
+        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(repairData),
@@ -127,8 +218,15 @@ export const useRepairStore: any = create((set) => ({
 
     const data = await res.json();
 
-    if (data.success === false) {
+    if (res.status === 401) {
       return { success: false, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
     }
 
     set((state: any) => ({ repairs: [...state.repairs, data.repair] }));
@@ -139,6 +237,7 @@ export const useRepairStore: any = create((set) => ({
     const res = await fetch(`${url}/api/repairs/edit/${pid}`, {
       method: "PUT",
       headers: {
+        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedRepair),
@@ -160,6 +259,9 @@ export const useRepairStore: any = create((set) => ({
   deleteRepair: async (pid: string) => {
     const res = await fetch(`${url}/api/repairs/delete/${pid}`, {
       method: "DELETE",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
     });
     const data = await res.json();
     if (!data.success) return { success: false, message: data.message };

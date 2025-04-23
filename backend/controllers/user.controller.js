@@ -7,7 +7,8 @@ const getUsers = async (req, res) => {
   try {
     await dbConn();
     const user = await User.find();
-
+    const { id } = req.user;
+    console.log(id);
     return res
       .status(200)
       .json({ success: true, message: "Users fetched", user });

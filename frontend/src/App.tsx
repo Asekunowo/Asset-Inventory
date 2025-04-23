@@ -12,8 +12,48 @@ import Nopage from "./components/error/nopage";
 import Settings from "./components/settings";
 import Passwordchange from "./components/passwordchange";
 import Protected from "./utils/protected";
+import { useEffect } from "react";
+import { useAuth } from "./utils/auth";
 
 function App() {
+  const { logout } = useAuth();
+  const updateExpireTime = () => {
+    const expireTime: number = Date.now() + 3600000;
+
+    localStorage.setItem("expireTime", JSON.stringify(expireTime));
+  };
+
+  const checkForInactivity = () => {
+    const expireTime: number = JSON.parse(localStorage.getItem("expireTime")!);
+
+    if (expireTime < Date.now()) {
+      logout();
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      checkForInactivity();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  });
+  useEffect(() => {
+    updateExpireTime();
+
+    const events = ["click", "mousemove", "keydown", "scroll", "resize"];
+    events.forEach((event) => {
+      window.addEventListener(event, updateExpireTime);
+    });
+
+    // Cleanup event listeners on component unmount
+    return () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, updateExpireTime);
+      });
+    };
+  });
+
   return (
     <Box minH={"100vh"} bg={"#2c3e50"} minW={"3xl"}>
       <Routes>
@@ -32,11 +72,13 @@ function App() {
             element={<Dashboard />}
             errorElement={<Rooterror />}
           />
-          <Route
-            path="assets"
-            element={<Asset />}
-            errorElement={<Rooterror />}
-          />
+          <Route path="assets" element={<Asset />} errorElement={<Rooterror />}>
+            <Route
+              path="new"
+              element={<Asset />}
+              errorElement={<Rooterror />}
+            />
+          </Route>
           <Route
             path="repairs"
             element={<Repairs />}

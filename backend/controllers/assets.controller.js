@@ -25,7 +25,7 @@ const getAssets = async (req, res) => {
 
 // // add new asset
 const addNewAsset = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.user;
   const data = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -53,9 +53,13 @@ const addNewAsset = async (req, res) => {
 
 // //edit asset customer
 const updateAsset = async (req, res) => {
-  try {
-    const { id } = req.params;
+  const { id } = req.user;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid ID" });
+  }
+
+  try {
     const data = req.body;
 
     await dbConn();
@@ -73,9 +77,13 @@ const updateAsset = async (req, res) => {
 
 // // delete one customer
 const deleteAsset = async (req, res) => {
-  try {
-    const { id } = req.params;
+  const { id } = req.user;
 
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid ID" });
+  }
+
+  try {
     const deleteData = await Asset.findByIdAndDelete(id);
     return res
       .status(200)

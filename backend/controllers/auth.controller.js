@@ -24,7 +24,9 @@ const login = async (req, res) => {
       return;
     }
 
-    const token = jwt.sign({ userId: user._id }, SECRET_KEY);
+    const token = jwt.sign({ id: user._id, email: user.email }, SECRET_KEY, {
+      expiresIn: "3d",
+    });
 
     res
       .status(200)

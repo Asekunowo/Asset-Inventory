@@ -1,12 +1,12 @@
-import { useAuth } from "../utils/auth";
+import Cookies from "universal-cookie";
 import { Navigate } from "react-router-dom";
 
+const cookies = new Cookies();
+
 const Protected = ({ children }: any) => {
-  const { isAuthenticated } = useAuth();
+  const token = cookies.get("jwt_authorization");
 
-  console.log(isAuthenticated);
-
-  if (!isAuthenticated) {
+  if (!token) {
     return <Navigate to={"/login"} />;
   }
   return children;

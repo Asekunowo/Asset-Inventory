@@ -5,19 +5,38 @@ import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Spin from "./spinner";
 import { useAssetStore, useRepairStore } from "@/store/store";
+import Cookies from "universal-cookie";
+import { Toaster, toaster } from "./ui/toaster";
 
 const Dashboard = () => {
   const { userData } = useAuth();
   const { fetchAssets, assets } = useAssetStore();
   const { fetchRepairs, repairs } = useRepairStore();
   const [load, SetLoad] = useState(true);
+  const cookies = new Cookies();
+  const token = cookies.get("jwt_authorization");
+
+  if (!token) {
+    toaster.create({
+      type: "error",
+      description: "Session expired, please login again",
+    });
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 2000);
+    return (
+      <>
+        <Toaster />
+      </>
+    );
+  }
 
   useEffect(() => {
     const data = async () => {
       try {
-        await fetchRepairs();
-        await fetchAssets();
         await userData;
+        await fetchAssets(token);
+        await fetchRepairs(token);
       } catch (error) {
         console.log(error);
       } finally {

@@ -6,10 +6,11 @@ const {
   deleteUser,
   changePassword,
 } = require("../controllers/user.controller.js");
+const { verifyToken } = require("../middlewares/auth.js");
 
 const router = express.Router();
 
-router.get("/getusers", getUsers);
+router.get("/getusers", verifyToken, getUsers);
 router.get("/getoneuser/:id", getOneUser);
 router.post("/createuser", createUser);
 router.put("/passchg/:id", changePassword);

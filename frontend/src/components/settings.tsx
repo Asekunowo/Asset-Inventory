@@ -8,12 +8,31 @@ import Notauthorized from "./error/notauthorized";
 import { useLocation } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
 import { Tooltip } from "./ui/tooltip";
+import Cookies from "universal-cookie";
+import { toaster, Toaster } from "./ui/toaster";
 
 const Settings = () => {
   const { userData, isAuthenticated } = useAuth();
   const [load, SetLoad] = useState(true);
   const [path, setPath] = useState("");
   const location = useLocation();
+  const cookies = new Cookies();
+  const token = cookies.get("jwt_authorization");
+
+  if (!token) {
+    toaster.create({
+      type: "error",
+      description: "Session expired, please login again",
+    });
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 2000);
+    return (
+      <>
+        <Toaster />
+      </>
+    );
+  }
 
   useEffect(() => {
     const data = async () => {
