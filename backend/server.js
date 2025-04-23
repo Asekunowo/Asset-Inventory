@@ -1,27 +1,15 @@
+const express = require("express");
+const cors = require("cors");
+const routes = require("./routes/root.route.js");
+const { PORT } = require("./secrets.js");
 
-const express =  require('express')
-const  cors = require('cors')
-const bodyParser = require('body-parser')
-const userRoutes = require('./routes/user.route.js')
-const assetRoutes = require('./routes/assets.route.js')
-const dotenv = require('dotenv')
+const app = express();
 
+app.use(cors());
+app.use(express.json());
 
-const PORT = process.env.PORT
-const app = express()
+app.use("/api", routes);
 
-dotenv.config()
-app.use(cors())
-// app.use(bodyParser.json())
-app.use(express.json())
+app.get("/", (req, res) => res.send("Welcome to IT ASSET INVENTORY SERVER"));
 
-
-app.use('/api/users', userRoutes)
-app.use('/api/assets', assetRoutes)
-
-
-
-app.listen(PORT, async () => {
-    console.log("Server running")
-}
-)
+app.listen(PORT, console.log("Server running"));
