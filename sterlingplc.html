@@ -28,16 +28,7 @@
         .content-area { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: none; }
         .active { display: block; }
 
-        /* Sidebar */
-        .sidebar { width: 250px; background: #2c3e50; color: white; padding: 20px; }
-        .sidebar h2 { text-align: center; margin-bottom: 20px; }
-        .sidebar ul { list-style: none; }
-        .sidebar ul li { padding: 10px; margin: 10px 0; cursor: pointer; }
-        .sidebar ul li a { color: white; text-decoration: none; display: flex; align-items: center; }
-        .sidebar ul li a i { margin-right: 10px; }
-        .sidebar ul li:hover { background: #34495e; border-radius: 5px; }
- /* Main Content */
- .main-content { flex: 1; padding: 20px; }
+ .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; gap: 20px; }  
         .navbar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
        
@@ -56,7 +47,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 100px;  /* Add some spacing at the top */
+    margin-top: 100px;  
 }
 
 
@@ -167,7 +158,9 @@
                 <li onclick="showSection('dashboard')"><a href="#"><i class="fa fa-home"></i> Dashboard</a></li>
                 <li onclick="showSection('assets')"><a href="#"><i class="fa fa-desktop"></i> Assets</a></li>
                 <li onclick="showSection('repairs')"><a href="#"><i class="fa fa-tools"></i> Repairs</a></li>
+                <li onclick="showSection('exit-register')"><a href="#"><i class="fa fa-sign-out-alt"></i> Exit Register</a></li>
                 <li onclick="showSection('settings')"><a href="#"><i class="fa fa-cog"></i> Settings</a></li>
+                
             </ul>
         </div>
        
@@ -550,10 +543,12 @@
                     </div>
                 </form>
             </div>
+
+        
             <div id="repairs" class="section">
                 <h2>Repair Requests</h2>
                 <form id="repairs-form">
-                    <input type="text" placeholder="Serial Number" required>
+                    <input type="text" placeholder="serialNumber" required>
                     <input type="text" placeholder="Asset Tag" required>
                     <input type="date" placeholder="Date Received">
                     <input type="text" placeholder="Fault" required>
@@ -734,10 +729,184 @@
                     </div>
                 </form>
             </div>
+
+    
+            <div id="exit-register" class="section">            
+                <h2>Exit register</h2>
+                <form id="exit-form">
+                    <input type="text" placeholder="User" required>
+                    <input type="text" placeholder="Asset Tag" required>
+                    <input type="text" placeholder="Serial Number" required>
+                    <input type="text" placeholder="Group">
+                    <input type="text" placeholder="Role">
+                    <select>
+                        <option value=""> SPEC </option>
+                        <option value="CORE i5 8GB">CORE i5 8GB</option>
+                        <option value="CORE i5 16GB">CORE i5 16GB</option>
+                        <option value="CORE i7 16GB">CORE i7 16GB</option>
+                    </select>
+
+                    <select>
+                        <option value=""> Entity </option>
+                        <option value="Alternative Bank">Alternative Bank</option>
+                        <option value="Sterling Bank">Sterling Bank</option>
+                    </select>
+
+                    <select>
+                        <option value=""> ASSET MODEL </option> 
+                        <option value="LATITUDE 5420">LATITUDE 5420</option>
+                        <option value="LATITUDE 3410">LATITUDE 3410</option>
+                        <option value="LATITUDE 3430">LATITUDE 3430</option>
+                        <option value="LATITUDE 5440">LATITUDE 5440</option>
+                        <option value="LATITUDE 5320">LATITUDE 5320</option>
+                        <option value="LATITUDE 3420">LATITUDE 3420</option>
+                        <option value="LATITUDE 5520">LATITUDE 5520</option>
+                        <option value="LATITUDE 3440">LATITUDE 3440</option>
+                        <option value="LATITUDE 3490">LATITUDE 3490</option>
+                        <option value="LATITUDE 5580">LATITUDE 5580</option>
+                        <option value="HP ELITEBOOK 640 G9">HP ELITEBOOK 640 G9</option>
+                        <option value="HP ELITEBOOK 840 G9">HP ELITEBOOK 840 G9</option>
+                        <option value="HP ELITEBOOK 450 G10">HP ELITEBOOK 450 G10</option>
+                        <option value="HP ELITEBOOK X360 1040 G6">HP ELITEBOOK X360 1040 G6</option>
+                        <option value="HP PROBOOK 440 G9">HP PROBOOK 440 G9</option>
+                        <option value="HP PROBOOK 440 G11">HP PROBOOK 440 G11</option>
+                        <option value="MAC BOOK PRO">MAC BOOK PRO</option>
+                        <option value="MAC BOOK AIR">MAC BOOK AIR</option>
+                    </select>
+
+                    <select>
+                        <option value=""> BRANCH </option> 
+                        <option value="MAMMAN KONTAGORA CLOSE">MAMMAN KONTAGORA CLOSE</option>
+                        <option value="STERLING BOULEVARD">STERLING BOULEVARD</option>
+                        <option value="SEDA CLOSE">SEDA CLOSE</option>
+                        <option value="CONOIL">CONOIL</option>
+                        <option value="KETU LAGOS">KETU LAGOS</option>
+                        <option value="IKORODU LAGOS">IKORODU LAGOS</option>
+                        <option value="IKOTUN LAGOS">IKOTUN LAGOS</option>
+                        <option value="ABULE EGBA">ABULE EGBA</option>
+                        <option value="OSHODI LAGOS">OSHODI LAGOS</option>
+                        <option value="AIRPORT ROAD">AIRPORT ROAD</option>
+                        <option value="OGBA LAGOS">OGBA LAGOS</option>
+                        <option value="SHASHA ROAD">SHASHA ROAD</option>
+                        <option value="IYANA-IPAJA">IYANA-IPAJA</option>
+                        <option value="IJU ROAD">IJU ROAD</option>
+                        <option value="OGUDU LAGOS">OGUDU LAGOS</option>
+                        <option value="COKER LAGOS">COKER LAGOS</option>
+                        <option value="AWOLOWO WAY">AWOLOWO WAY</option>
+                        <option value="ILUPEJU">ILUPEJU</option>
+                        <option value="AROMIRE">AROMIRE</option>
+                        <option value="ALABA CASH">ALABA CASH</option>
+                        <option value="TRADE FAIR">TRADE FAIR</option>
+                        <option value="FESTAC LAGOS">FESTAC LAGOS</option>
+                        <option value="26B CREEK ROAD">26B CREEK ROAD</option>
+                        <option value="LASU LAGOS">LASU LAGOS</option>
+                        <option value="TINCAN LAGOS">TINCAN LAGOS</option>
+                        <option value="OGIJO">OGIJO</option>
+                        <option value="MAGBORO">MAGBORO</option>
+                        <option value="AKUTE">AKUTE</option>
+                        <option value="SHAGAMU">SHAGAMU</option>
+                        <option value="MOSINMI CASH CENTRE">MOSINMI CASH CENTRE</option>
+                        <option value="OWODE ONIRIN CASH CENTRE">OWODE ONIRIN CASH CENTRE</option>
+                        <option value="IGBOGBO CASH CENTRE">IGBOGBO CASH CENTRE</option>
+                        <option value="IDUMOTA">IDUMOTA</option>
+                        <option value="IGBOSERE">IGBOSERE</option>
+                        <option value="HEAD OFFICE BRANCH">HEAD OFFICE BRANCH</option>
+                        <option value="MARTINS">MARTINS</option>
+                        <option value="JOHN STREET">JOHN STREET</option>
+                        <option value="IDUMAGBO">IDUMAGBO</option>
+                        <option value="SURA">SURA</option>
+                        <option value="ISSA WILLIAMS">ISSA WILLIAMS</option>
+                        <option value="30 ADETOKUNBO ADEMOLA (AA1)">30 ADETOKUNBO ADEMOLA (AA1)</option>
+                        <option value="114 AWOLOWO ROAD ( IKY 2)">114 AWOLOWO ROAD ( IKY 2)</option>
+                        <option value="DOUGLAS RD, OWERRI">DOUGLAS RD, OWERRI</option>
+                        <option value="WETHERAL RD">WETHERAL RD</option>
+                        <option value="RIVER CALABAR">RIVER CALABAR</option>
+                        <option value="CLEMENT EBRI">CLEMENT EBRI</option>
+                        <option value="UUTH AKWA IBOM">UUTH AKWA IBOM</option>
+                        <option value="ABAK RD">ABAK RD</option>
+                        <option value="ORON RD">ORON RD</option>
+                        <option value="EKEOHA MARKET BRANCH">EKEOHA MARKET BRANCH</option>
+                        <option value="CEMETERY BRANCH ABIA">CEMETERY BRANCH ABIA</option>
+                        <option value="ARIARIA BRANCH">ARIARIA BRANCH</option>
+                        <option value="AZIKIWE RD (ABA 2)">AZIKIWE RD (ABA 2)</option>
+                        <option value="EZIUKWU RD (ABA 1)">EZIUKWU RD (ABA 1)</option>
+                        <option value="GUSAU">GUSAU</option>
+                        <option value="DUTSE">DUTSE</option>
+                        <option value="KEBBI">KEBBI</option>
+                        <option value="KASTINA">KASTINA</option>
+                        <option value="SOKOTO">SOKOTO</option>
+                        <option value="GOMBE">GOMBE</option>
+                        <option value="JIMETA ADAMAWA">JIMETA ADAMAWA</option>
+                        <option value="BAUCHI BAUCHI">BAUCHI BAUCHI</option>
+                        <option value="NAZE CASH CENTRE">NAZE CASH CENTRE</option>
+                        <option value="MARKET RD ENUGU">MARKET RD ENUGU</option>
+                        <option value="OKPARA AVENUE">OKPARA AVENUE</option>
+                        <option value="ZIK AVENUE">ZIK AVENUE</option>
+                        <option value="PORTHARCOURT ROAD">PORTHARCOURT ROAD</option>
+                        <option value="UGA BRIDGE HEAD ONITSHA">UGA BRIDGE HEAD ONITSHA</option>
+                        <option value="NOTTIDGE">NOTTIDGE</option>
+                        <option value="MELFORD OKILO ROAD">MELFORD OKILO ROAD</option>
+                        <option value="IWO ROAD">IWO ROAD</option>
+                        <option value="DUGBE OYO">DUGBE OYO</option>
+                        <option value="APATA">APATA</option>
+                        <option value="RING ROAD OYO">RING ROAD OYO</option>
+                        <option value="SECRETARIAT IBADAN">SECRETARIAT IBADAN</option>
+                        <option value="OKE-ADO IBADAN">OKE-ADO IBADAN</option>
+                        <option value="IJEBU-ODE OGUN">IJEBU-ODE OGUN</option>
+                        <option value="MM WAY, ILORIN KWARA">MM WAY, ILORIN KWARA</option>
+                        <option value="ORE ONDO">ORE ONDO</option>                                                                                                                                        
+                        <option value="OSHOGBO OSUN">OSHOGBO OSUN</option>
+                        <option value="BOWEN UNIVERSITY">BOWEN UNIVERSITY</option>
+                        <option value="IBRAHIM TAIWO">IBRAHIM TAIWO</option>
+                        <option value="ADO EKITI">ADO EKITI</option>
+                        <option value="AKURE ONDO">AKURE ONDO</option>
+                        <option value="IKERE EKITI">IKERE EKITI</option>
+                        <option value="DALEKO LAGOS">DALEKO LAGOS</option>
+                        <option value="ADENIRAN OGUNSANYA LAGOS">ADENIRAN OGUNSANYA LAGOS</option>
+                        <option value="OGUNLANA LAGOS SURULERE">OGUNLANA LAGOS SURULERE</option>
+                        <option value="ITIRE LAGOS">ITIRE LAGOS</option>
+                        <option value="IRE-AKARI LAGOS">IRE-AKARI LAGOS</option>
+                        <option value="OKOTA LAGOS">OKOTA LAGOS</option>
+                        <option value="YABA LAGOS">YABA LAGOS</option>
+                        <option value="IDDO LAGOS">IDDO LAGOS</option>
+                        <option value="WILLOUGHBY LAGOS">WILLOUGHBY LAGOS</option>
+                        <option value="OJUWOYE LAGOS">OJUWOYE LAGOS</option>
+                        <option value="MATORI CASH LAGOS">MATORI CASH LAGOS</option>                                                                 
+                        <option value="MAIDUGURI BORNO ">MAIDUGURI BORNO </option>
+                        <option value="LOKOJA KOGI">LOKOJA KOGI</option>
+                        <option value="MAKURDI BENUE">MAKURDI BENUE</option>
+                        <option value="MINNA NIGER">MINNA NIGER</option>
+                        <option value="ZARIA KADUNA">ZARIA KADUNA</option>
+                        <option value="KAGORO KADUNA">KAGORO KADUNA</option>
+                        <option value="KADUNA REFINERY">KADUNA REFINERY</option>
+                        <option value="KACHIA ROAD KADUNA">KACHIA ROAD KADUNA</option>
+                        <option value="ALI AKILU KADUNA">ALI AKILU KADUNA</option>
+                        <option value="WARRI DELTA">WARRI DELTA</option>
+                        <option value="ASABA 1">ASABA 1</option>
+                        <option value="SAPELE ROAD">SAPELE ROAD</option>
+                        <option value="OKADA EDO BENIN">OKADA EDO BENIN</option>
+                        <option value="ADESUWA ROAD">ADESUWA ROAD</option>
+                        <option value="ODIBO">ODIBO</option>
+                        <option value="AKPAKPAVA EDO BENIN">AKPAKPAVA EDO BENIN</option>
+                        <option value="PRIVATE BANKING">PRIVATE BANKING</option>
+                        <option value="LAMGBASA">LAMGBASA</option>
+                        <option value="AWOYAYA">AWOYAYA</option>
+                        <option value="IKOTA SHOPPING COMPLEX">IKOTA SHOPPING COMPLEX</option>
+                        <option value="BAKKY PLAZA">BAKKY PLAZA</option>
+                        <option value="ADEOLA ODEKU">ADEOLA ODEKU</option>
+                    </select>
+                 
+                    <div class="action-buttons">
+                        <button type="submit" class="primary-button">Submit</button>
+                        <button type="reset" class="secondary-button">Clear</button>
+                    </div>
+                </form>
+         </div>
+
             <div id="settings" class="section">
                 <h2>Settings</h2>
-                <div class="settings-button-group"></div>
-                <button onclick="showSubSection('change-account-section')" class="action-button primary-button">Change User Account</button> --
+                <div class="settings-button-group">
+                <button onclick="showSubSection('change-account-section')" class="action-button primary-button">Change User Account</button> 
                 <button onclick="showSubSection('change-password-section')" class="action-button primary-button">Change Password</button>
                 <button onclick="showSubSection('profile-section')" class="action-button primary-button">Profile</button>
                 <button onclick="logout()" class="action-button secondary-button">Log Out</button>
@@ -760,8 +929,8 @@
                 <p>User details here...</p>
                 </div>
             </div>
-        </div>
-    </div>
+        
+   
 
     <script>
     document.querySelectorAll("form").forEach(form => {
