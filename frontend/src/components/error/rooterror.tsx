@@ -1,7 +1,7 @@
 import { Button, EmptyState, Text, VStack } from "@chakra-ui/react";
 import { MdError } from "react-icons/md";
 
-const Rooterror = ({}) => {
+const Rooterror = () => {
   return (
     <EmptyState.Root>
       <EmptyState.Content>

@@ -1,9 +1,10 @@
 import { useAuth } from "@/utils/auth";
-import { Avatar, Button, HStack, Text, VStack } from "@chakra-ui/react";
+import { Button, HStack, Text, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { toaster, Toaster } from "./ui/toaster";
 import { useState, useEffect } from "react";
 import Spin from "./spinner";
+import { TbLogout2 } from "react-icons/tb";
 const Topbar = () => {
   const navigate = useNavigate();
   const { userData, logout, isAuthenticated } = useAuth();
@@ -24,23 +25,6 @@ const Topbar = () => {
       data();
     }, 700);
   }, []);
-
-  // useEffect(() => {
-  //   if (isAuthenticated) {
-  //     setTimeout(() => {
-  //       SetLoad(true);
-  //       toaster.create({
-  //         type: "info",
-  //         description: `You have been logged out!`,
-  //         title: "Session Expired",
-  //       });
-  //       setTimeout(() => {
-  //         logout();
-  //         navigate("/login");
-  //       }, 2500);
-  //     }, 1500000);
-  //   }
-  // }, [isAuthenticated]);
 
   const handleLogOut = async () => {
     await logout();
@@ -88,11 +72,12 @@ const Topbar = () => {
       <HStack gap={8}>
         <HStack></HStack>
         <Button
-          colorPalette="gray"
-          variant={"subtle"}
+          colorPalette="black"
+          variant={"surface"}
           w={"max-content"}
           onClick={handleLogOut}
         >
+          <TbLogout2 />
           Logout
         </Button>
       </HStack>

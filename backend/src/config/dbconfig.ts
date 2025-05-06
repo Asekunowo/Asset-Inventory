@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { DB_URI } = require("../secrets");
+import { connect } from "mongoose";
+import { DB_URI } from "../secrets";
 
 const config = {
   user: "tireddev",
@@ -15,14 +15,12 @@ const config = {
   port: 1433,
 };
 
-const dbConn = async () => {
+export const dbConn = async () => {
   try {
-    const conn = await mongoose.connect(DB_URI);
+    const conn = await connect(DB_URI);
     console.log("Connected to: " + conn.connection.host);
   } catch (error) {
     console.log(error);
     process.exit(1);
   }
 };
-
-module.exports = { dbConn };

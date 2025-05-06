@@ -1,81 +1,70 @@
 import {
   Box,
   Button,
+  Field,
+  Flex,
   Heading,
   HStack,
+  Icon,
   Input,
-  Text,
+  Table,
+  TableBody,
+  TableColumnHeader,
+  TableHeader,
+  TableRow,
   VStack,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/utils/auth";
-import { toaster, Toaster } from "./ui/toaster";
 import Spin from "./spinner";
-import {
-  Bank,
-  Branch,
-  equipmentTypes,
-  Fault,
-  laptopModels,
-} from "@/store/data";
 import { useRepairStore } from "@/store/store";
-import Cookies from "universal-cookie";
-
-type repairData = {
-  type: string;
-  model: string;
-  tag: string;
-  serial_no: string;
-  branch: string;
-  vendor: string;
-  fault: string;
-  cost_of_repair: string;
-  bank: string;
-};
+import { Outlet } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { IoCaretBack, IoSearch } from "react-icons/io5";
+import Sessionexpired from "./error/sessionexpired";
 
 const Repairs = () => {
   const { userData } = useAuth();
-  const [load, SetLoad] = useState(true);
-  const { addRepair } = useRepairStore();
+  const [load, SetLoad] = useState<boolean>(true);
+  const [expired, setExpired] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>("");
+  const { addRepair, repairs, fetchRepairs } = useRepairStore();
 
-  const [repairData, setRepairData] = useState<repairData>({
-    type: "--TYPE--",
-    model: "--MODEL--",
-    tag: "",
-    serial_no: "",
-    branch: "--BRANCH--",
-    vendor: "",
-    fault: "--FAULT--",
-    cost_of_repair: "",
-    bank: "--BANK--",
-  });
+  const location = useLocation();
 
-  const cookies = new Cookies();
-  const token = cookies.get("jwt_authorization");
+  const path = location.pathname;
 
-  if (!token) {
-    toaster.create({
-      type: "error",
-      description: "Session expired, please login again",
+  const filterRepairs = (repairs: any[], searchTerm: string) => {
+    if (!searchTerm) return repairs;
+
+    return repairs.filter((repair) => {
+      const searchFields = [
+        repair.vendor,
+        repair.tag,
+        repair.serial_no,
+        repair.group,
+        repair.branch,
+      ];
+
+      return searchFields.some((field) =>
+        field?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      );
     });
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 2000);
-    return (
-      <>
-        <Toaster />
-      </>
-    );
-  }
+  };
 
   useEffect(() => {
     const data = async () => {
       try {
         await userData;
+        const data = await fetchRepairs();
+        if ("res" in data && data.res === 401) {
+          setExpired(true);
+        }
       } catch (error) {
         console.log(error);
       } finally {
         SetLoad(false);
+        console.log(repairs);
       }
     };
 
@@ -84,50 +73,13 @@ const Repairs = () => {
     }, 700);
   }, []);
 
-  const handleAddRepair = async (pid: string) => {
-    const { success, message } = await addRepair(pid, repairData);
-
-    toaster.create({
-      type: success ? "success" : "error",
-      description: message,
-    });
-
-    success &&
-      setRepairData({
-        type: "--TYPE--",
-        model: "--MODEL--",
-        tag: "",
-        serial_no: "",
-        branch: "--BRANCH--",
-        vendor: "",
-        fault: "--FAULT--",
-        cost_of_repair: "",
-        bank: "--BANK--",
-      });
-  };
-
-  const handleClear = () => {
-    setRepairData({
-      type: "--TYPE--",
-      model: "--MODEL--",
-      tag: "",
-      serial_no: "",
-      branch: "--BRANCH--",
-      vendor: "",
-      fault: "--FAULT--",
-      cost_of_repair: "",
-      bank: "--BANK--",
-    });
-  };
-
   if (load) {
     return (
       <VStack
-        className="backdrop-brightness-50"
+        className="backdrop-brightness-25"
         position={"absolute"}
+        top={0}
         left={0}
-        top={2}
-        h={"full"}
         minH={"100vh"}
         minW={"full"}
         justifyContent={"center"}
@@ -140,198 +92,138 @@ const Repairs = () => {
   }
   return (
     <VStack textAlign={"left"} alignItems={"left"}>
-      <Box>
-        <Toaster />
-      </Box>
+      {expired && <Sessionexpired />}
       <VStack
-        rounded={"md"}
-        w={"full"}
-        p={"1rem"}
-        spaceY={"2"}
-        h={"max-content"}
+        mt={10}
+        gap={"10rem"}
+        justifyContent={"space-between"}
         bg={"white"}
-        pos={"relative"}
-        placeItems={"flex-start"}
-        textAlign={"left"}
-        alignItems={"flex-start"}
-        mt={5}
+        rounded={"md"}
+        minH={"100vh"}
       >
-        <Heading
-          textTransform={"uppercase"}
-          display={"block"}
-          float={"left"}
-          size={"2xl"}
-          padding={"1rem"}
-        >
-          Repairs
-        </Heading>
-        <VStack
+        <Box
           rounded={"md"}
+          w={"full"}
           p={"1rem"}
-          outline={1}
-          outlineColor={"black"}
-          outlineStyle={"solid"}
-          //   h={"max-content"}
-          float={"left"}
-          //   w={"full"}
+          spaceY={"4"}
+          bg={"white"}
+          pos={"relative"}
         >
-          <Text fontWeight={"bold"}>Add New Repair</Text>
-        </VStack>
-        <form className="p-5 grid grid-cols-3 gap-4 w-full h-full">
-          <Input
-            value={"SUBMITTED BY: " + userData.firstname}
-            disabled
+          <Heading
+            float={"left"}
+            size={"2xl"}
+            padding={"1rem"}
             textTransform={"uppercase"}
-            fontWeight={"bold"}
-            _disabled={{ bg: "gray.400" }}
-          />
-          <select
-            value={repairData.type}
-            onChange={(e) =>
-              setRepairData({ ...repairData, type: e.target.value })
-            }
-            className="col-start- row-start- w-full h-10 rounded-md py-10 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-1 outline-1 focus:outline-offset-1 focus:outline-black sm:text-sm/6 "
+            w={"full"}
+            ml={-2}
           >
-            <option
-              className="disabled:text-gray-400"
-              value="--TYPE--"
-              disabled
+            Repairs
+          </Heading>
+          {!path.includes("new") && (
+            <Flex
+              w={"full"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+              mx={2}
             >
-              --TYPE--
-            </option>
-            {equipmentTypes.map((type) => (
-              <option key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
+              <Button colorPalette={"blue"} variant={"solid"}>
+                <Link to={"new"}>Add New Repair</Link>
+              </Button>
+              <Field.Root w={"max-content"}>
+                <HStack pos={"relative"} mr={5}>
+                  <Input
+                    minW={"14rem"}
+                    p={2}
+                    placeholder="Search"
+                    variant={"flushed"}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                  <Icon pos={"absolute"} right={0} size={"lg"}>
+                    <IoSearch />
+                  </Icon>
+                </HStack>
+              </Field.Root>
+            </Flex>
+          )}
+          {path.includes("new") && (
+            <Link to={"/assets"}>
+              <Button colorPalette={"gray"} variant={"surface"} rounded={"md"}>
+                <IoCaretBack />
+                Back
+              </Button>
+            </Link>
+          )}
+          {!path.includes("new") && (
+            <Table.ScrollArea
+              borderWidth="1px"
+              maxW="9xl"
+              colorPalette={"gray"}
+            >
+              <Table.Root
+                borderRadius={"md"}
+                stickyHeader
+                variant={"outline"}
+                showColumnBorder
+              >
+                <TableHeader>
+                  <TableRow>
+                    <TableColumnHeader minW={"13px"}>S/N</TableColumnHeader>
+                    <TableColumnHeader>TYPE</TableColumnHeader>
+                    <TableColumnHeader>TAG</TableColumnHeader>
+                    <TableColumnHeader>SERIAL NO</TableColumnHeader>
+                    <TableColumnHeader>VENDOR</TableColumnHeader>
+                    <TableColumnHeader>FAULT</TableColumnHeader>
+                    <TableColumnHeader>COST OF REPAIR</TableColumnHeader>
 
-          <select
-            value={repairData.model}
-            onChange={(e) =>
-              setRepairData({ ...repairData, model: e.target.value })
-            }
-            className="col-start- row-start- w-full h-10 rounded-md py-10 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-1 outline-1 focus:outline-offset-1 focus:outline-black sm:text-sm/6 "
-          >
-            <option
-              className="disabled:text-gray-400"
-              value="--MODEL--"
-              disabled
-            >
-              --MODEL--
-            </option>
-            {laptopModels.map((model) => (
-              <option key={model} value={model}>
-                {model}
-              </option>
-            ))}
-          </select>
-          <Input
-            placeholder="Asset Tag"
-            value={repairData.tag}
-            onChange={(e) =>
-              setRepairData({ ...repairData, tag: e.target.value })
-            }
-          />
-          <Input
-            placeholder="Serial No"
-            value={repairData.serial_no}
-            onChange={(e) =>
-              setRepairData({ ...repairData, serial_no: e.target.value })
-            }
-          />
-          <select
-            onChange={(e) =>
-              setRepairData({ ...repairData, branch: e.target.value })
-            }
-            value={repairData.branch}
-            className="col-start- row-start- w-full h-10 rounded-md py-10 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-1 outline-1 focus:outline-offset-1 focus:outline-black sm:text-sm/6 "
-          >
-            <option
-              className="disabled:text-gray-400"
-              value="--BRANCH--"
-              disabled
-            >
-              --BRANCH--
-            </option>
-            {Branch.map((branch) => (
-              <option key={branch} value={branch}>
-                {branch}
-              </option>
-            ))}
-          </select>
-          <Input
-            placeholder="Vendor"
-            value={repairData.vendor}
-            onChange={(e) =>
-              setRepairData({ ...repairData, vendor: e.target.value })
-            }
-          />
+                    <TableColumnHeader>BANK</TableColumnHeader>
+                    <TableColumnHeader textAlign={"end"}>
+                      DATE ADDED
+                    </TableColumnHeader>
+                    <TableColumnHeader>CUSTODIAN</TableColumnHeader>
+                  </TableRow>
+                </TableHeader>
+                <TableBody cursor={"text"}>
+                  {filterRepairs(repairs, search).map(
+                    (repair: any, index: number) => {
+                      const repairDate = new Date(
+                        repair.createdAt
+                      ).toLocaleDateString();
 
-          <select
-            value={repairData.fault}
-            onChange={(e) =>
-              setRepairData({ ...repairData, fault: e.target.value })
-            }
-            className="col-start- row-start- w-full h-10 rounded-md py-10 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-1 outline-1 focus:outline-offset-1 focus:outline-black sm:text-sm/6 "
-          >
-            <option
-              className="disabled:text-gray-400"
-              value="--FAULT--"
-              disabled
-            >
-              --FAULT--
-            </option>
-            {Fault.map((fault) => (
-              <option key={fault} value={fault}>
-                {fault}
-              </option>
-            ))}
-          </select>
-          <Input
-            placeholder="Cost of Repair"
-            value={repairData.cost_of_repair}
-            onChange={(e) =>
-              setRepairData({ ...repairData, cost_of_repair: e.target.value })
-            }
-          />
-          <select
-            value={repairData.bank}
-            onChange={(e) =>
-              setRepairData({ ...repairData, bank: e.target.value })
-            }
-            className="col-start- row-start- w-full h-10 rounded-md py-10 pr-7 pl-3 text-base text-gray-500 placeholder:text-gray-400 focus:outline-1 outline-1 focus:outline-offset-1 focus:outline-black sm:text-sm/6 "
-          >
-            <option
-              className="disabled:text-gray-400"
-              value="--BANK--"
-              disabled
-            >
-              --BANK--
-            </option>
-            {Bank.map((bank) => (
-              <option key={bank} value={bank}>
-                {bank}
-              </option>
-            ))}
-          </select>
-        </form>
-        <HStack float={"right"}>
-          <Button
-            variant={"subtle"}
-            colorPalette={"green"}
-            onClick={() => handleAddRepair(userData._id)}
-          >
-            Submit
-          </Button>
-          <Button
-            colorPalette={"red"}
-            variant={"surface"}
-            onClick={() => handleClear()}
-          >
-            Clear
-          </Button>
-        </HStack>
+                      return (
+                        <TableRow key={index}>
+                          <TableColumnHeader>{index + 1}</TableColumnHeader>
+                          <TableColumnHeader>{repair.type}</TableColumnHeader>
+                          <TableColumnHeader>{repair.tag}</TableColumnHeader>
+                          <TableColumnHeader>
+                            {repair.serial_no}
+                          </TableColumnHeader>
+                          <TableColumnHeader>{repair.vendor}</TableColumnHeader>
+                          <TableColumnHeader>{repair.fault}</TableColumnHeader>
+                          <TableColumnHeader>
+                            {repair.costofrepair}
+                          </TableColumnHeader>
+                          <TableColumnHeader>{repair.bank}</TableColumnHeader>
+                          <TableColumnHeader>{repairDate}</TableColumnHeader>
+                          <TableColumnHeader
+                            bg={"gray.300"}
+                            fontWeight={"bold"}
+                            color={"gray.500"}
+                          >
+                            {repair.custodian.firstname +
+                              " " +
+                              repair.custodian.lastname}
+                          </TableColumnHeader>
+                        </TableRow>
+                      );
+                    }
+                  )}
+                </TableBody>
+              </Table.Root>
+            </Table.ScrollArea>
+          )}
+
+          <Outlet context={{ addRepair, userData }} />
+        </Box>
       </VStack>
     </VStack>
   );

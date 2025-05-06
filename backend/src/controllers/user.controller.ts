@@ -1,27 +1,29 @@
-const { default: mongoose } = require("mongoose");
-const { dbConn } = require("../config/dbconfig");
-const { hashSync, compareSync } = require("bcrypt");
-const User = require("../models/user.model");
+import { default as mongoose } from "mongoose";
+import { Request, Response } from "express";
+import { dbConn } from "../config/dbconfig";
+import { hashSync, compare } from "bcrypt";
+import User from "../models/user.model";
 
-const getUsers = async (req, res) => {
+export const getUsers = async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ success: false, message: "Not Authorized" });
+    return;
+  }
+
   try {
     await dbConn();
     const user = await User.find();
-    const { id } = req.user;
-    console.log(id);
-    return res
-      .status(200)
-      .json({ success: true, message: "Users fetched", user });
+    res.status(200).json({ success: true, message: "Users fetched", user });
+    return;
   } catch (error) {
-    return res
-      .status(500)
-      .json({ success: false, message: "Could not fetch data" });
-  } finally {
-    mongoose.disconnect();
+    res.status(500).json({ success: false, message: "Could not fetch data" });
+    return;
   }
 };
 
-const createUser = async (req, res) => {
+export const createUser = async (req: Request, res: Response) => {
   const user = req.body;
 
   const newUser = new User({ ...user, password: hashSync(user.password, 10) });
@@ -49,12 +51,10 @@ const createUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Unable to create user" });
-  } finally {
-    mongoose.disconnect();
   }
 };
 
-const getOneUser = async (req, res) => {
+export const getOneUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -78,12 +78,10 @@ const getOneUser = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: "User not found" });
     return;
-  } finally {
-    mongoose.disconnect();
   }
 };
 
-const deleteUser = async (req, res) => {
+export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -108,32 +106,32 @@ const deleteUser = async (req, res) => {
     console.log(error);
     res.status(500).json({ success: false, message: "Unable to delete user" });
     return;
-  } finally {
-    mongoose.disconnect();
   }
 };
 
-const changePassword = async (req, res) => {
-  const { id } = req.params;
+export const changePassword = async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+
   const { oldPassword, newPassword } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(400).json({ success: false, message: "Invalid id" });
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ success: false, message: "Not Authorized" });
     return;
   }
 
   try {
     await dbConn();
-    const checkPassword = await User.findById(id);
+    const checkPassword = await User.findById(userId);
 
-    if (!compareSync(oldPassword, checkPassword.password)) {
-      return res
+    if (!compare(oldPassword, checkPassword.password)) {
+      res
         .status(401)
         .json({ success: false, message: "Old password incorrect" });
+      return;
     }
 
     await User.findByIdAndUpdate(
-      id,
+      userId,
       {
         $set: { password: hashSync(newPassword, 10) },
       },
@@ -141,21 +139,12 @@ const changePassword = async (req, res) => {
     );
 
     res.status(200).json({ success: true, message: "Password changed!" });
-  } catch (error) {
+    return;
+  } catch (error: any) {
     console.log(error);
     res
       .status(500)
       .json({ success: false, message: "Unable to change password" });
     return;
-  } finally {
-    mongoose.disconnect();
   }
-};
-
-module.exports = {
-  getUsers,
-  createUser,
-  getOneUser,
-  deleteUser,
-  changePassword,
 };

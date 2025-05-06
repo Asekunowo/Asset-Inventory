@@ -1,5 +1,4 @@
-import React, { useContext, createContext, useState, useEffect } from "react";
-import Cookies from "universal-cookie";
+import { useContext, createContext, useState, useEffect } from "react";
 
 const AuthContext = createContext<any>(null);
 // const url = 'https://product-store-back.onrender.com';
@@ -17,8 +16,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     storedData ? true : false
   );
 
-  const cookies = new Cookies();
-
   useEffect(() => {
     if (storedData) {
       const { user } = storedData;
@@ -27,17 +24,13 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
-  const login = (newToken: String, newData: []) => {
+  const login = (newData: []) => {
     sessionStorage.setItem(
       "user_data",
       JSON.stringify({
         user: newData,
       })
     );
-
-    cookies.set("jwt_authorization", newToken, {
-      expires: new Date(Date.now() + 7200 * 1000), // 10 seconds for testings  });
-    });
     setUserData(newData);
     setIsAuthenticated(true);
   };
@@ -46,7 +39,6 @@ export const AuthProvider: React.FC<Props> = ({ children }) => {
     sessionStorage.removeItem("user_data");
     setUserData(null);
     setIsAuthenticated(false);
-    cookies.remove("jwt_authorization");
   };
 
   return (

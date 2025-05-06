@@ -11,114 +11,160 @@ import {
 import { useEffect, useState } from "react";
 import { BsEyeFill, BsEyeSlash } from "react-icons/bs";
 import { Toaster, toaster } from "./ui/toaster";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import Spin from "./spinner";
+import { useNavigate } from "react-router-dom";
+import Sessionexpired from "./error/sessionexpired";
+interface PasswordState {
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+interface ErrorState {
+  same: boolean;
+  notmatch: boolean;
+}
+
+interface ChangePassword {
+  changePass: (password: {
+    oldPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  }) => Promise<{ success: boolean; message: string }>;
+}
+
+const DEFAULT_PASSWORD_STATE: PasswordState = {
+  oldPassword: "",
+  newPassword: "",
+  confirmNewPassword: "",
+};
 
 const Passwordchange = () => {
-  const [id]: string = useOutletContext();
-
   const navigate = useNavigate();
-  const [pass, showPass] = useState<boolean>(false);
-  const [load, SetLoad] = useState(false);
-  const [error, setError] = useState({
+  const [expired, setExpired] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [loading, SetLoad] = useState(false);
+  const [password, setPassword] = useState(DEFAULT_PASSWORD_STATE);
+  const [error, setError] = useState<ErrorState>({
     same: false,
     notmatch: false,
   });
 
-  const { changePass } = userStore();
-
-  const [password, setPassword] = useState({
-    oldPassword: "",
-    newPassword: "",
-    confirmNewPassword: "",
-  });
+  const { changePass }: ChangePassword = userStore();
 
   useEffect(() => {
-    if (
-      password.newPassword &&
-      password.newPassword !== password.confirmNewPassword
-    ) {
-      setError({ ...error, notmatch: true });
-    } else {
-      setError({ ...error, notmatch: false });
+    if (password.newPassword || password.confirmNewPassword) {
+      setError((prev) => ({
+        ...prev,
+        notmatch: password.newPassword !== password.confirmNewPassword,
+      }));
+    } else if (!password.newPassword && !password.confirmNewPassword) {
+      setError((prev) => ({ ...prev, notmatch: false }));
     }
-  }, [password]);
+    {
+      setError((prev) => ({ ...prev, notmatch: false }));
+    }
+  }, [password.newPassword, password.confirmNewPassword]);
 
-  const handlePassChange = async (pid: string) => {
+  const validatePasswords = (): boolean => {
     if (
-      !password.oldPassword &&
-      !password.newPassword &&
+      !password.oldPassword ||
+      !password.newPassword ||
       !password.confirmNewPassword
     ) {
       toaster.create({
         type: "error",
-        description: "Please fill all the fields",
-        duration: 2000,
+        title: "Please fill all fields",
       });
-      return;
+      return false;
     }
+
     if (error.notmatch) {
       toaster.create({
         type: "error",
-        description: "Passwords do not match",
-        duration: 1500,
+        title: "Passwords do not match",
       });
-      return;
+      return false;
     }
+
     if (password.oldPassword === password.newPassword) {
-      setError({ ...error, same: true });
+      setError((prev) => ({ ...prev, same: true }));
       toaster.create({
         type: "error",
-        description: "New password cannot be same as old password",
-        duration: 1500,
+        title: "New password cannot be same as old password",
       });
-      return;
+      return false;
     }
 
-    if (!confirm("Are you sure you want to change your password?")) {
-      return;
-    }
-
-    SetLoad(true);
-
-    const { success, message } = await changePass(pid, password);
-
-    success &&
-      setTimeout(() => {
-        SetLoad(false);
-        navigate("../");
-        toaster.create({
-          type: success ? "success" : "error",
-          description: message,
-        });
-      }, 1500);
-
-    success &&
-      setPassword({
-        oldPassword: "",
-        newPassword: "",
-        confirmNewPassword: "",
-      });
+    return true;
   };
 
+  const handlePassChange = async (): Promise<void> => {
+    if (!validatePasswords()) return;
+
+    if (!confirm("Are you sure you want to change your password?")) return;
+
+    try {
+      SetLoad(true);
+
+      const data = await changePass(password);
+
+      if ("res" in data && data.res === 401) {
+        setExpired(true);
+        return;
+      }
+
+      if (data.success) {
+        toaster.create({ type: "success", title: data.message });
+        setPassword(DEFAULT_PASSWORD_STATE);
+        setTimeout(() => navigate("../"), 500);
+      } else {
+        toaster.create({ type: "error", title: data.message });
+      }
+    } catch (error) {
+      console.error(error);
+      toaster.create({
+        type: "error",
+        title: "Failed to change password",
+        description: "Please try again later",
+      });
+    } finally {
+      SetLoad(false);
+    }
+  };
+
+  const PasswordInput = ({
+    placeholder,
+    value,
+    onChange,
+  }: {
+    placeholder: string;
+    value: string;
+    onChange: (value: string) => void;
+  }) => (
+    <HStack position="relative">
+      <Input
+        w="sm"
+        placeholder={placeholder}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        type={showPassword ? "text" : "password"}
+      />
+      <Button
+        bg="transparent"
+        pos="absolute"
+        variant="solid"
+        zIndex={2}
+        right={0}
+        onClick={() => setShowPassword((prev) => !prev)}
+      >
+        {showPassword ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
+      </Button>
+    </HStack>
+  );
+
   return (
-    <Box>
-      {load && (
-        <VStack
-          className="backdrop-brightness-50"
-          position={"absolute"}
-          left={0}
-          top={2}
-          h={"full"}
-          minH={"100vh"}
-          minW={"full"}
-          justifyContent={"center"}
-        >
-          <div className="scale-150">
-            <Spin />
-          </div>
-        </VStack>
-      )}
+    <Box shadow={"md"} rounded={"md"}>
+      {expired && <Sessionexpired />}
       <Toaster />
       <VStack
         spaceY={4}
@@ -150,17 +196,21 @@ const Passwordchange = () => {
               onChange={(e) =>
                 setPassword({ ...password, newPassword: e.target.value })
               }
-              type={pass ? "text" : "password"}
+              type={showPassword ? "text" : "password"}
             />
             <Button
               bg={"transparent"}
               pos={"absolute"}
-              variant={"solid"}
+              variant={"surface"}
               zIndex={2}
               right={0}
-              onClick={() => showPass((prevPass) => !prevPass)}
+              onClick={() => setShowPassword((prevPass) => !prevPass)}
             >
-              {pass ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
+              {showPassword ? (
+                <BsEyeSlash size={20} />
+              ) : (
+                <BsEyeFill size={20} />
+              )}
             </Button>
           </HStack>
           {password.oldPassword &&
@@ -179,24 +229,28 @@ const Passwordchange = () => {
               onChange={(e) =>
                 setPassword({ ...password, confirmNewPassword: e.target.value })
               }
-              type={pass ? "text" : "password"}
+              type={showPassword ? "text" : "password"}
             />
             <Button
               bg={"transparent"}
               pos={"absolute"}
-              variant={"solid"}
+              variant={"surface"}
               zIndex={2}
               right={0}
-              onClick={() => showPass((prevPass) => !prevPass)}
+              onClick={() => setShowPassword((prevPass) => !prevPass)}
             >
-              {pass ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
+              {showPassword ? (
+                <BsEyeSlash size={20} />
+              ) : (
+                <BsEyeFill size={20} />
+              )}
             </Button>
           </HStack>
 
           <Field.ErrorText>Passwords do not match</Field.ErrorText>
         </Field.Root>
 
-        <Button colorPalette={"blue"} onClick={() => handlePassChange(id)}>
+        <Button disabled={loading} onClick={() => handlePassChange()}>
           Change Password
         </Button>
       </VStack>

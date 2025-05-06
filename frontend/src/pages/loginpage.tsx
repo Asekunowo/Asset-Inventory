@@ -16,28 +16,37 @@ import { BsEyeFill, BsEyeSlash } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const { loading, loginUser } = useLogin();
+  const navigate = useNavigate();
+  const [load, setLoad] = useState(true);
+  const [pass, showPass] = useState(false);
   const [LoginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
-  const { loading, loginUser } = useLogin();
-
-  const [pass, showPass] = useState(false);
-
-  const navigate = useNavigate();
-
   const [invalid, setInvalid] = useState({
-    password: false,
+    password: true,
     email: false,
   });
 
-  const [load, setLoad] = useState(true);
+  useEffect(() => {
+    const login = (e: any) => {
+      if (e.key === "Enter" && !invalid.password) {
+        handleSignIn();
+      }
+    };
+    window.addEventListener("keydown", login);
+
+    return () => {
+      window.removeEventListener("keydown", login);
+    };
+  });
 
   useEffect(() => {
     setTimeout(() => {
       setLoad(false);
-    }, 1500);
+    }, 1000);
   }, []);
 
   useEffect(() => {
@@ -50,11 +59,20 @@ const LoginPage = () => {
     }
   }, [LoginData]);
 
+  useEffect(() => {
+    if (LoginData.password === "") {
+      setInvalid({ ...invalid, password: true });
+    } else {
+      setInvalid({ ...invalid, password: false });
+    }
+  }, [LoginData]);
+
   async function handleSignIn() {
-    if (!LoginData.email && !LoginData.password) {
+    if (invalid.email) {
       toaster.create({
         type: "error",
-        description: "Please fill in all fields",
+        title: "Please fill in all fields",
+        duration: 1500,
       });
       return;
     }
@@ -128,7 +146,7 @@ const LoginPage = () => {
                 <Field.ErrorText>Enter a valid email address</Field.ErrorText>
               </Field.Root>
 
-              <Field.Root invalid={invalid.password}>
+              <Field.Root>
                 <Field.Label>Password</Field.Label>
                 <HStack w={"full"} position={"relative"}>
                   <Input
@@ -139,9 +157,8 @@ const LoginPage = () => {
                     onChange={(e) =>
                       setLoginData({ ...LoginData, password: e.target.value })
                     }
-                    minLength={8}
-                    maxLength={16}
                   />
+
                   <Button
                     bg={"transparent"}
                     pos={"absolute"}
@@ -154,14 +171,13 @@ const LoginPage = () => {
                     {pass ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
                   </Button>
                 </HStack>
-                <Field.ErrorText>Password is required</Field.ErrorText>
+                {/* <Field.ErrorText>Password is required</Field.ErrorText> */}
               </Field.Root>
 
               <Button
-                disabled={loading}
+                disabled={loading || invalid.password}
                 w={"full"}
                 mt={5}
-                variant={"subtle"}
                 outlineColor={"white"}
                 fontWeight={"bold"}
                 alignItems={"center"}

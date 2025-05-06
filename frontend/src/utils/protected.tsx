@@ -1,10 +1,9 @@
-import Cookies from "universal-cookie";
 import { Navigate } from "react-router-dom";
 
-const cookies = new Cookies();
-
 const Protected = ({ children }: any) => {
-  const token = cookies.get("jwt_authorization");
+  const storedData = JSON.parse(sessionStorage.getItem("user_data")!);
+
+  const token = storedData && storedData.user._id;
 
   if (!token) {
     return <Navigate to={"/login"} />;

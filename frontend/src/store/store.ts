@@ -9,29 +9,42 @@ type resData = {
   repairs?: [];
 };
 
-import Cookies from "universal-cookie";
-const cookies = new Cookies();
-const token = cookies.get("jwt_authorization");
+interface OtherAsset {
+  _id: string;
+  type: string;
+  tag: string;
+  serial_no: string;
+  model: string;
+  branch: string;
+  vendor: string;
+  custodian: {
+    firstname: string;
+    lastname: string;
+  };
+}
 
 export const useAssetStore: any = create((set) => ({
   assets: [],
   setAssets: (assets: []) => set({ assets }),
-  fetchAssets: async (token: string) => {
+  fetchAssets: async () => {
     const res: Response = await fetch(`${url}/api/assets/get`, {
       method: "GET",
+      credentials: "include",
       headers: {
-        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
     const data: resData = await res.json();
 
     if (!res) {
-      return { success: false, message: "Unable to communicate with server" };
+      return {
+        success: false,
+        message: "Unable to communicate with server",
+      };
     }
 
     if (res.status === 401) {
-      return { success: false, message: data.message };
+      return { success: false, res: 401, message: data.message };
     }
 
     if (res.status === 403) {
@@ -43,11 +56,11 @@ export const useAssetStore: any = create((set) => ({
 
     set({ assets: data.assets });
   },
-  addAsset: async (pid: string, assetData: any) => {
-    const res = await fetch(`${url}/api/assets/new/${pid}`, {
+  addAsset: async (assetData: any) => {
+    const res = await fetch(`${url}/api/assets/new`, {
       method: "POST",
+      credentials: "include",
       headers: {
-        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(assetData),
@@ -57,10 +70,13 @@ export const useAssetStore: any = create((set) => ({
       return { success: false, message: "Unable to communicate with server" };
     }
 
-    const data = await res.json();
-
     if (res.status === 401) {
-      return { success: false, message: data.message };
+      return {
+        success: false,
+        res: 401,
+
+        message: "Token Expired. Please login again ",
+      };
     }
 
     if (res.status === 403) {
@@ -70,6 +86,12 @@ export const useAssetStore: any = create((set) => ({
       };
     }
 
+    if (res.status === 500) {
+      return { success: false, message: "Server Error" };
+    }
+
+    const data = await res.json();
+
     set((state: any) => ({ assets: [...state.assets, data.asset] }));
 
     return { success: data.success, message: data.message };
@@ -77,8 +99,9 @@ export const useAssetStore: any = create((set) => ({
   updateAsset: async (pid: string, updatedAsset: {}) => {
     const res = await fetch(`${url}/api/assets/edit/${pid}`, {
       method: "PUT",
+      credentials: "include",
+
       headers: {
-        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedAsset),
@@ -90,7 +113,7 @@ export const useAssetStore: any = create((set) => ({
     const data = await res.json();
 
     if (res.status === 401) {
-      return { success: false, message: data.message };
+      return { success: false, res: 401, message: data.message };
     }
 
     if (res.status === 403) {
@@ -111,9 +134,7 @@ export const useAssetStore: any = create((set) => ({
   deleteAsset: async (pid: string) => {
     const res = await fetch(`${url}/api/assets/delete/${pid}`, {
       method: "DELETE",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
     });
 
     if (!res) {
@@ -123,7 +144,7 @@ export const useAssetStore: any = create((set) => ({
     const data = await res.json();
 
     if (res.status === 401) {
-      return { success: false, message: data.message };
+      return { success: false, res: 401, message: data.message };
     }
 
     if (res.status === 403) {
@@ -144,11 +165,11 @@ export const useAssetStore: any = create((set) => ({
 export const userStore: any = create((set) => ({
   user: [],
   setUser: (user: []) => set({ user }),
-  changePass: async (pid: string, pass: {}) => {
-    const res: Response = await fetch(`${url}/api/users/passchg/${pid}`, {
+  changePass: async (pass: {}) => {
+    const res: Response = await fetch(`${url}/api/users/passchg`, {
       method: "PUT",
+      credentials: "include",
       headers: {
-        authorization: `Bearer token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(pass),
@@ -160,7 +181,7 @@ export const userStore: any = create((set) => ({
     const data: resData = await res.json();
 
     if (res.status === 401) {
-      return { success: false, message: data.message };
+      return { success: false, res: 401, message: data.message };
     }
 
     if (res.status === 403) {
@@ -177,11 +198,9 @@ export const userStore: any = create((set) => ({
 export const useRepairStore: any = create((set) => ({
   repairs: [],
   setRepairs: (repairs: []) => set({ repairs }),
-  fetchRepairs: async (token: string) => {
+  fetchRepairs: async () => {
     const res: Response = await fetch(`${url}/api/repairs/get`, {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
     });
 
     if (!res) {
@@ -190,7 +209,7 @@ export const useRepairStore: any = create((set) => ({
     const data: resData = await res.json();
 
     if (res.status === 401) {
-      return { success: false, message: data.message };
+      return { success: false, res: 401, message: data.message };
     }
 
     if (res.status === 403) {
@@ -202,11 +221,11 @@ export const useRepairStore: any = create((set) => ({
     set({ repairs: data.repairs });
     return { success: data.success, message: data.message };
   },
-  addRepair: async (pid: string, repairData: any) => {
-    const res = await fetch(`${url}/api/repairs/new/${pid}`, {
+  addRepair: async (repairData: any) => {
+    const res = await fetch(`${url}/api/repairs/new`, {
       method: "POST",
+      credentials: "include",
       headers: {
-        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(repairData),
@@ -219,7 +238,7 @@ export const useRepairStore: any = create((set) => ({
     const data = await res.json();
 
     if (res.status === 401) {
-      return { success: false, message: data.message };
+      return { success: false, res: 401, message: data.message };
     }
 
     if (res.status === 403) {
@@ -236,14 +255,24 @@ export const useRepairStore: any = create((set) => ({
   updateRepair: async (pid: string, updatedRepair: {}) => {
     const res = await fetch(`${url}/api/repairs/edit/${pid}`, {
       method: "PUT",
+      credentials: "include",
       headers: {
-        authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedRepair),
     });
     const data = await res.json();
 
+    if (res.status === 401) {
+      return { success: false, res: 401, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
     if (!data.success) {
       return { success: false, message: data.message };
     }
@@ -259,11 +288,20 @@ export const useRepairStore: any = create((set) => ({
   deleteRepair: async (pid: string) => {
     const res = await fetch(`${url}/api/repairs/delete/${pid}`, {
       method: "DELETE",
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
+      credentials: "include",
     });
     const data = await res.json();
+
+    if (res.status === 401) {
+      return { success: false, res: 401, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
     if (!data.success) return { success: false, message: data.message };
 
     //updates UI immediately without refresh
@@ -271,5 +309,139 @@ export const useRepairStore: any = create((set) => ({
       repairs: state.repairs.filter((repair: any) => repair._id !== pid),
     }));
     return { success: true, message: data.message };
+  },
+}));
+
+// Add the store implementation after existing stores
+export const useOtherStore = create((set) => ({
+  others: [],
+  setOthers: (others: OtherAsset[]) => set({ others }),
+
+  fetchOthers: async () => {
+    const res = await fetch(`${url}/api/assets/others`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res) {
+      return { success: false, message: "Unable to communicate with server" };
+    }
+
+    const data = await res.json();
+
+    if (res.status === 401) {
+      return { success: false, res: 401, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
+
+    set({ others: data.others });
+    return { success: true, message: "Others fetched successfully" };
+  },
+
+  addOther: async (otherData: Omit<OtherAsset, "_id">) => {
+    const res = await fetch(`${url}/api/assets/newother`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(otherData),
+    });
+
+    if (!res) {
+      return { success: false, message: "Unable to communicate with server" };
+    }
+
+    const data = await res.json();
+
+    if (res.status === 401) {
+      return { success: false, res: 401, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
+
+    // Update UI immediately without refresh
+    set((state: any) => ({ others: [...state.others, data.other] }));
+    return { success: data.success, message: data.message };
+  },
+
+  updateOther: async (pid: string, updatedOther: Partial<OtherAsset>) => {
+    const res = await fetch(`${url}/api/others/edit/${pid}`, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatedOther),
+    });
+
+    if (!res) {
+      return { success: false, message: "Unable to communicate with server" };
+    }
+
+    const data = await res.json();
+
+    if (res.status === 401) {
+      return { success: false, res: 401, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
+
+    // Update UI immediately without refresh
+    set((state: any) => ({
+      others: state.others.map((other: OtherAsset) =>
+        other._id === pid ? { ...other, ...data.other } : other
+      ),
+    }));
+    return { success: data.success, message: data.message };
+  },
+
+  deleteOther: async (pid: string) => {
+    const res = await fetch(`${url}/api/assets/delete/${pid}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+
+    if (!res) {
+      return { success: false, message: "Unable to communicate with server" };
+    }
+
+    const data = await res.json();
+
+    if (res.status === 401) {
+      return { success: false, res: 401, message: data.message };
+    }
+
+    if (res.status === 403) {
+      return {
+        success: false,
+        message: "You are not authorized to perform this action",
+      };
+    }
+
+    // Update UI immediately without refresh
+    set((state: any) => ({
+      others: state.others.filter((other: OtherAsset) => other._id !== pid),
+    }));
+    return { success: data.success, message: data.message };
   },
 }));

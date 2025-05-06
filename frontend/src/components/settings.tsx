@@ -8,31 +8,12 @@ import Notauthorized from "./error/notauthorized";
 import { useLocation } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
 import { Tooltip } from "./ui/tooltip";
-import Cookies from "universal-cookie";
-import { toaster, Toaster } from "./ui/toaster";
 
 const Settings = () => {
   const { userData, isAuthenticated } = useAuth();
   const [load, SetLoad] = useState(true);
   const [path, setPath] = useState("");
   const location = useLocation();
-  const cookies = new Cookies();
-  const token = cookies.get("jwt_authorization");
-
-  if (!token) {
-    toaster.create({
-      type: "error",
-      description: "Session expired, please login again",
-    });
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 2000);
-    return (
-      <>
-        <Toaster />
-      </>
-    );
-  }
 
   useEffect(() => {
     const data = async () => {
@@ -58,11 +39,10 @@ const Settings = () => {
   if (load) {
     return (
       <VStack
-        className="backdrop-brightness-50"
+        className="backdrop-brightness-25"
         position={"absolute"}
         left={0}
-        top={2}
-        h={"full"}
+        top={0}
         minH={"100vh"}
         minW={"full"}
         justifyContent={"center"}
@@ -111,18 +91,21 @@ const Settings = () => {
           </Button>
         </Link>
       )}
-      <HStack m={5} alignItems={"flex-start"}>
-        {!path.includes("password") && (
+      {!path.includes("password") && (
+        <HStack m={5} alignItems={"flex-start"}>
           <Link to={"passwordchange"}>
-            <Button variant={"subtle"}>Change your password</Button>
+            <Button colorPalette={"gray"}>Change your password</Button>
           </Link>
-        )}
-        <Tooltip openDelay={500} content={"This feature is not available yet"}>
-          <Button variant={"subtle"} disabled>
-            Change your account
-          </Button>
-        </Tooltip>
-      </HStack>
+          <Tooltip
+            openDelay={200}
+            content={"This feature is not available yet"}
+          >
+            <Button variant={"subtle"} disabled>
+              Change your account
+            </Button>
+          </Tooltip>
+        </HStack>
+      )}
       <VStack mt={20}>
         <Outlet context={[userData._id]} />
       </VStack>

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES2024",
+    "module": "CommonJS",
+
+    "strict": true, // Enable all strict type-checking options
+    "esModuleInterop": true, // Enables emitting imports for all modules consistently
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "./src/**/*" // Or your source code directory
+  ],
+  "exclude": ["node_modules"]
+}

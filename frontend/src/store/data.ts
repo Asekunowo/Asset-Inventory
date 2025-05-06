@@ -1,20 +1,27 @@
 export const laptopModels = [
   "DELL LATITUDE 3420",
-  "DELL LATITUDE 5420",
-  "DELL LATTITUDE 5520",
   "DELL LATITUDE 3430",
   "DELL LATITUDE 3400",
   "DELL LATITUDE 5440",
   "DELL LATITUDE 3490",
   "DELL LATITUDE 5320",
+  "DELL LATITUDE 5420",
+  "DELL LATITUDE 5520",
   "DELL LATITUDE 5580",
+  "DELL Optiplex 3040",
+  "DELL Optiplex 3050",
+  "DELL Optiplex 3060",
+  "DELL Optiplex 3080",
+  "DELL Optiplex 5000",
+  "DELL Optiplex 5090",
+  "DELL Optiplex 7000",
   "HP ELITEBOOK 640 G9",
   "HP ELITEBOOK 450 G10",
   "HP ELITEBOOK 840 G9",
   "HP ELITEBOOK X360 1040 G6",
   "HP PROBOOK 440 G9",
   "HP PROBOOK 440 G11",
-  "MACBOOK  ***",
+  "MACBOOK",
 ];
 
 export const equipmentTypes = [
@@ -29,13 +36,6 @@ export const equipmentTypes = [
   "HP PRODESK",
   "HP PRO MINI",
   "HP PRO TOWER",
-  "DELL Optiplex 3050",
-  "DELL Optiplex 3060",
-  "DELL Optiplex 3080",
-  "DELL Optiplex 5000",
-  "DELL Optiplex 5090",
-  "DELL Optiplex 3040",
-  "DELL Optiplex 7000",
   "SITV",
   "Office Jet PRO",
   "Canon Lide 300",
@@ -53,7 +53,7 @@ export const Fault = [
   "Power Issue",
 ];
 
-export const Vendor = [
+export const Vendors = [
   "Chams Access",
   "Pajuno",
   "Awesu",

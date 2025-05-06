@@ -1,65 +1,92 @@
-import { Box, Button, ButtonGroup, Heading, VStack } from "@chakra-ui/react";
-
-import { FaHouseChimney } from "react-icons/fa6";
+"use-client";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  HStack,
+  Icon,
+  VStack,
+} from "@chakra-ui/react";
+import { NavLink, Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import Topbar from "./topbar";
+import { RiDashboardFill } from "react-icons/ri";
 import { FaLaptop, FaTools } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/utils/auth";
-import { toaster } from "./ui/toaster";
 
 const Sidebar = () => {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const [activePath, setActivePath] = useState<boolean>(true);
 
-  const handleLogOut = async () => {
-    await logout();
-    toaster.create({
-      title: "Logged Out",
-      type: "info",
-    });
+  const location = useLocation();
+  const path = location.pathname;
 
-    navigate("/login");
-  };
+  useEffect(() => {
+    if (path.includes("dashboard")) {
+      setActivePath(true);
+    } else {
+      setActivePath(false);
+    }
+  }, []);
+
+  const links = [
+    { link: "dashboard", icon: <RiDashboardFill /> },
+    { link: "assets", icon: <FaLaptop /> },
+    { link: "repairs", icon: <FaTools /> },
+    { link: "settings", icon: <IoMdSettings /> },
+  ];
 
   return (
-    <VStack
-      bg={"#2c3e50"}
-      minW={"270px"}
-      w={"2/12"}
-      minH={"100vh"}
-      p={2}
-      pt={10}
-      position={"relative"}
-    >
-      <Heading textTransform={"uppercase"}>IT INVENTORY</Heading>
-      <VStack
-        textAlign={"left"}
-        alignItems={"flex-start"}
-        justifyContent={"flex-start"}
-        mt={10}
-      >
-        <Link to={"dashboard"}>
-          <Button fontSize={16} variant={"ghost"}>
-            <FaHouseChimney /> Dashboard
-          </Button>
-        </Link>
-        <Link to={"assets"}>
-          <Button fontSize={16} variant={"ghost"}>
-            <FaLaptop /> Assets
-          </Button>
-        </Link>
-        <Link to={"repairs"}>
-          <Button fontSize={16} variant={"ghost"}>
-            <FaTools /> Repairs
-          </Button>
-        </Link>
-        <Link to={"settings"}>
-          <Button fontSize={16} variant={"ghost"}>
-            <IoMdSettings /> Settings
-          </Button>
-        </Link>
-      </VStack>
-    </VStack>
+    <Box rounded={"md"} minH={"100vh"} w={"full"} bg={"gray.200"}>
+      <Flex>
+        <VStack
+          bg={"#2c3e50"}
+          minW={"270px"}
+          w={"2/12"}
+          minH={"100vh"}
+          alignContent={"flex-start"}
+          justifyContent={"flex-start"}
+          p={2}
+          pt={10}
+          position={"relative"}
+        >
+          <Heading textTransform={"uppercase"} color={"white"}>
+            IT ASSET INVENTORY
+          </Heading>
+          <Box className="mt-10" mt={10}>
+            {links.map((link, index) => (
+              <NavLink
+                key={index}
+                to={`../${link.link}`}
+                className={"block text-left m-10 "}
+              >
+                <Button
+                  textTransform={"capitalize"}
+                  minW={"7rem"}
+                  w={"full"}
+                  justifyContent={"flex-start"}
+                  p={2}
+                  mb={5}
+                  bg={path.includes(link.link) ? "white" : "black"}
+                  color={path.includes(link.link) ? "black" : "white"}
+                  _hover={{ bg: "white", color: "black" }}
+                >
+                  {link.icon}
+                  {link.link}
+                </Button>
+              </NavLink>
+            ))}
+          </Box>
+        </VStack>
+        <Box w={"10/12"} p={"1.5rem"} color={"black"}>
+          <Box rounded={"md"} p={"1rem"} h={"max-content"} bg={"white"}>
+            <Topbar />
+          </Box>
+          <Outlet />
+        </Box>
+      </Flex>
+    </Box>
   );
 };
 

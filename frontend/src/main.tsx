@@ -10,17 +10,17 @@ import Rooterror from "./components/error/rooterror.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <Provider defaultTheme="dark">
-      <AuthProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <Provider defaultTheme="dark">
+        <AuthProvider>
           <ErrorBoundary
             FallbackComponent={Rooterror}
             onReset={() => (location.href = "/")}
           >
             <App />
           </ErrorBoundary>
-        </BrowserRouter>
-      </AuthProvider>
-    </Provider>
+        </AuthProvider>
+      </Provider>
+    </BrowserRouter>
   </StrictMode>
 );

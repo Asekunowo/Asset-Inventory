@@ -1,14 +1,28 @@
-const mongoose = require("mongoose");
+import mongoose, { Types } from "mongoose";
 
 const { Schema, model, models } = mongoose;
 
-const RepairsSchema = new Schema(
+const AssetSchema = new Schema(
   {
     custodian: {
-      type: mongoose.Types.ObjectId,
+      type: Types.ObjectId,
       required: true,
+      ref: "User",
     },
     type: {
+      type: String,
+      required: true,
+    },
+    user: {
+      type: String,
+      required: true,
+    },
+    tag: {
+      type: String,
+      required: true,
+      unique: [true, "Assets cannot have the same tags"],
+    },
+    serial_no: {
       type: String,
       required: true,
     },
@@ -16,11 +30,15 @@ const RepairsSchema = new Schema(
       type: String,
       required: true,
     },
-    tag: {
+    group: {
       type: String,
       required: true,
     },
-    serial_no: {
+    role: {
+      type: String,
+      required: true,
+    },
+    bank: {
       type: String,
       required: true,
     },
@@ -28,22 +46,10 @@ const RepairsSchema = new Schema(
       type: String,
       required: true,
     },
-    vendor: {
-      type: String,
-    },
-    fault: {
-      type: String,
-    },
-    costofrepair: {
-      type: String,
-    },
-    bank: {
-      type: String,
-    },
   },
   { timestamps: true }
 );
 
-const Repairs = models.Repairs || model("repairs", RepairsSchema);
+const Asset = models.Asset || model("assets", AssetSchema);
 
-module.exports = Repairs;
+export default Asset;

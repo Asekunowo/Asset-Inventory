@@ -5,38 +5,19 @@ import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Spin from "./spinner";
 import { useAssetStore, useRepairStore } from "@/store/store";
-import Cookies from "universal-cookie";
-import { Toaster, toaster } from "./ui/toaster";
 
 const Dashboard = () => {
   const { userData } = useAuth();
   const { fetchAssets, assets } = useAssetStore();
   const { fetchRepairs, repairs } = useRepairStore();
   const [load, SetLoad] = useState(true);
-  const cookies = new Cookies();
-  const token = cookies.get("jwt_authorization");
-
-  if (!token) {
-    toaster.create({
-      type: "error",
-      description: "Session expired, please login again",
-    });
-    setTimeout(() => {
-      window.location.href = "/login";
-    }, 2000);
-    return (
-      <>
-        <Toaster />
-      </>
-    );
-  }
 
   useEffect(() => {
     const data = async () => {
       try {
         await userData;
-        await fetchAssets(token);
-        await fetchRepairs(token);
+        await fetchAssets();
+        await fetchRepairs();
       } catch (error) {
         console.log(error);
       } finally {
@@ -52,11 +33,10 @@ const Dashboard = () => {
   if (load) {
     return (
       <VStack
-        className="backdrop-brightness-50"
+        className="backdrop-brightness-25"
         position={"absolute"}
         left={0}
-        top={2}
-        h={"full"}
+        top={0}
         minH={"100vh"}
         minW={"full"}
         justifyContent={"center"}
@@ -93,9 +73,11 @@ const Dashboard = () => {
             Profile
           </Text>
           <Box as={"ul"} listStyleType={"none"}>
-            <li>User: {userData.firstname + " " + userData.lastname}</li>
-            <li>Role: {userData.role}</li>
-            <li>Email: {userData.email}</li>
+            <li>
+              User: {userData && userData.firstname + " " + userData.lastname}
+            </li>
+            <li>Role: {userData && userData.role}</li>
+            <li>Email: {userData && userData.email}</li>
           </Box>
         </VStack>
       </VStack>
