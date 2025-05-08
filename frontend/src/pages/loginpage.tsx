@@ -1,4 +1,4 @@
-import Spin from "@/components/spinner";
+import Spin from "@/components/ui/spinner";
 import { Toaster, toaster } from "@/components/ui/toaster";
 import useLogin from "@/hooks/useLogin";
 import {
@@ -92,10 +92,10 @@ const LoginPage = () => {
   if (load) {
     return (
       <VStack
-        className="backdrop-brightness-50"
+        className="backdrop-brightness-25"
         position={"absolute"}
         left={0}
-        top={2}
+        top={0}
         h={"full"}
         minH={"100vh"}
         minW={"full"}

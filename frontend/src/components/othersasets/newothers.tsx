@@ -2,58 +2,42 @@ import { Box, Button, HStack, Input, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Bank, Branch, equipmentTypes } from "@/store/data";
 import { useState } from "react";
-import { toaster, Toaster } from "./ui/toaster";
-import Spin from "./spinner";
-import CustomSelect from "./customselect";
-
-type Assets = {
-  type: string;
-  tag: string;
-  serial_no: string;
-  model: string;
-  branch: string;
-  bank: string;
-};
-
-const DEFAULT_ASSET_DATA: Assets = {
-  type: "",
-  tag: "",
-  serial_no: "",
-  model: "",
-  branch: "",
-  bank: "",
-};
+import { toaster, Toaster } from "../ui/toaster";
+import Spin from "../ui/spinner";
+import CustomSelect from "../reusable/customselect";
+import { DEFAULT_OTHERASSET_DATA } from "@/utils/definitions";
+import { OtherAssets as Assets } from "@/utils/types";
+import { serialCheck, tagCheck } from "@/utils/functions";
+import { useOtherAssetStore } from "@/store/store";
 
 const Newothers = ({}) => {
   const [loading, setLoading] = useState<boolean>(false);
+  const { addOther } = useOtherAssetStore();
   type OutletContextType = {
     userData: { firstname: string; lastname: string };
-    addAsset: any;
   };
 
-  const { userData, addAsset } = useOutletContext<OutletContextType>();
+  const { userData } = useOutletContext<OutletContextType>();
 
-  const containsAlphabet = (str: string): boolean => {
-    return /[a-zA-Z]/.test(str);
-  };
-
-  const [AssetData, setAssetData] = useState<Assets>(DEFAULT_ASSET_DATA);
+  const [otherAssetData, setOtherAssetData] = useState<Assets>(
+    DEFAULT_OTHERASSET_DATA
+  );
 
   const handleClear = () => {
-    setAssetData(DEFAULT_ASSET_DATA);
+    setOtherAssetData(DEFAULT_OTHERASSET_DATA);
   };
 
   const validateForm = () => {
     const requiredFields: (keyof Assets)[] = [
       "tag",
       "serial_no",
-      "model",
+      "type",
       "branch",
       "bank",
     ];
 
     const emptyFields = requiredFields.filter(
-      (field) => !AssetData[field] || AssetData[field].includes("--")
+      (field) => !otherAssetData[field] || otherAssetData[field].includes("--")
     );
 
     if (emptyFields.length > 0) {
@@ -66,29 +50,35 @@ const Newothers = ({}) => {
       return false;
     }
 
-    if (containsAlphabet(AssetData.tag)) {
+    if (!tagCheck(otherAssetData.tag)) {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: "Tag number cannot contain alpha characters.",
+        description: `Tags cannot must be at least 6 NUMERIC characters.`,
         duration: 5000,
       });
       return false;
     }
 
+    if (!serialCheck(otherAssetData.serial_no)) {
+      toaster.create({
+        type: "error",
+        title: "Invalid Serial Number",
+        description: "Serial number must be at least 6 alphanumeric characters",
+      });
+      return false;
+    }
     return true;
   };
 
-  const handleAddAsset = async () => {
+  const handleAddOtherAsset = async () => {
     try {
       if (!validateForm()) {
         setLoading(false);
         return;
       }
 
-      const { success, message } = await addAsset(AssetData);
-      // const success = true; // Simulate success for demonstration
-      // const message = "Asset added successfully"; // Simulate success message
+      const { success, message } = await addOther(otherAssetData);
 
       toaster.create({
         type: success ? "success" : "error",
@@ -134,24 +124,28 @@ const Newothers = ({}) => {
         />
         <CustomSelect
           defaultValue="TYPE"
-          value={AssetData.type || "TYPE"}
-          onChange={(value) => setAssetData({ ...AssetData, type: value })}
+          value={otherAssetData.type || "TYPE"}
+          onChange={(value) =>
+            setOtherAssetData({ ...otherAssetData, type: value })
+          }
           options={equipmentTypes}
         />
 
         <Input
           placeholder="Asset Tag"
-          value={AssetData.tag}
+          value={otherAssetData.tag}
           type="text"
-          onChange={(e) => setAssetData({ ...AssetData, tag: e.target.value })}
+          onChange={(e) =>
+            setOtherAssetData({ ...otherAssetData, tag: e.target.value })
+          }
         />
 
         <Input
           placeholder="Serial No"
-          value={AssetData.serial_no}
+          value={otherAssetData.serial_no}
           onChange={(e) =>
-            setAssetData({
-              ...AssetData,
+            setOtherAssetData({
+              ...otherAssetData,
               serial_no: e.target.value.toUpperCase(),
             })
           }
@@ -159,15 +153,19 @@ const Newothers = ({}) => {
 
         <CustomSelect
           defaultValue="BANK"
-          value={AssetData.bank || "BANK"}
-          onChange={(value) => setAssetData({ ...AssetData, bank: value })}
+          value={otherAssetData.bank || "BANK"}
+          onChange={(value) =>
+            setOtherAssetData({ ...otherAssetData, bank: value })
+          }
           options={Bank}
         />
         <div>
           <CustomSelect
             defaultValue="BRANCH"
-            value={AssetData.branch || "BRANCH"}
-            onChange={(value) => setAssetData({ ...AssetData, branch: value })}
+            value={otherAssetData.branch || "BRANCH"}
+            onChange={(value) =>
+              setOtherAssetData({ ...otherAssetData, branch: value })
+            }
             options={Branch}
           />
         </div>
@@ -181,7 +179,7 @@ const Newothers = ({}) => {
               colorPalette={"green"}
               onClick={() => {
                 setLoading(true);
-                handleAddAsset();
+                handleAddOtherAsset();
               }}
             >
               {loading ? <Spin /> : "Submit"}

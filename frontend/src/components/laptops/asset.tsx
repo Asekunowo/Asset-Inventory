@@ -8,22 +8,22 @@ import {
   HStack,
   Icon,
   Input,
-  Table,
-  TableBody,
-  TableColumnHeader,
-  TableHeader,
-  TableRow,
   Text,
+  SegmentGroup,
   VStack,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/utils/auth";
-import Spin from "./spinner";
-import { useAssetStore } from "@/store/store";
-
+import Spin from "../ui/spinner";
+import { useAssetStore, useOtherAssetStore } from "@/store/store";
+import { MdImportantDevices } from "react-icons/md";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { IoCaretBack, IoSearch } from "react-icons/io5";
-import Sessionexpired from "./error/sessionexpired";
+import Sessionexpired from "../error/sessionexpired";
+import Otherassets from "../othersasets/otherassets";
+import { BsLaptop } from "react-icons/bs";
+import Laptops from "./laptops";
+import { Toaster } from "../ui/toaster";
 
 const Asset = () => {
   const { userData, isAuthenticated } = useAuth();
@@ -32,6 +32,9 @@ const Asset = () => {
   const [error, setError] = useState<boolean>(false);
   const [expired, setExpired] = useState<boolean>(false);
   const { addAsset, fetchAssets, assets } = useAssetStore();
+  const { fetchOthers, others } = useOtherAssetStore();
+
+  const [value, setValue] = useState<string | null>("laptop");
 
   const location = useLocation();
 
@@ -42,6 +45,7 @@ const Asset = () => {
       try {
         await userData;
         // await fetchAssets();
+        await fetchOthers();
         const data = await fetchAssets();
         if ("res" in data && data.res === 401) {
           setExpired(true);
@@ -148,6 +152,7 @@ const Asset = () => {
   return (
     <VStack textAlign={"left"} alignItems={"left"} overflow={"hidden"}>
       {expired && <Sessionexpired />}
+      <Toaster />
       <VStack
         mt={10}
         gap={"10rem"}
@@ -163,7 +168,6 @@ const Asset = () => {
           spaceY={"4"}
           bg={"white"}
           pos={"relative"}
-          // placeItems={"flex-start"}
         >
           <Heading
             float={"left"}
@@ -218,68 +222,46 @@ const Asset = () => {
               </Button>
             </Link>
           )}
-          {!path.includes("/new") && (
-            <Table.ScrollArea
-              borderWidth="1px"
-              maxW="9xl"
-              colorPalette={"gray"}
+          {!path.includes("new") && (
+            <SegmentGroup.Root
+              value={value}
+              onValueChange={(e) => {
+                setValue(e.value);
+              }}
             >
-              <Table.Root
-                borderRadius={"md"}
-                stickyHeader
-                variant={"outline"}
-                showColumnBorder
-              >
-                <TableHeader>
-                  <TableRow>
-                    <TableColumnHeader maxW={"10px"}>S/N</TableColumnHeader>
-                    <TableColumnHeader w={"12rem"}>USER</TableColumnHeader>
-                    <TableColumnHeader>TYPE</TableColumnHeader>
-                    <TableColumnHeader>TAG</TableColumnHeader>
-                    <TableColumnHeader>SERIAL NO</TableColumnHeader>
-                    <TableColumnHeader>MODEL</TableColumnHeader>
-                    <TableColumnHeader>GROUP</TableColumnHeader>
-
-                    <TableColumnHeader textAlign={"end"}>
-                      BRANCH
-                    </TableColumnHeader>
-                    <TableColumnHeader>DATE</TableColumnHeader>
-                    <TableColumnHeader>CUSTODIAN</TableColumnHeader>
-                  </TableRow>
-                </TableHeader>
-                <TableBody cursor={"text"}>
-                  {filterAssets(assets, search).map(
-                    (asset: any, index: number) => {
-                      const recordDate = new Date(
-                        asset.createdAt
-                      ).toDateString();
-                      return (
-                        <TableRow key={index}>
-                          <TableColumnHeader>{index + 1}</TableColumnHeader>
-                          <TableColumnHeader>{asset.user}</TableColumnHeader>
-                          <TableColumnHeader>{asset.type}</TableColumnHeader>
-                          <TableColumnHeader>{asset.tag}</TableColumnHeader>
-                          <TableColumnHeader>
-                            {asset.serial_no}
-                          </TableColumnHeader>
-                          <TableColumnHeader>{asset.model}</TableColumnHeader>
-                          <TableColumnHeader>{asset.group}</TableColumnHeader>
-                          <TableColumnHeader textAlign={"end"}>
-                            {asset.branch}
-                          </TableColumnHeader>
-                          <TableColumnHeader>{recordDate}</TableColumnHeader>
-                          <TableColumnHeader>
-                            {asset.custodian.firstname +
-                              " " +
-                              asset.custodian.lastname}
-                          </TableColumnHeader>
-                        </TableRow>
-                      );
-                    }
-                  )}
-                </TableBody>
-              </Table.Root>
-            </Table.ScrollArea>
+              <SegmentGroup.Indicator />
+              <SegmentGroup.Items
+                items={[
+                  {
+                    value: "laptop",
+                    label: (
+                      <HStack>
+                        <BsLaptop />
+                        Laptop
+                      </HStack>
+                    ),
+                  },
+                  {
+                    value: "others",
+                    label: (
+                      <HStack>
+                        <MdImportantDevices />
+                        Other Assets
+                      </HStack>
+                    ),
+                  },
+                ]}
+              />
+            </SegmentGroup.Root>
+          )}
+          {!path.includes("/new") ? (
+            value?.includes("laptop") ? (
+              <Laptops laptops={filterAssets(assets, search)} />
+            ) : (
+              <Otherassets others={filterAssets(others, search)} />
+            )
+          ) : (
+            <></>
           )}
 
           <Outlet context={{ addAsset, userData }} />

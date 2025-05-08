@@ -2,9 +2,9 @@ import mongoose, { Types } from "mongoose";
 
 const { Schema, model, models } = mongoose;
 
-const RepairsSchema = new Schema(
+const MovementSchema = new Schema(
   {
-    type: {
+    serial_no: {
       type: String,
       required: true,
     },
@@ -12,23 +12,15 @@ const RepairsSchema = new Schema(
       type: String,
       required: true,
     },
-    serial_no: {
+    from_location: {
       type: String,
       required: true,
     },
-    branch: {
+    to_location: {
       type: String,
       required: true,
     },
-    vendor: {
-      type: String,
-      required: true,
-    },
-    fault: {
-      type: String,
-      required: true,
-    },
-    costofrepair: {
+    type: {
       type: String,
       required: true,
     },
@@ -36,15 +28,15 @@ const RepairsSchema = new Schema(
       type: String,
       required: true,
     },
-    custodian: {
-      type: Types.ObjectId,
-      required: true,
-      ref: "User",
-    },
+    recipient: { type: String, required: true },
+    reason: { type: String, required: true },
+    custodian: { type: Types.ObjectId, required: true, ref: "User" },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
-const Repairs = models.Repairs || model("repairs", RepairsSchema);
+const Movement = models.Movement || model("movements", MovementSchema);
 
-export default Repairs;
+export default Movement;

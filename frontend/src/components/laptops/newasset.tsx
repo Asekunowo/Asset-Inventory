@@ -2,23 +2,14 @@ import { Box, Button, HStack, Input, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Bank, Branch, laptopModels } from "@/store/data";
 import { useState } from "react";
-import { toaster, Toaster } from "./ui/toaster";
-import Spin from "./spinner";
-import CustomSelect from "./customselect";
+import { toaster } from "../ui/toaster";
+import Spin from "../ui/spinner";
+import CustomSelect from "../reusable/customselect";
+import { Assets } from "@/utils/types";
+import { DEFAULT_ASSET_DATA } from "@/utils/definitions";
+import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
 
-type Assets = {
-  user: string;
-  type: string;
-  tag: string;
-  serial_no: string;
-  model: string;
-  group: string;
-  role: string;
-  branch: string;
-  bank: string;
-};
-
-const Newasset = ({}) => {
+const Newasset = () => {
   const [loading, setLoading] = useState<boolean>(false);
   type OutletContextType = {
     userData: { firstname: string; lastname: string };
@@ -27,34 +18,10 @@ const Newasset = ({}) => {
 
   const { userData, addAsset } = useOutletContext<OutletContextType>();
 
-  const containsAlphabet = (str: string): boolean => {
-    return /[a-zA-Z]/.test(str);
-  };
-
-  const [AssetData, setAssetData] = useState<Assets>({
-    user: "",
-    type: "Laptop",
-    tag: "",
-    serial_no: "",
-    model: "",
-    group: "",
-    role: "",
-    branch: "",
-    bank: "",
-  });
+  const [AssetData, setAssetData] = useState<Assets>(DEFAULT_ASSET_DATA);
 
   const handleClear = () => {
-    setAssetData({
-      user: "",
-      type: "Laptop",
-      tag: "",
-      serial_no: "",
-      model: "",
-      group: "",
-      role: "",
-      branch: "",
-      bank: "",
-    });
+    setAssetData(DEFAULT_ASSET_DATA);
   };
 
   const validateForm = () => {
@@ -83,12 +50,30 @@ const Newasset = ({}) => {
       return false;
     }
 
-    if (containsAlphabet(AssetData.tag)) {
+    if (!nameCheck(AssetData.user)) {
+      toaster.create({
+        type: "error",
+        title: "Invalid Name",
+        description: "Name should contain only letters",
+      });
+      return false;
+    }
+
+    if (!tagCheck(AssetData.tag)) {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: "Tag number cannot contain alpha characters.",
+        description: `Tags must be at least 6 NUMERIC characters.`,
         duration: 5000,
+      });
+      return false;
+    }
+
+    if (!serialCheck(AssetData.serial_no)) {
+      toaster.create({
+        type: "error",
+        title: "Invalid Serial Number",
+        description: "Serial number must be at least 6 alphanumeric characters",
       });
       return false;
     }
@@ -104,15 +89,13 @@ const Newasset = ({}) => {
       }
 
       const { success, message } = await addAsset(AssetData);
-      // const success = true; // Simulate success for demonstration
-      // const message = "Asset added successfully"; // Simulate success message
 
       toaster.create({
         type: success ? "success" : "error",
         title: message,
       });
 
-      window.location.replace("../assets");
+      success && window.location.replace("../assets");
       success && handleClear();
     } catch (error) {
       toaster.create({
@@ -127,12 +110,12 @@ const Newasset = ({}) => {
 
   return (
     <Box>
-      <Toaster />
+      {/* <Toaster /> */}
       <Box
         rounded={"md"}
-        p={"1rem"}
+        p={"0.5rem"}
         outline={1}
-        w={"10rem"}
+        w={"max-content"}
         mb={7}
         outlineColor={"black"}
         outlineStyle={"solid"}

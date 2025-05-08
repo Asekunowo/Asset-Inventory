@@ -1,4 +1,4 @@
-import { Button, EmptyState, Text, VStack } from "@chakra-ui/react";
+import { Button, EmptyState, VStack } from "@chakra-ui/react";
 import { MdError } from "react-icons/md";
 
 const Rooterror = () => {
@@ -16,13 +16,10 @@ const Rooterror = () => {
             <MdError />
           </EmptyState.Indicator>
           <EmptyState.Title>Error!</EmptyState.Title>
-          <EmptyState.Description>
-            <VStack spaceY={4}>
-              <Text>An unexpected error occured.</Text>
-              <Button onClick={() => window.location.reload()}>
-                Try Again?
-              </Button>
-            </VStack>
+          <EmptyState.Description spaceY={4}>
+            An unexpected error occured.
+            <br />
+            <Button onClick={() => window.location.reload()}>Try Again?</Button>
           </EmptyState.Description>
         </VStack>
       </EmptyState.Content>

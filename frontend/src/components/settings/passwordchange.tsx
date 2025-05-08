@@ -10,9 +10,9 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { BsEyeFill, BsEyeSlash } from "react-icons/bs";
-import { Toaster, toaster } from "./ui/toaster";
+import { Toaster, toaster } from "../ui/toaster";
 import { useNavigate } from "react-router-dom";
-import Sessionexpired from "./error/sessionexpired";
+import Sessionexpired from "../error/sessionexpired";
 interface PasswordState {
   oldPassword: string;
   newPassword: string;
@@ -131,36 +131,6 @@ const Passwordchange = () => {
       SetLoad(false);
     }
   };
-
-  const PasswordInput = ({
-    placeholder,
-    value,
-    onChange,
-  }: {
-    placeholder: string;
-    value: string;
-    onChange: (value: string) => void;
-  }) => (
-    <HStack position="relative">
-      <Input
-        w="sm"
-        placeholder={placeholder}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        type={showPassword ? "text" : "password"}
-      />
-      <Button
-        bg="transparent"
-        pos="absolute"
-        variant="solid"
-        zIndex={2}
-        right={0}
-        onClick={() => setShowPassword((prev) => !prev)}
-      >
-        {showPassword ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
-      </Button>
-    </HStack>
-  );
 
   return (
     <Box shadow={"md"} rounded={"md"}>

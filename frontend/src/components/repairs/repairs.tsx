@@ -16,17 +16,18 @@ import {
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/utils/auth";
-import Spin from "./spinner";
+import Spin from "../ui/spinner";
 import { useRepairStore } from "@/store/store";
 import { Outlet } from "react-router-dom";
 import { Link, useLocation } from "react-router-dom";
 import { IoCaretBack, IoSearch } from "react-icons/io5";
-import Sessionexpired from "./error/sessionexpired";
+import Sessionexpired from "../error/sessionexpired";
+import { Toaster } from "../ui/toaster";
 
 const Repairs = () => {
   const { userData } = useAuth();
   const [load, SetLoad] = useState<boolean>(true);
-  const [expired, setExpired] = useState<boolean>(true);
+  const [expired, setExpired] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
   const { addRepair, repairs, fetchRepairs } = useRepairStore();
 
@@ -44,6 +45,7 @@ const Repairs = () => {
         repair.serial_no,
         repair.group,
         repair.branch,
+        repair.createdAt,
       ];
 
       return searchFields.some((field) =>
@@ -64,7 +66,6 @@ const Repairs = () => {
         console.log(error);
       } finally {
         SetLoad(false);
-        console.log(repairs);
       }
     };
 
@@ -93,6 +94,7 @@ const Repairs = () => {
   return (
     <VStack textAlign={"left"} alignItems={"left"}>
       {expired && <Sessionexpired />}
+      <Toaster />
       <VStack
         mt={10}
         gap={"10rem"}
@@ -146,7 +148,7 @@ const Repairs = () => {
             </Flex>
           )}
           {path.includes("new") && (
-            <Link to={"/assets"}>
+            <Link to={"/repairs"}>
               <Button colorPalette={"gray"} variant={"surface"} rounded={"md"}>
                 <IoCaretBack />
                 Back

@@ -93,7 +93,7 @@ export const getOtherAssets = async (req: Request, res: Response) => {
       return;
     }
 
-    const other = await Others.find().populate({
+    const others = await Others.find().populate({
       path: "custodian",
       select: "firstname lastname",
     });
@@ -101,7 +101,7 @@ export const getOtherAssets = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "Successfully fetched other assets",
-      other,
+      others,
     });
     return;
   } catch (error: any) {

@@ -21,7 +21,8 @@ export const laptopModels = [
   "HP ELITEBOOK X360 1040 G6",
   "HP PROBOOK 440 G9",
   "HP PROBOOK 440 G11",
-  "MACBOOK",
+  "MACBOOK PRO",
+  "MACBOOK AIR",
 ];
 
 export const equipmentTypes = [

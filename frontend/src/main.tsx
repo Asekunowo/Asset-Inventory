@@ -7,6 +7,17 @@ import App from "./App.tsx";
 import { BrowserRouter } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import Rooterror from "./components/error/rooterror.tsx";
+import { Buffer } from "buffer";
+
+declare global {
+  interface Window {
+    Buffer: typeof Buffer;
+  }
+}
+
+if (!window.Buffer) {
+  window.Buffer = Buffer;
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

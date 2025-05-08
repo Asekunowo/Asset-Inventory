@@ -1,27 +1,7 @@
 import { create } from "zustand";
+import { movementData as Movement, OtherAsset, resData } from "@/utils/types";
 
 const url: string = "http://localhost:5000";
-
-type resData = {
-  success: boolean;
-  message: string;
-  assets?: [];
-  repairs?: [];
-};
-
-interface OtherAsset {
-  _id: string;
-  type: string;
-  tag: string;
-  serial_no: string;
-  model: string;
-  branch: string;
-  vendor: string;
-  custodian: {
-    firstname: string;
-    lastname: string;
-  };
-}
 
 export const useAssetStore: any = create((set) => ({
   assets: [],
@@ -55,6 +35,7 @@ export const useAssetStore: any = create((set) => ({
     }
 
     set({ assets: data.assets });
+    return { success: true, message: data.message };
   },
   addAsset: async (assetData: any) => {
     const res = await fetch(`${url}/api/assets/new`, {
@@ -313,38 +294,43 @@ export const useRepairStore: any = create((set) => ({
 }));
 
 // Add the store implementation after existing stores
-export const useOtherStore = create((set) => ({
+export const useOtherAssetStore: any = create((set) => ({
   others: [],
   setOthers: (others: OtherAsset[]) => set({ others }),
 
   fetchOthers: async () => {
-    const res = await fetch(`${url}/api/assets/others`, {
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    try {
+      const res = await fetch(`${url}/api/assets/others`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    if (!res) {
-      return { success: false, message: "Unable to communicate with server" };
+      if (!res) {
+        return { success: false, message: "Unable to communicate with server" };
+      }
+
+      const data = await res.json();
+
+      if (res.status === 401) {
+        return { success: false, res: 401, message: data.message };
+      }
+
+      if (res.status === 403) {
+        return {
+          success: false,
+          message: "You are not authorized to perform this action",
+        };
+      }
+
+      set({ others: data.others });
+      return { success: true, message: "Others fetched successfully" };
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "An unexpected error occurred" };
     }
-
-    const data = await res.json();
-
-    if (res.status === 401) {
-      return { success: false, res: 401, message: data.message };
-    }
-
-    if (res.status === 403) {
-      return {
-        success: false,
-        message: "You are not authorized to perform this action",
-      };
-    }
-
-    set({ others: data.others });
-    return { success: true, message: "Others fetched successfully" };
   },
 
   addOther: async (otherData: Omit<OtherAsset, "_id">) => {
@@ -414,34 +400,80 @@ export const useOtherStore = create((set) => ({
     }));
     return { success: data.success, message: data.message };
   },
+}));
 
-  deleteOther: async (pid: string) => {
-    const res = await fetch(`${url}/api/assets/delete/${pid}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+export const useMovementStore: any = create((set) => ({
+  movements: [],
+  setMovements: (movements: Movement[]) => set({ movements }),
 
-    if (!res) {
-      return { success: false, message: "Unable to communicate with server" };
+  fetchMovements: async () => {
+    try {
+      const res = await fetch(`${url}/api/movements/get`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res) {
+        return { success: false, message: "Unable to communicate with server" };
+      }
+
+      const data = await res.json();
+
+      if (res.status === 401) {
+        return { success: false, res: 401, message: data.message };
+      }
+
+      if (res.status === 403) {
+        return {
+          success: false,
+          message: "You are not authorized to perform this action",
+        };
+      }
+
+      set({ movements: data.movements });
+      return { success: true, message: "Exits fetched successfully" };
+    } catch (error) {
+      console.error("Error fetching movements:", error);
+      return { success: false, message: "An unexpected error occurred" };
     }
+  },
 
-    const data = await res.json();
+  addMovement: async (movementData: Omit<Movement, "_id">) => {
+    try {
+      const res = await fetch(`${url}/api/movements/new`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(movementData),
+      });
 
-    if (res.status === 401) {
-      return { success: false, res: 401, message: data.message };
+      if (!res) {
+        return { success: false, message: "Unable to communicate with server" };
+      }
+
+      const data = await res.json();
+
+      if (res.status === 401) {
+        return { success: false, res: 401, message: data.message };
+      }
+
+      if (res.status === 403) {
+        return {
+          success: false,
+          message: "You are not authorized to perform this action",
+        };
+      }
+
+      set((state: any) => ({ movements: [...state.movements, data.movement] }));
+      return { success: true, message: "Exit record created successfully" };
+    } catch (error) {
+      console.error("Error adding exit:", error);
+      return { success: false, message: "An unexpected error occurred" };
     }
-
-    if (res.status === 403) {
-      return {
-        success: false,
-        message: "You are not authorized to perform this action",
-      };
-    }
-
-    // Update UI immediately without refresh
-    set((state: any) => ({
-      others: state.others.filter((other: OtherAsset) => other._id !== pid),
-    }));
-    return { success: data.success, message: data.message };
   },
 }));

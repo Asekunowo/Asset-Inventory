@@ -3,7 +3,7 @@
 import { useAuth } from "@/utils/auth";
 import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import Spin from "./spinner";
+import Spin from "./ui/spinner";
 import { useAssetStore, useRepairStore } from "@/store/store";
 
 const Dashboard = () => {

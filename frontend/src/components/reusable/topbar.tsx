@@ -1,9 +1,9 @@
 import { useAuth } from "@/utils/auth";
 import { Button, HStack, Text, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import { toaster, Toaster } from "./ui/toaster";
+import { toaster, Toaster } from "../ui/toaster";
 import { useState, useEffect } from "react";
-import Spin from "./spinner";
+import Spin from "../ui/spinner";
 import { TbLogout2 } from "react-icons/tb";
 const Topbar = () => {
   const navigate = useNavigate();

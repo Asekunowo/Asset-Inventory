@@ -1,13 +1,13 @@
 "use client";
 import { Box, Button, Heading, HStack, VStack } from "@chakra-ui/react";
 import { Link, Outlet } from "react-router-dom";
-import Spin from "./spinner";
+import Spin from "../ui/spinner";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/utils/auth";
-import Notauthorized from "./error/notauthorized";
+import Notauthorized from "../error/notauthorized";
 import { useLocation } from "react-router-dom";
 import { FaChevronLeft } from "react-icons/fa";
-import { Tooltip } from "./ui/tooltip";
+import { Tooltip } from "../ui/tooltip";
 
 const Settings = () => {
   const { userData, isAuthenticated } = useAuth();

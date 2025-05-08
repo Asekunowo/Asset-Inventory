@@ -1,40 +1,25 @@
 "use-client";
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  HStack,
-  Icon,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, VStack } from "@chakra-ui/react";
 import { NavLink, Outlet } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import Topbar from "./topbar";
+import Topbar from "./reusable/topbar";
 import { RiDashboardFill } from "react-icons/ri";
 import { FaLaptop, FaTools } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
+import { IoLogOut } from "react-icons/io5";
+import { FaTruck } from "react-icons/fa";
 
 const Sidebar = () => {
-  const [activePath, setActivePath] = useState<boolean>(true);
-
   const location = useLocation();
   const path = location.pathname;
 
-  useEffect(() => {
-    if (path.includes("dashboard")) {
-      setActivePath(true);
-    } else {
-      setActivePath(false);
-    }
-  }, []);
-
   const links = [
-    { link: "dashboard", icon: <RiDashboardFill /> },
-    { link: "assets", icon: <FaLaptop /> },
-    { link: "repairs", icon: <FaTools /> },
-    { link: "settings", icon: <IoMdSettings /> },
+    { link: "dashboard", title: "dashboard", icon: <RiDashboardFill /> },
+    { link: "assets", title: "assets", icon: <FaLaptop /> },
+    { link: "repairs", title: "repairs", icon: <FaTools /> },
+    { link: "movement", title: "Movement Form", icon: <FaTruck /> },
+    { link: "exit", title: "Exit Register", icon: <IoLogOut /> },
+    { link: "settings", title: "settings", icon: <IoMdSettings /> },
   ];
 
   return (
@@ -73,7 +58,7 @@ const Sidebar = () => {
                   _hover={{ bg: "white", color: "black" }}
                 >
                   {link.icon}
-                  {link.link}
+                  {link.title}
                 </Button>
               </NavLink>
             ))}
