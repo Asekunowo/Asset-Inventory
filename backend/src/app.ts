@@ -1,6 +1,6 @@
 import express, { Express } from "express";
 import cors from "cors";
-import routes from "../src/routes/root.route";
+import routes from "./routes/root.route";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { URL } from "./secrets";
