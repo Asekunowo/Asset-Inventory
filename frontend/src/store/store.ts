@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { movementData as Movement, OtherAsset, resData } from "@/utils/types";
 
-const url: string = "http://localhost:5000";
+// const url: string = "http://localhost:5000";
+const url: string = "https://itassetmanagementsystem.onrender.com";
 
 export const useAssetStore: any = create((set) => ({
   assets: [],
