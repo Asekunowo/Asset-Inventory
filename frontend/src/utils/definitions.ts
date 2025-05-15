@@ -1,7 +1,7 @@
-import { Laptop, RegisterData, repairData } from "./types";
+import { ExitRegisterData, Laptop, movementData, repairData } from "./types";
 import { OtherAssets } from "./types";
 
-export const DEFAULT_MOVEMENT_DATA: RegisterData = {
+export const DEFAULT_MOVEMENT_DATA: movementData = {
   type: "",
   tag: "",
   serial_no: "",
@@ -10,6 +10,28 @@ export const DEFAULT_MOVEMENT_DATA: RegisterData = {
   to_location: "",
   bank: "",
   recipient: "",
+};
+
+export const DEFAULT_EXIT_DATA: ExitRegisterData = {
+  staffId: "",
+  name: "",
+  gender: "", //gender
+  classification: "", //job description itself
+  role: "", //departmemt
+  location: "", //branch
+  supervisor: "", //reports to...
+  date_Of_Exit: new Date(), //  mm/dd/yyyy
+  type: "LAPTOP", //system_type
+  model_type: "",
+  serial_no: "",
+  tag: "",
+  ram: "", //in GB
+  monitor_At: "", //sterling / alternative bank
+  response: "", //mail sent / received
+  status: "REASSIGNED",
+  current_custodian: "", // reassing to...
+  retrieval_Date: new Date(), //    date of reassignment
+  reassignment: "NEW_ASSIGNMENT",
 };
 
 export const DEFAULT_ASSET_DATA: Laptop = {

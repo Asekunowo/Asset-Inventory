@@ -14,9 +14,7 @@ const MovemnentForm = () => {
   const navigate = useNavigate();
   const { loading, setLoading }: any = useOutletContext();
 
-  const [data, setData] = useState<movementData>(
-    JSON.parse(sessionStorage.getItem("movement")!)
-  );
+  const data: movementData = JSON.parse(sessionStorage.getItem("movement")!);
 
   useEffect(() => {
     // setLoading(true);
@@ -77,7 +75,7 @@ const MovemnentForm = () => {
         outlineColor={"black"}
         outlineStyle={"solid"}
       >
-        <Text fontWeight={"bold"}>PRINT EXIT FORM</Text>
+        <Text fontWeight={"bold"}>PRINT MOVEMENT FORM</Text>
       </Box>
       <HStack m={2}>
         <Link to={"../"}>
@@ -86,7 +84,7 @@ const MovemnentForm = () => {
             onClick={() => sessionStorage.removeItem("movement")}
           >
             <IoArrowBackSharp />
-            Back To Exits Page
+            Back To Movements
           </Button>
         </Link>
         <Button bg={"gray.600"} onClick={() => handleDownload()}>

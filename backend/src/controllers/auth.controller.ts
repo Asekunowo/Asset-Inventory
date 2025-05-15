@@ -31,7 +31,7 @@ export const login = async (req: Request, res: Response) => {
     );
 
     const token = sign({ id: user._id, email: user.email }, SECRET_KEY, {
-      expiresIn: "2h",
+      expiresIn: "3h",
     });
 
     res.cookie("authToken", token, {
@@ -51,20 +51,8 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  if (!mongoose.Types.ObjectId.isValid(req.user!.id)) {
-    res.status(400).json({
-      success: false,
-      message: "You are not authorized to perform this action",
-    });
-    return;
-  }
-
-  const userId = req.user!.id;
-
   try {
     await dbConn();
-
-    await User.findOne({ _id: userId });
 
     res.clearCookie("authToken");
     res.status(200).json({ success: true, message: "Logged out" });

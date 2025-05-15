@@ -22,6 +22,9 @@ export const useAssetStore: any = create((set) => ({
         message: "Unable to communicate with server",
       };
     }
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -38,7 +41,7 @@ export const useAssetStore: any = create((set) => ({
     return { success: true, message: data.message };
   },
   addAsset: async (assetData: any) => {
-    const res = await fetch(`${url}/api/assets/new`, {
+    const res = await fetch(`${url}/api/assets/add`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -51,27 +54,30 @@ export const useAssetStore: any = create((set) => ({
       return { success: false, message: "Unable to communicate with server" };
     }
 
+    const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
+
     if (res.status === 401) {
       return {
-        success: false,
+        success: data.success,
         res: 401,
-
-        message: "Token Expired. Please login again ",
+        message: data.message,
       };
     }
 
     if (res.status === 403) {
       return {
-        success: false,
-        message: "You are not authorized to perform this action",
+        success: data.success,
+        message: data.message,
       };
     }
 
     if (res.status === 500) {
       return { success: false, message: "Server Error" };
     }
-
-    const data = await res.json();
 
     set((state: any) => ({ assets: [...state.assets, data.asset] }));
 
@@ -92,6 +98,10 @@ export const useAssetStore: any = create((set) => ({
     }
 
     const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -123,6 +133,10 @@ export const useAssetStore: any = create((set) => ({
     }
 
     const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -161,6 +175,10 @@ export const userStore: any = create((set) => ({
 
     const data: resData = await res.json();
 
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
+
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
     }
@@ -189,6 +207,9 @@ export const useRepairStore: any = create((set) => ({
     }
     const data: resData = await res.json();
 
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
     }
@@ -203,7 +224,7 @@ export const useRepairStore: any = create((set) => ({
     return { success: data.success, message: data.message };
   },
   addRepair: async (repairData: any) => {
-    const res = await fetch(`${url}/api/repairs/new`, {
+    const res = await fetch(`${url}/api/repairs/add`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -217,6 +238,10 @@ export const useRepairStore: any = create((set) => ({
     }
 
     const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -243,6 +268,10 @@ export const useRepairStore: any = create((set) => ({
       body: JSON.stringify(updatedRepair),
     });
     const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -272,6 +301,10 @@ export const useRepairStore: any = create((set) => ({
       credentials: "include",
     });
     const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -314,6 +347,10 @@ export const useOtherAssetStore: any = create((set) => ({
 
       const data = await res.json();
 
+      if (res.status === 400) {
+        return { success: data.success, message: data.message };
+      }
+
       if (res.status === 401) {
         return { success: false, res: 401, message: data.message };
       }
@@ -334,7 +371,7 @@ export const useOtherAssetStore: any = create((set) => ({
   },
 
   addOther: async (otherData: Omit<OtherAsset, "_id">) => {
-    const res = await fetch(`${url}/api/assets/newother`, {
+    const res = await fetch(`${url}/api/assets/addother`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -348,6 +385,10 @@ export const useOtherAssetStore: any = create((set) => ({
     }
 
     const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -380,6 +421,10 @@ export const useOtherAssetStore: any = create((set) => ({
     }
 
     const data = await res.json();
+
+    if (res.status === 400) {
+      return { success: data.success, message: data.message };
+    }
 
     if (res.status === 401) {
       return { success: false, res: 401, message: data.message };
@@ -422,6 +467,10 @@ export const useMovementStore: any = create((set) => ({
 
       const data = await res.json();
 
+      if (res.status === 400) {
+        return { success: data.success, message: data.message };
+      }
+
       if (res.status === 401) {
         return { success: false, res: 401, message: data.message };
       }
@@ -443,13 +492,136 @@ export const useMovementStore: any = create((set) => ({
 
   addMovement: async (movementData: Omit<Movement, "_id">) => {
     try {
-      const res = await fetch(`${url}/api/movements/new`, {
+      const res = await fetch(`${url}/api/movements/add`, {
         method: "POST",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(movementData),
+      });
+
+      if (!res) {
+        return { success: false, message: "Unable to communicate with server" };
+      }
+
+      const data = await res.json();
+
+      if (res.status === 400) {
+        return { success: data.success, message: data.message };
+      }
+      if (res.status === 401) {
+        return { success: false, res: 401, message: data.message };
+      }
+
+      if (res.status === 403) {
+        return {
+          success: false,
+          message: "You are not authorized to perform this action",
+        };
+      }
+
+      set((state: any) => ({ movements: [...state.movements, data.movement] }));
+      return { success: true, message: "Exit record created successfully" };
+    } catch (error) {
+      console.error("Error adding exit:", error);
+      return { success: false, message: "An unexpected error occurred" };
+    }
+  },
+}));
+
+export const useExitRegisterStore: any = create((set) => ({
+  exits: [],
+  setExits: (exits: any[]) => set({ exits }),
+
+  fetchExits: async () => {
+    try {
+      const res = await fetch(`${url}/api/exits/get`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res) {
+        return { success: false, message: "Unable to communicate with server" };
+      }
+
+      const data = await res.json();
+
+      if (res.status === 400) {
+        return { success: data.success, message: data.message };
+      }
+
+      if (res.status === 401) {
+        return { success: false, res: 401, message: data.message };
+      }
+
+      if (res.status === 403) {
+        return {
+          success: false,
+          message: "You are not authorized to perform this action",
+        };
+      }
+
+      set({ exits: data.exits });
+      return { success: true, message: "Exits fetched successfully" };
+    } catch (error) {
+      console.error("Error fetching exits:", error);
+      return { success: false, message: "An unexpected error occurred" };
+    }
+  },
+
+  addExit: async (exitData: any) => {
+    try {
+      const res = await fetch(`${url}/api/exits/add`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(exitData),
+      });
+
+      if (!res) {
+        return { success: false, message: "Unable to communicate with server" };
+      }
+
+      const data = await res.json();
+
+      if (res.status === 400) {
+        return { success: data.success, message: data.message };
+      }
+
+      if (res.status === 401) {
+        return { success: false, res: 401, message: data.message };
+      }
+
+      if (res.status === 403) {
+        return {
+          success: false,
+          message: "You are not authorized to perform this action",
+        };
+      }
+
+      set((state: any) => ({ exits: [...state.exits, data.exit] }));
+      return { success: true, message: "Exit registered successfully" };
+    } catch (error) {
+      console.error("Error adding exit:", error);
+      return { success: false, message: "An unexpected error occurred" };
+    }
+  },
+
+  updateExit: async (pid: string, updatedExit: any) => {
+    try {
+      const res = await fetch(`${url}/api/exits/edit/${pid}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedExit),
       });
 
       if (!res) {
@@ -469,10 +641,48 @@ export const useMovementStore: any = create((set) => ({
         };
       }
 
-      set((state: any) => ({ movements: [...state.movements, data.movement] }));
-      return { success: true, message: "Exit record created successfully" };
+      set((state: any) => ({
+        exits: state.exits.map((exit: any) =>
+          exit._id === pid ? { ...exit, ...data.exit } : exit
+        ),
+      }));
+      return { success: data.success, message: data.message };
     } catch (error) {
-      console.error("Error adding exit:", error);
+      console.error("Error updating exit:", error);
+      return { success: false, message: "An unexpected error occurred" };
+    }
+  },
+
+  deleteExit: async (pid: string) => {
+    try {
+      const res = await fetch(`${url}/api/exits/delete/${pid}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!res) {
+        return { success: false, message: "Unable to communicate with server" };
+      }
+
+      const data = await res.json();
+
+      if (res.status === 401) {
+        return { success: false, res: 401, message: data.message };
+      }
+
+      if (res.status === 403) {
+        return {
+          success: false,
+          message: "You are not authorized to perform this action",
+        };
+      }
+
+      set((state: any) => ({
+        exits: state.exits.filter((exit: any) => exit._id !== pid),
+      }));
+      return { success: true, message: data.message };
+    } catch (error) {
+      console.error("Error deleting exit:", error);
       return { success: false, message: "An unexpected error occurred" };
     }
   },

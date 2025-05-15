@@ -16,10 +16,10 @@ router.use(verifyToken);
 
 router.get("/get", getAssets);
 router.put("/edit/:id", updateAsset);
-router.post("/new", addNewAsset);
-router.delete("/del/:id", deleteAsset);
+router.post("/add", addNewAsset);
+router.delete("/delete/:id", deleteAsset);
 
-router.post("/newother", addNewOther);
+router.post("/addother", addNewOther);
 router.get("/others", getOtherAssets);
 
 export default router;

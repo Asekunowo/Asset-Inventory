@@ -18,11 +18,13 @@ import Newothers from "./components/othersasets/newothers";
 import { BsArrowsFullscreen } from "react-icons/bs";
 import Movement from "./components/movement/movement";
 import MovementForm from "./components/movement/movementform";
+import NewExit from "./components/exitregister/newexit";
+import ExitRegister from "./components/exitregister/exitregister";
 
 function App() {
   return (
     <LightMode>
-      <Box display={{ base: "block", xl: "none" }}>
+      <Box display={{ base: "none", xl: "none" }}>
         <VStack minH={"90vh"} justifyContent={"center"} spaceY={10}>
           <Icon boxSize={"150px"} color={"white"} size={"2xl"}>
             <BsArrowsFullscreen />
@@ -37,7 +39,7 @@ function App() {
         bg={"#2c3e50"}
         minW={"3xl"}
         overflow={"hidden"}
-        display={{ base: "none", xl: "block" }}
+        display={{ base: "block", xl: "block" }}
       >
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -93,6 +95,10 @@ function App() {
                 errorElement={<Rooterror />}
               />
             </Route>
+            <Route path="exit" element={<ExitRegister />}>
+              <Route path="new" element={<NewExit />} />
+            </Route>
+
             <Route
               path="settings"
               element={<Settings />}

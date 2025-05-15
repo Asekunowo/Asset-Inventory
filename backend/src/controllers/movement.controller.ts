@@ -40,7 +40,9 @@ export const getMovements = async (req: Request, res: Response) => {
       return;
     }
 
-    const movements = await Movement.find().populate({
+    const movements = await Movement.find({
+      createdAt: { $lte: Date.now() },
+    }).populate({
       path: "custodian",
       select: "firstname lastname",
     });
@@ -55,7 +57,7 @@ export const getMovements = async (req: Request, res: Response) => {
   }
 };
 
-export const addExit = async (req: MovementRequest, res: Response) => {
+export const addMovement = async (req: MovementRequest, res: Response) => {
   const userId = req.user!.id;
 
   if (!Types.ObjectId.isValid(userId)) {

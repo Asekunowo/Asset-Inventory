@@ -19,7 +19,7 @@ const MovementsTable = ({ movements, handlePrint, setSearch }: any) => {
   return (
     <div>
       <Flex m={3} justify={"space-between"} alignItems={"center"}>
-        <Heading>EXITS</Heading>
+        <Heading>MOVEMENTS</Heading>
         <HStack pos={"relative"} mr={5}>
           <Input
             minW={"14rem"}

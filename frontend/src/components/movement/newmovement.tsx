@@ -4,7 +4,7 @@ import { useState } from "react";
 import CustomSelect from "../reusable/customselect";
 import { Bank, Branch, equipmentTypes } from "@/store/data";
 import Spin from "../ui/spinner";
-import { RegisterData } from "@/utils/types";
+import { movementData } from "@/utils/types";
 
 import { toaster } from "../ui/toaster";
 
@@ -13,7 +13,7 @@ import { DEFAULT_MOVEMENT_DATA } from "@/utils/definitions";
 import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
 
 const NewMovement = ({ loading, setLoading }: any) => {
-  const [movementData, setMovementData] = useState<RegisterData>(
+  const [movementData, setMovementData] = useState<movementData>(
     DEFAULT_MOVEMENT_DATA
   );
 
@@ -21,10 +21,10 @@ const NewMovement = ({ loading, setLoading }: any) => {
   const { addMovement } = useMovementStore();
 
   const validateForm = (): boolean => {
-    const requiredFields: (keyof RegisterData)[] = [
+    const requiredFields: (keyof movementData)[] = [
       "type",
-      "bank",
       "tag",
+      "bank",
       "serial_no",
       "reason",
       "recipient",
@@ -33,7 +33,13 @@ const NewMovement = ({ loading, setLoading }: any) => {
     ];
 
     const emptyFields = requiredFields.filter(
-      (field) => !movementData[field] || movementData[field].includes("--")
+      (field) => {
+        const value = movementData[field];
+        return (
+          !value ||
+          (typeof value === "string" && value.includes("--"))
+        );
+      }
     );
 
     if (emptyFields.length > 0) {

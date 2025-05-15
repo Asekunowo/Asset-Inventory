@@ -24,6 +24,8 @@ import Otherassets from "../othersasets/otherassets";
 import { BsLaptop } from "react-icons/bs";
 import Laptops from "./laptops";
 import { Toaster } from "../ui/toaster";
+import CustomSelect from "../reusable/customselect";
+import { Searchby } from "@/store/data";
 
 const Asset = () => {
   const { userData, isAuthenticated } = useAuth();
@@ -85,6 +87,7 @@ const Asset = () => {
   }, [error, count]);
 
   const [search, setSearch] = useState<string>("");
+  const [searchBy, setSearchBy] = useState<string>(Searchby[0]);
 
   const filterAssets = (assets: any[], searchTerm: string) => {
     if (!searchTerm) return assets;
@@ -95,8 +98,7 @@ const Asset = () => {
         asset.tag,
         asset.serial_no,
         asset.model,
-        asset.group,
-        asset.branch,
+        asset.createdAt,
       ];
 
       return searchFields.some((field) =>
@@ -198,6 +200,14 @@ const Asset = () => {
               >
                 <Link to={"newothers"}>Add New Other Asset</Link>
               </Button>
+              <Box mr={5}>
+                <CustomSelect
+                  defaultValue="SEARCH BY"
+                  onChange={(value) => setSearchBy(value)}
+                  value={searchBy}
+                  options={Searchby}
+                />
+              </Box>
               <Field.Root w={"max-content"}>
                 <HStack pos={"relative"} mr={5}>
                   <Input

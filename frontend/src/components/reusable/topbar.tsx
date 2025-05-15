@@ -1,13 +1,12 @@
 import { useAuth } from "@/utils/auth";
-import { Button, HStack, Text, VStack } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
-import { toaster, Toaster } from "../ui/toaster";
+import { HStack, Text, VStack } from "@chakra-ui/react";
+import { Toaster } from "../ui/toaster";
 import { useState, useEffect } from "react";
 import Spin from "../ui/spinner";
-import { TbLogout2 } from "react-icons/tb";
+
+import Timedate from "./timedate";
 const Topbar = () => {
-  const navigate = useNavigate();
-  const { userData, logout, isAuthenticated } = useAuth();
+  const { userData, isAuthenticated } = useAuth();
   const [load, SetLoad] = useState(true);
 
   useEffect(() => {
@@ -25,16 +24,6 @@ const Topbar = () => {
       data();
     }, 700);
   }, []);
-
-  const handleLogOut = async () => {
-    await logout();
-    toaster.create({
-      title: "Logged Out",
-      type: "info",
-    });
-
-    navigate("/login");
-  };
 
   if (load) {
     return (
@@ -66,20 +55,11 @@ const Topbar = () => {
       <Text fontSize={"2xl"} fontWeight={"bold"}>
         IT ASSET INVENTORY
       </Text>
-      <Text textTransform={"uppercase"} fontWeight={"bold"}>
+      <Text w={"max-content"} textTransform={"uppercase"} fontWeight={"bold"}>
         {userData.firstname + " " + userData.lastname}{" "}
       </Text>
-      <HStack gap={8}>
-        <HStack></HStack>
-        <Button
-          colorPalette="black"
-          variant={"surface"}
-          w={"max-content"}
-          onClick={handleLogOut}
-        >
-          <TbLogout2 />
-          Logout
-        </Button>
+      <HStack px={3} gap={5}>
+        <Timedate />
       </HStack>
     </HStack>
   );

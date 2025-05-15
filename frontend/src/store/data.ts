@@ -192,3 +192,32 @@ export const Branch = [
   "BAKKY PLAZA",
   "ADEOLA ODEKU",
 ];
+
+export const Searchby = [
+  "USER",
+  "TYPE",
+  "TAG",
+  "SERIAL NO",
+  "MODEL",
+  "GROUP",
+  "DATE",
+];
+
+export const Gender = ["Male", "Female"];
+
+export const Reassignment = [
+  "NEW_ASSIGNMENT",
+  "REFRESH",
+  "STOP_GAP",
+  "OBSOLETE",
+];
+
+export const Status = [
+  "REASSIGNED",
+  "STOP_GAP",
+  "STORE",
+  "ITAM_STORE",
+  "INBRANCH",
+];
+
+export const Response = ["Mail Sent", "Received"];

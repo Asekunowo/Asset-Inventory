@@ -8,6 +8,6 @@ const router: Router = Router();
 router.use(verifyToken);
 
 router.get("/get", getRepairs);
-router.post("/new", addNewRepairs);
+router.post("/add", addNewRepairs);
 
 export default router;

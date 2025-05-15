@@ -81,34 +81,6 @@ export const getOneUser = async (req: Request, res: Response) => {
   }
 };
 
-export const deleteUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    res.status(400).json({ success: false, message: "Invalid id" });
-    return;
-  }
-
-  try {
-    await dbConn();
-
-    const isUserExists = await User.findByIdAndDelete(id);
-    if (!isUserExists) {
-      res
-        .status(404)
-        .json({ success: false, message: "No user with this id exists" });
-      return;
-    }
-
-    res.status(200).json({ success: true, message: "User deleted!" });
-    return;
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ success: false, message: "Unable to delete user" });
-    return;
-  }
-};
-
 export const changePassword = async (req: Request, res: Response) => {
   const userId = req.user!.id;
 

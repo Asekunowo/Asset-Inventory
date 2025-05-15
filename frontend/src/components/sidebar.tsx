@@ -8,9 +8,17 @@ import { FaLaptop, FaTools } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
 import { FaTruck } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/utils/auth";
+import { Toaster, toaster } from "./ui/toaster";
+import { TbLogout2 } from "react-icons/tb";
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const { logout } = useAuth();
+
   const path = location.pathname;
 
   const links = [
@@ -22,8 +30,19 @@ const Sidebar = () => {
     { link: "settings", title: "settings", icon: <IoMdSettings /> },
   ];
 
+  const handleLogOut = async () => {
+    await logout();
+    toaster.create({
+      title: "Logged Out",
+      type: "info",
+    });
+
+    navigate("/login");
+  };
+
   return (
     <Box rounded={"md"} minH={"100vh"} w={"full"} bg={"gray.200"}>
+      <Toaster />
       <Flex>
         <VStack
           bg={"#2c3e50"}
@@ -62,6 +81,19 @@ const Sidebar = () => {
                 </Button>
               </NavLink>
             ))}
+            <div className={"block text-left m-10 "}>
+              <Button
+                colorPalette="black"
+                variant={"surface"}
+                minW={"7rem"}
+                w={"full"}
+                justifyContent={"flex-start"}
+                onClick={handleLogOut}
+              >
+                <TbLogout2 />
+                Logout
+              </Button>
+            </div>
           </Box>
         </VStack>
         <Box w={"10/12"} p={"1.5rem"} color={"black"}>

@@ -1,3 +1,4 @@
+import { Asset } from "@/utils/types";
 import {
   Table,
   TableBody,
@@ -6,7 +7,11 @@ import {
   TableColumnHeader,
 } from "@chakra-ui/react";
 
-const Laptops: React.FC<any> = ({ laptops }) => {
+const Laptops = ({ laptops }: any) => {
+  const dateformat = Intl.DateTimeFormat("en-us", {
+    dateStyle: "medium",
+  });
+
   return (
     <Table.ScrollArea borderWidth="1px" maxW="9xl" colorPalette={"gray"}>
       <Table.Root
@@ -31,8 +36,10 @@ const Laptops: React.FC<any> = ({ laptops }) => {
           </TableRow>
         </TableHeader>
         <TableBody cursor={"text"}>
-          {laptops.map((asset: any, index: number) => {
-            const recordDate = new Date(asset.createdAt).toDateString();
+          {laptops.map((asset: Asset, index: number) => {
+            const recordDate = dateformat
+              .format(new Date(asset.createdAt))
+              .replace(",", "");
             return (
               <TableRow key={index}>
                 <TableColumnHeader>{index + 1}</TableColumnHeader>

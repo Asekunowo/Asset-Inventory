@@ -1,16 +1,17 @@
-import { Box, Heading, HStack, VStack } from "@chakra-ui/react";
+import { Box, Button, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Spin from "../ui/spinner";
 import { Outlet } from "react-router-dom";
-import { useMovementStore } from "@/store/store";
 import { useLocation } from "react-router-dom";
-import { movementData } from "@/utils/types";
-import NewMovement from "./newmovement";
+import { useExitRegisterStore } from "@/store/store";
+import { ExitRegisterData } from "@/utils/types";
 import Sessionexpired from "../error/sessionexpired";
-import MovementsTable from "./movementstable";
+import ExitRegisterTable from "./exitregistertable";
+import { Link } from "react-router-dom";
+import { IoCaretBack } from "react-icons/io5";
 
-const Movement = () => {
-  const { fetchMovements, movements } = useMovementStore();
+const ExitRegister = () => {
+  const { fetchExits, exits } = useExitRegisterStore();
   const [loading, setLoading] = useState<boolean>(true);
   const [expired, setExpired] = useState(false);
   const [search, setSearch] = useState<string>("");
@@ -19,16 +20,11 @@ const Movement = () => {
 
   const path = location.pathname;
 
-  const handlePrint = (movement: movementData) => {
-    sessionStorage.setItem("movement", JSON.stringify(movement));
-    return;
-  };
-
   useEffect(() => {
     const data = async () => {
       try {
         // setLoading(true);
-        const data = await fetchMovements();
+        const data = await fetchExits();
         if ("res" in data && data.res === 401) {
           setExpired(true);
         }
@@ -43,15 +39,18 @@ const Movement = () => {
     }, 1500);
   }, []);
 
-  const filterMovements = (movements: movementData[], searchTerm: string) => {
-    if (!searchTerm) return movements;
+  const filterExits = (exits: ExitRegisterData[], searchTerm: string) => {
+    if (!searchTerm) return exits;
 
-    return movements.filter((movement) => {
+    return exits.filter((exit) => {
       const searchFields = [
-        movement.tag,
-        movement.serial_no,
-        movement.to_location,
-        movement.recipient,
+        exit.tag,
+        exit.serial_no,
+        exit.location,
+        exit.name,
+        exit.date_Of_Exit,
+        exit.current_custodian,
+        exit.supervisor,
       ];
 
       return searchFields.some((field) =>
@@ -113,23 +112,32 @@ const Movement = () => {
               display={"block"}
               ml={-2}
             >
-              Movement Register
+              Exit Register
             </Heading>
           </HStack>
+          {path.includes("new") && (
+            <Link to={"/exit"}>
+              <Button colorPalette={"gray"} variant={"surface"} rounded={"md"}>
+                <IoCaretBack />
+                Back
+              </Button>
+            </Link>
+          )}
+          {!path.includes("new") && (
+            <Button colorPalette={"blue"} variant={"solid"}>
+              <Link to={"new"}>Add New </Link>
+            </Button>
+          )}
 
           <Box>
-            <Outlet context={{ loading, setLoading }} />
+            <Outlet />
           </Box>
 
-          {!path.includes("form") && (
-            <NewMovement loading={loading} setLoading={setLoading} />
-          )}
-          {!path.includes("form") && (
+          {!path.includes("new") && (
             <Box w={"full"}>
-              <MovementsTable
+              <ExitRegisterTable
                 setSearch={setSearch}
-                movements={filterMovements(movements, search)}
-                handlePrint={handlePrint}
+                exits={filterExits(exits, search)}
               />
             </Box>
           )}
@@ -139,4 +147,4 @@ const Movement = () => {
   );
 };
 
-export default Movement;
+export default ExitRegister;
