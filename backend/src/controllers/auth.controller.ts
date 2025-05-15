@@ -36,8 +36,8 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax", // Or 'lax', depending on your needs,
+      secure: true,
+      sameSite: "none", // Or 'lax', depending on your needs,
       maxAge: 2 * 60 * 60 * 1000, // 1 hour (in milliseconds)
     });
 
