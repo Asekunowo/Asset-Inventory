@@ -2,7 +2,7 @@ import { PDFViewer, pdf } from "@react-pdf/renderer";
 import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
 import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
 import { movementData } from "@/utils/types";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Spin from "../ui/spinner";
 import Form from "./form";
 import { IoArrowBackSharp, IoPrint } from "react-icons/io5";
