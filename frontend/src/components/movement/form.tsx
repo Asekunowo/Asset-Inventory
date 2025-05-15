@@ -39,7 +39,7 @@ const Form = ({ data }: data) => (
       <View style={styles.section}>
         <Text style={styles.text}>Old Custodian (Name/Branch/Sign)</Text>
         <Text style={styles.dataText}>
-          {data.custodian.firstname + " " + data.custodian.lastname}
+          {data.custodian!.firstname + " " + data.custodian!.lastname}
         </Text>
       </View>
       <View style={styles.largesection}>
