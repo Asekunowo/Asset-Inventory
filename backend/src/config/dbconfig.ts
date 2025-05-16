@@ -17,7 +17,8 @@ const config = {
 
 export const dbConn = async () => {
   try {
-    const conn = await connect(DB_URI);
+    const conn = await connect(DB_URI, {
+      dbName: 'asset_inventory'});
     console.log("Connected to: " + conn.connection.host);
   } catch (error) {
     console.log(error);
