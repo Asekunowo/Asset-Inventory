@@ -1,82 +1,51 @@
-import { Box, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import Spin from "../ui/spinner";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+import { Box, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useMovementStore } from "@/store/store";
-import { useLocation } from "react-router-dom";
-import { movementData } from "@/utils/types";
-import NewMovement from "./newmovement";
+import { filterMovements, handlePrint } from "@/utils/functions";
+import Loader from "../ui/load";
 import Sessionexpired from "../error/sessionexpired";
+import NewMovement from "./newmovement";
 import MovementsTable from "./movementstable";
+import Unexpected from "../error/unexpected";
 
 const Movement = () => {
+  const location = useLocation();
   const { fetchMovements, movements } = useMovementStore();
+
   const [loading, setLoading] = useState<boolean>(true);
-  const [expired, setExpired] = useState(false);
+  const [expired, setExpired] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
   const [search, setSearch] = useState<string>("");
 
-  const location = useLocation();
-
   const path = location.pathname;
-
-  const handlePrint = (movement: movementData) => {
-    sessionStorage.setItem("movement", JSON.stringify(movement));
-    return;
-  };
 
   useEffect(() => {
     const data = async () => {
       try {
-        // setLoading(true);
         const data = await fetchMovements();
         if ("res" in data && data.res === 401) {
           setExpired(true);
         }
       } catch (error) {
         console.error(error);
+        setError(true);
       } finally {
         setLoading(false);
       }
     };
     setTimeout(() => {
       data();
-    }, 1500);
+    }, 300);
   }, []);
 
-  const filterMovements = (movements: movementData[], searchTerm: string) => {
-    if (!searchTerm) return movements;
-
-    return movements.filter((movement) => {
-      const searchFields = [
-        movement.tag,
-        movement.serial_no,
-        movement.to_location,
-        movement.recipient,
-      ];
-
-      return searchFields.some((field) =>
-        field?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
-  };
-
   if (loading) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        left={0}
-        top={0}
-        h={"full"}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
+    return <Loader />;
+  }
+
+  if (error) {
+    return <Unexpected error={error} />;
   }
 
   return (

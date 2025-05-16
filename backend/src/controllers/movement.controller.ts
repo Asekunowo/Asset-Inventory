@@ -27,6 +27,12 @@ export const getMovements = async (req: Request, res: Response) => {
     return;
   }
 
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
   try {
     await dbConn();
 
@@ -41,7 +47,7 @@ export const getMovements = async (req: Request, res: Response) => {
     }
 
     const movements = await Movement.find({
-      createdAt: { $lte: Date.now() },
+      createdAt: { $gte: start, $lte: end },
     }).populate({
       path: "custodian",
       select: "firstname lastname",

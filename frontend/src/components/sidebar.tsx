@@ -1,44 +1,70 @@
-"use-client";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Box, Button, Flex, Heading, VStack } from "@chakra-ui/react";
-import { NavLink, Outlet } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import Topbar from "./reusable/topbar";
-import { RiDashboardFill } from "react-icons/ri";
-import { FaLaptop, FaTools } from "react-icons/fa";
-import { IoMdSettings } from "react-icons/io";
-import { IoLogOut } from "react-icons/io5";
-import { FaTruck } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/utils/auth";
+import {
+  IAsset,
+  IDashboard,
+  IRepair,
+  ISettings,
+  IMovement,
+  ILogout,
+  IRegister,
+} from "@/store/icons";
+
 import { Toaster, toaster } from "./ui/toaster";
-import { TbLogout2 } from "react-icons/tb";
+import useLogout from "@/hooks/useLogout";
+import Loader from "./ui/load";
+import { useState } from "react";
 
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const { logout } = useAuth();
-
+  const { logoutUser } = useLogout();
+  const [load, setLoad] = useState<boolean>(false);
   const path = location.pathname;
 
   const links = [
-    { link: "dashboard", title: "dashboard", icon: <RiDashboardFill /> },
-    { link: "assets", title: "assets", icon: <FaLaptop /> },
-    { link: "repairs", title: "repairs", icon: <FaTools /> },
-    { link: "movement", title: "Movement Form", icon: <FaTruck /> },
-    { link: "exit", title: "Exit Register", icon: <IoLogOut /> },
-    { link: "settings", title: "settings", icon: <IoMdSettings /> },
+    { link: "dashboard", title: "dashboard", icon: <IDashboard /> },
+    { link: "assets", title: "assets", icon: <IAsset /> },
+    { link: "repairs", title: "repairs", icon: <IRepair /> },
+    { link: "movement", title: "Movement Form", icon: <IMovement /> },
+    { link: "exit", title: "Exit Register", icon: <IRegister /> },
+    { link: "settings", title: "settings", icon: <ISettings /> },
   ];
 
   const handleLogOut = async () => {
-    await logout();
-    toaster.create({
-      title: "Logged Out",
-      type: "info",
-    });
+    setLoad(true);
+    try {
+      const { success, message } = await logoutUser();
 
-    navigate("/login");
+      success &&
+        toaster.create({
+          title: message,
+          type: "info",
+        });
+
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+      toaster.create({
+        title: "An error occured",
+        type: "error",
+      });
+    } finally {
+      setTimeout(() => {
+        setLoad(false);
+      }, 2000);
+    }
   };
+
+  if (load) {
+    return (
+      <>
+        <Toaster />
+        <Loader />;
+      </>
+    );
+  }
 
   return (
     <Box rounded={"md"} minH={"100vh"} w={"full"} bg={"gray.200"}>
@@ -90,7 +116,7 @@ const Sidebar = () => {
                 justifyContent={"flex-start"}
                 onClick={handleLogOut}
               >
-                <TbLogout2 />
+                <ILogout />
                 Logout
               </Button>
             </div>

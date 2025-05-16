@@ -1,12 +1,12 @@
-import { Box, Button, HStack, Input, Text } from "@chakra-ui/react";
-import { useOutletContext } from "react-router-dom";
-import { Bank, Branch, equipmentTypes } from "@/store/data";
 import { useState } from "react";
-import { toaster, Toaster } from "../ui/toaster";
-import Spin from "../ui/spinner";
-import CustomSelect from "../reusable/customselect";
-import { DEFAULT_OTHERASSET_DATA } from "@/utils/definitions";
-import { OtherAssets as Assets } from "@/utils/types";
+import { useOutletContext } from "react-router-dom";
+import { Box, Button, HStack, Input, Text } from "@chakra-ui/react";
+import { Bank, Branch, equipmentTypes } from "@/store/data";
+import { toaster, Toaster } from "../../ui/toaster";
+import Spin from "../../ui/spinner";
+import CustomSelect from "../../reusable/customselect";
+import { DEFAULT_OTHERASSET_DATA } from "@/types/definitions";
+import { OtherAssets as Assets } from "@/types/types";
 import { serialCheck, tagCheck } from "@/utils/functions";
 import { useOtherAssetStore } from "@/store/store";
 
@@ -44,7 +44,7 @@ const Newothers = ({}) => {
       toaster.create({
         type: "error",
         title: "Required fields are empty",
-        description: `Please fill in: ${emptyFields.join(", ").toUpperCase()}`,
+        description: `Please fill in all fields.`,
         duration: 5000,
       });
       return false;
@@ -54,7 +54,7 @@ const Newothers = ({}) => {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: `Tags cannot must be at least 6 NUMERIC characters.`,
+        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
         duration: 5000,
       });
       return false;
@@ -64,7 +64,8 @@ const Newothers = ({}) => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description: "Serial number must be at least 6 alphanumeric characters",
+        description:
+          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
       });
       return false;
     }
@@ -136,7 +137,10 @@ const Newothers = ({}) => {
           value={otherAssetData.tag}
           type="text"
           onChange={(e) =>
-            setOtherAssetData({ ...otherAssetData, tag: e.target.value })
+            setOtherAssetData({
+              ...otherAssetData,
+              tag: e.target.value.toUpperCase(),
+            })
           }
         />
 

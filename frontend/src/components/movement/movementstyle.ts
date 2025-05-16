@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
     fontWeight: "600",
     marginTop: "30px",
     marginBottom: "10px",
+    textTransform: "uppercase",
   },
   title: {
     fontWeight: "600",

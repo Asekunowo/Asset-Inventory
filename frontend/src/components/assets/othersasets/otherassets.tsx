@@ -1,4 +1,3 @@
-import { Asset } from "@/utils/types";
 import {
   Table,
   TableBody,
@@ -7,11 +6,7 @@ import {
   TableColumnHeader,
 } from "@chakra-ui/react";
 
-const Laptops = ({ laptops }: any) => {
-  const dateformat = Intl.DateTimeFormat("en-us", {
-    dateStyle: "medium",
-  });
-
+const Otherassets: React.FC<any> = ({ others }) => {
   return (
     <Table.ScrollArea borderWidth="1px" maxW="9xl" colorPalette={"gray"}>
       <Table.Root
@@ -23,36 +18,24 @@ const Laptops = ({ laptops }: any) => {
         <TableHeader>
           <TableRow>
             <TableColumnHeader maxW={"10px"}>S/N</TableColumnHeader>
-            <TableColumnHeader w={"12rem"}>USER</TableColumnHeader>
             <TableColumnHeader>TYPE</TableColumnHeader>
             <TableColumnHeader>TAG</TableColumnHeader>
             <TableColumnHeader>SERIAL NO</TableColumnHeader>
-            <TableColumnHeader>MODEL</TableColumnHeader>
-            <TableColumnHeader>GROUP</TableColumnHeader>
-
-            <TableColumnHeader textAlign={"end"}>BRANCH</TableColumnHeader>
+            <TableColumnHeader>BRANCH</TableColumnHeader>
             <TableColumnHeader>DATE</TableColumnHeader>
             <TableColumnHeader>CUSTODIAN</TableColumnHeader>
           </TableRow>
         </TableHeader>
         <TableBody cursor={"text"}>
-          {laptops.map((asset: Asset, index: number) => {
-            const recordDate = dateformat
-              .format(new Date(asset.createdAt))
-              .replace(",", "");
+          {others.map((asset: any, index: number) => {
             return (
               <TableRow key={index}>
                 <TableColumnHeader>{index + 1}</TableColumnHeader>
-                <TableColumnHeader>{asset.user}</TableColumnHeader>
                 <TableColumnHeader>{asset.type}</TableColumnHeader>
                 <TableColumnHeader>{asset.tag}</TableColumnHeader>
                 <TableColumnHeader>{asset.serial_no}</TableColumnHeader>
-                <TableColumnHeader>{asset.model}</TableColumnHeader>
-                <TableColumnHeader>{asset.group}</TableColumnHeader>
-                <TableColumnHeader textAlign={"end"}>
-                  {asset.branch}
-                </TableColumnHeader>
-                <TableColumnHeader>{recordDate}</TableColumnHeader>
+                <TableColumnHeader>{asset.branch}</TableColumnHeader>
+                <TableColumnHeader>{asset.createdAt}</TableColumnHeader>
                 <TableColumnHeader>
                   {asset.custodian.firstname + " " + asset.custodian.lastname}
                 </TableColumnHeader>
@@ -65,4 +48,4 @@ const Laptops = ({ laptops }: any) => {
   );
 };
 
-export default Laptops;
+export default Otherassets;

@@ -1,33 +1,35 @@
 import "./App.css";
-import { Box, Icon, Text, VStack } from "@chakra-ui/react";
-import LoginPage from "./pages/loginpage";
 import { Route, Routes } from "react-router-dom";
-import Asset from "./components/laptops/asset";
+import { Box, Icon, Text, VStack } from "@chakra-ui/react";
+import { LightMode } from "./components/ui/color-mode";
+import { FullScreen } from "./store/icons";
+import LoginPage from "./pages/loginpage";
+import Asset from "./components/assets/asset";
 import Dashboard from "./components/dashboard";
 import Repairs from "./components/repairs/repairs";
 import Rooterror from "./components/error/rooterror";
 import Nopage from "./components/error/nopage";
 import Settings from "./components/settings/settings";
 import Passwordchange from "./components/settings/passwordchange";
-import Protected from "./utils/protected";
-import Newasset from "./components/laptops/newasset";
-import { LightMode } from "./components/ui/color-mode";
+import Newasset from "./components/assets/laptops/newlaptop";
 import Sidebar from "./components/sidebar";
 import Newrepair from "./components/repairs/newrepair";
-import Newothers from "./components/othersasets/newothers";
-import { BsArrowsFullscreen } from "react-icons/bs";
+import Newothers from "./components/assets/othersasets/newothers";
 import Movement from "./components/movement/movement";
 import MovementForm from "./components/movement/movementform";
 import NewExit from "./components/exitregister/newexit";
 import ExitRegister from "./components/exitregister/exitregister";
+import Protected from "./auth/protected";
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
   return (
     <LightMode>
-      <Box display={{ base: "none", xl: "none" }}>
+      <Toaster />
+      <Box display={{ base: "block", xl: "none" }}>
         <VStack minH={"90vh"} justifyContent={"center"} spaceY={10}>
           <Icon boxSize={"150px"} color={"white"} size={"2xl"}>
-            <BsArrowsFullscreen />
+            <FullScreen />
           </Icon>
           <Text fontWeight={"bold"} fontSize={"4xl"} color={"white"}>
             This page can only be viewed on larger screens
@@ -39,7 +41,7 @@ function App() {
         bg={"#2c3e50"}
         minW={"3xl"}
         overflow={"hidden"}
-        display={{ base: "block", xl: "block" }}
+        display={{ base: "none", xl: "block" }}
       >
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -102,7 +104,7 @@ function App() {
             <Route
               path="settings"
               element={<Settings />}
-              errorElement={<Nopage />}
+              errorElement={<Rooterror />}
             >
               <Route path="passwordchange" element={<Passwordchange />} />
             </Route>

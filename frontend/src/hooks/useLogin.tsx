@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../utils/auth.tsx";
+import { useAuth } from "@/auth/auth";
 
 const useLogin = () => {
   const { login, url } = useAuth();

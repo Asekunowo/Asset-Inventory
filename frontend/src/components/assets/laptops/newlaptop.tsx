@@ -2,11 +2,11 @@ import { Box, Button, HStack, Input, Text } from "@chakra-ui/react";
 import { useOutletContext } from "react-router-dom";
 import { Bank, Branch, laptopModels } from "@/store/data";
 import { useState } from "react";
-import { toaster } from "../ui/toaster";
-import Spin from "../ui/spinner";
-import CustomSelect from "../reusable/customselect";
-import { Assets } from "@/utils/types";
-import { DEFAULT_ASSET_DATA } from "@/utils/definitions";
+import { toaster } from "../../ui/toaster";
+import Spin from "../../ui/spinner";
+import CustomSelect from "../../reusable/customselect";
+import { Assets } from "@/types/types";
+import { DEFAULT_ASSET_DATA } from "@/types/definitions";
 import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
 
 const Newasset = () => {
@@ -59,11 +59,28 @@ const Newasset = () => {
       return false;
     }
 
+    if (!nameCheck(AssetData.group)) {
+      toaster.create({
+        type: "error",
+        title: "Invalid Name",
+        description: "Group should contain only letters",
+      });
+      return false;
+    }
+
+    if (!nameCheck(AssetData.role)) {
+      toaster.create({
+        type: "error",
+        title: "Invalid Name",
+        description: "Role should contain only letters",
+      });
+      return false;
+    }
     if (!tagCheck(AssetData.tag)) {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: `Tags must be at least 6 NUMERIC characters.`,
+        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
         duration: 5000,
       });
       return false;
@@ -73,7 +90,8 @@ const Newasset = () => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description: "Serial number must be at least 6 alphanumeric characters",
+        description:
+          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
       });
       return false;
     }
@@ -148,7 +166,9 @@ const Newasset = () => {
           placeholder="Asset Tag"
           value={AssetData.tag}
           type="text"
-          onChange={(e) => setAssetData({ ...AssetData, tag: e.target.value })}
+          onChange={(e) =>
+            setAssetData({ ...AssetData, tag: e.target.value.toUpperCase() })
+          }
         />
         <Input
           placeholder="Serial No"
@@ -171,13 +191,15 @@ const Newasset = () => {
           placeholder="Group"
           value={AssetData.group}
           onChange={(e) =>
-            setAssetData({ ...AssetData, group: e.target.value })
+            setAssetData({ ...AssetData, group: e.target.value.toUpperCase() })
           }
         />
         <Input
           placeholder="Role"
           value={AssetData.role}
-          onChange={(e) => setAssetData({ ...AssetData, role: e.target.value })}
+          onChange={(e) =>
+            setAssetData({ ...AssetData, role: e.target.value.toUpperCase() })
+          }
         />
 
         <CustomSelect

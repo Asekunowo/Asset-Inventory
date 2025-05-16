@@ -1,7 +1,7 @@
 import { Page, Text, View, Document, Image } from "@react-pdf/renderer";
 import { styles } from "./movementstyle";
 import sterling from "../../assets/sterling-logo.png";
-import { movementData } from "@/utils/types";
+import { movementData } from "@/types/types";
 
 interface data {
   data: movementData;
@@ -52,6 +52,10 @@ const Form = ({ data }: data) => (
         <View style={styles.bottom}>
           <Text style={[styles.text, styles.textBold]}>
             Authorized by (Name, Signature & Date)
+          </Text>
+          <Text style={styles.dataText}>Tolulope Balogun</Text>
+          <Text style={styles.dataText}>
+            {new Date().toLocaleDateString("en-UK")}
           </Text>
         </View>
         <View style={styles.bottom}>

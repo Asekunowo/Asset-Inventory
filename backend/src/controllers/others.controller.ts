@@ -93,15 +93,24 @@ export const getOtherAssets = async (req: Request, res: Response) => {
       return;
     }
 
-    const others = await Others.find().populate({
+    const others = await Others.find().lean().populate({
       path: "custodian",
       select: "firstname lastname",
     });
 
+    const othersData = others.map((other) => ({
+      ...other,
+      createdAt: other.createdAt.toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      }),
+    }));
+
     res.status(200).json({
       success: true,
       message: "Successfully fetched other assets",
-      others,
+      others: othersData,
     });
     return;
   } catch (error: any) {

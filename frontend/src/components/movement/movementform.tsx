@@ -1,12 +1,15 @@
-import { PDFViewer, pdf } from "@react-pdf/renderer";
-import { Box, Button, Flex, HStack, Text, VStack } from "@chakra-ui/react";
-import { Navigate, useNavigate, useOutletContext } from "react-router-dom";
-import { movementData } from "@/utils/types";
 import { useEffect } from "react";
-import Spin from "../ui/spinner";
+import { Box, Button, Flex, HStack, Loader, Text } from "@chakra-ui/react";
+import {
+  Navigate,
+  useNavigate,
+  useOutletContext,
+  Link,
+} from "react-router-dom";
+import { PDFViewer, pdf } from "@react-pdf/renderer";
+import { BackArrow, IPrint } from "@/store/icons";
+import { movementData } from "@/types/types";
 import Form from "./form";
-import { IoArrowBackSharp, IoPrint } from "react-icons/io5";
-import { Link } from "react-router-dom";
 
 const MovemnentForm = () => {
   // const [loading, setLoading] = useState<boolean>(true);
@@ -17,8 +20,6 @@ const MovemnentForm = () => {
   const data: movementData = JSON.parse(sessionStorage.getItem("movement")!);
 
   useEffect(() => {
-    // setLoading(true);
-
     setTimeout(() => {
       setLoading(false);
       if (!data) {
@@ -28,22 +29,7 @@ const MovemnentForm = () => {
   });
 
   if (loading) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        left={0}
-        top={0}
-        h={"full"}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
+    return <Loader />;
   }
 
   const handleDownload = async () => {
@@ -83,12 +69,12 @@ const MovemnentForm = () => {
             variant={"surface"}
             onClick={() => sessionStorage.removeItem("movement")}
           >
-            <IoArrowBackSharp />
+            <BackArrow />
             Back To Movements
           </Button>
         </Link>
         <Button bg={"gray.600"} onClick={() => handleDownload()}>
-          <IoPrint /> Print
+          <IPrint /> Print
         </Button>
       </HStack>
       <div className="w-full h-[90vh]">

@@ -41,12 +41,21 @@ const ExitRegisterTable = ({ exits, setSearch }: any) => {
       </Flex>
       {!columns && <Heading>Nothing to see here!</Heading>}
       <Table.ScrollArea>
-        <Table.Root>
+        <Table.Root
+          variant={"outline"}
+          stickyHeader
+          showColumnBorder
+          borderRadius={"md"}
+        >
           <TableHeader>
             <TableRow>
-              <TableColumnHeader>S/N</TableColumnHeader>
+              <TableColumnHeader fontWeight={"bold"}>S/N</TableColumnHeader>
               {columns.map((col) => (
-                <TableColumnHeader textTransform={"capitalize"} key={col}>
+                <TableColumnHeader
+                  textTransform={"capitalize"}
+                  fontWeight={"bold"}
+                  key={col}
+                >
                   {col.replace(/[-_.]/g, " ")}
                 </TableColumnHeader>
               ))}
@@ -60,7 +69,10 @@ const ExitRegisterTable = ({ exits, setSearch }: any) => {
                   <TableColumnHeader>{rowIdx + 1}</TableColumnHeader>
                   {columns.map((col) => (
                     <TableColumnHeader as="td" key={col}>
-                      {exit[col.includes("RAM") ? "ram" : col]}
+                      {exit[col.includes("RAM") ? "ram" : col].replace(
+                        "_",
+                        " "
+                      )}
                     </TableColumnHeader>
                   ))}
                 </TableRow>

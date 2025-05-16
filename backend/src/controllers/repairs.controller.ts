@@ -7,14 +7,24 @@ export const getRepairs = async (req: Request, res: Response) => {
   try {
     await dbConn();
 
-    const repairs = await Repairs.find().populate({
+    const repairs = await Repairs.find().lean().populate({
       path: "custodian",
       select: "firstname lastname email",
     });
+
+    const repairData = repairs.map((repair: any) => ({
+      ...repair,
+      createdAt: repair.createdAt!.toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      }),
+    }));
+
     res.status(200).json({
       success: true,
       message: "Successfully fetched repairs",
-      repairs,
+      repairs: repairData,
     });
     return;
   } catch (error: any) {
@@ -45,7 +55,11 @@ export const addNewRepairs = async (req: Request, res: Response) => {
 
     res
       .status(200)
-      .json({ success: true, message: "New Repair Record Created" });
+      .json({
+        success: true,
+        message: "New Repair Record Created",
+        repair: newData,
+      });
     return;
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });

@@ -7,7 +7,7 @@ const Sessionexpired = () => {
 
   useEffect(() => {
     toaster.create({
-      type: "info",
+      type: "warning",
       title: "Session Expired",
       description: "Rerouting to login...",
     });
@@ -15,7 +15,7 @@ const Sessionexpired = () => {
     setTimeout(() => {
       logoutUser();
       window.location.replace("../login");
-    }, 5000);
+    }, 1000);
   }, []);
 
   return (

@@ -9,15 +9,22 @@ A TypeScript-based RESTful backend for a Asset Inventory application, built with
 - 🔐 JWT authentication
 - 🧑 User login, Password Change
 - 📝 Data entry - Add Assets, Add Other Assets, Add Repairs, Add Movement,
-- Rate Limiting to avoid brute force attacks
+- 🚫 Rate Limiting to avoid brute force attacks
+- 🧾 Entry & Exit tracking
+- 📅 Date-based filtering
+- 🔌 RESTful API architecture
+- 🧠 Typed logic with TypeScript
+- 🛡️ Input validation and error handling
 
 ---
 
 ## 🛠️ Tech Stack
 
-- **Node.js** with **TypeScript**
-- **Express.js**
-- **JWT** for auth
+- 🟦 Node.js + Express
+- 📘 TypeScript
+- 🍃 MongoDB + Mongoose
+- 🔑 JWT for authentication
+- 🌐 CORS for secure cross-origin requests
 
 ---
 
@@ -30,7 +37,6 @@ src/
 ├── models/ // Mongoose models
 ├── routes/ // Express routers
 ├── utils/ // Helper functions
-├── secrets.ts/ // Environment variables
 ├── app.ts/ // App Entry Point
 └── server.ts // Server Entry Point
 
@@ -76,20 +82,10 @@ GET /api/movements/get - Follow a user
 
 POST /api/movements/add - Unfollow a user
 
-## 🧪 Testing
-
-You can test the API using:
+## 🧪 Endpoint Testing
 
 Postman
 
-## 🛡️ Security Notes
-
-Passwords are hashed using bcrypt
-
-JWT tokens are stored client-side ( HTTP-only cookies )
-
-Rate limiting is in use for login and change password endpoints
-
 ## 👨‍💻 Author
 
-Built by Michael Amao
+Built by [Michael Amao](https://github.com/tireddev24)

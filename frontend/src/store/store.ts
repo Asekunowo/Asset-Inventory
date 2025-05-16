@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import { movementData as Movement, OtherAsset, resData } from "@/utils/types";
-
-// const url: string = "http://localhost:5000";
-const url: string = "https://itassetmanagementsystem.onrender.com";
+import { SERVER_URI as url } from "@/utils/secrets";
+import { movementData as Movement, OtherAsset, resData } from "@/types/types";
 
 export const useAssetStore: any = create((set) => ({
   assets: [],
@@ -245,7 +243,7 @@ export const useRepairStore: any = create((set) => ({
     }
 
     if (res.status === 401) {
-      return { success: false, res: 401, message: data.message };
+      return { success: false, message: false };
     }
 
     if (res.status === 403) {

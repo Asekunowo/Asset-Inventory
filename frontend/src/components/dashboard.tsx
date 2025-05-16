@@ -1,25 +1,32 @@
-"use client";
-
-import { useAuth } from "@/utils/auth";
-import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import Spin from "./ui/spinner";
+import { Box, Heading, HStack, Text, VStack } from "@chakra-ui/react";
+import { useAuth } from "@/auth/auth";
 import { useAssetStore, useRepairStore } from "@/store/store";
+import Loader from "./ui/load";
+import Sessionexpired from "./error/sessionexpired";
+import Unexpected from "./error/unexpected";
 
 const Dashboard = () => {
   const { userData } = useAuth();
   const { fetchAssets, assets } = useAssetStore();
   const { fetchRepairs, repairs } = useRepairStore();
+
+  const [expired, setExpired] = useState<boolean>(false);
   const [load, SetLoad] = useState(true);
+  const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
     const data = async () => {
       try {
         await userData;
-        await fetchAssets();
         await fetchRepairs();
+        const data = await fetchAssets();
+        if ("res" in data && data.res === 401) {
+          setExpired(true);
+        }
       } catch (error) {
         console.log(error);
+        setError(true);
       } finally {
         SetLoad(false);
       }
@@ -31,25 +38,16 @@ const Dashboard = () => {
   }, []);
 
   if (load) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        left={0}
-        top={0}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
+    return <Loader />;
+  }
+
+  if (error) {
+    return <Unexpected error={error} />;
   }
 
   return (
     <VStack textAlign={"left"} alignItems={"left"}>
+      {expired && <Sessionexpired />}
       <VStack
         rounded={"md"}
         p={"1rem"}

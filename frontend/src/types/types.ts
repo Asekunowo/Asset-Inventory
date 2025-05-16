@@ -1,3 +1,35 @@
+//login
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface InvalidLoginData {
+  password: boolean;
+  email: boolean;
+}
+
+//password change
+
+export interface PasswordState {
+  oldPassword: string;
+  newPassword: string;
+  confirmNewPassword: string;
+}
+
+export interface ErrorState {
+  same: boolean;
+  notmatch: boolean;
+}
+
+export interface ChangePassword {
+  changePass: (password: {
+    oldPassword: string;
+    newPassword: string;
+    confirmNewPassword: string;
+  }) => Promise<{ success: boolean; message: string }>;
+}
+
 //movements
 
 export interface movementData {
@@ -68,6 +100,11 @@ export type repairData = {
   fault: string;
   costofrepair: string;
   bank: string;
+  createdAt?: string;
+  custodian?: {
+    firstname: string;
+    lastname: string;
+  };
 };
 
 //laptops

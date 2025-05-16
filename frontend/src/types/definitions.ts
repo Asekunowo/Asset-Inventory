@@ -1,4 +1,11 @@
-import { ExitRegisterData, Laptop, movementData, repairData } from "./types";
+import {
+  ErrorState,
+  ExitRegisterData,
+  Laptop,
+  movementData,
+  PasswordState,
+  repairData,
+} from "./types";
 import { OtherAssets } from "./types";
 
 export const DEFAULT_MOVEMENT_DATA: movementData = {
@@ -63,4 +70,15 @@ export const DEFAULT_REPAIR_DATA: repairData = {
   fault: "",
   costofrepair: "",
   bank: "",
+};
+
+export const DEFAULT_PASSWORD_STATE: PasswordState = {
+  oldPassword: "",
+  newPassword: "",
+  confirmNewPassword: "",
+};
+
+export const DEFAULT_ERROR_STATE: ErrorState = {
+  same: false,
+  notmatch: false,
 };

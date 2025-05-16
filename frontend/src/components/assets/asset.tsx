@@ -1,4 +1,3 @@
-"use client";
 import {
   Box,
   Button,
@@ -8,37 +7,35 @@ import {
   HStack,
   Icon,
   Input,
-  Text,
   SegmentGroup,
   VStack,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
-import { useAuth } from "@/utils/auth";
-import Spin from "../ui/spinner";
-import { useAssetStore, useOtherAssetStore } from "@/store/store";
-import { MdImportantDevices } from "react-icons/md";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { IoCaretBack, IoSearch } from "react-icons/io5";
+import { useState, useEffect } from "react";
+import { useAssetStore, useOtherAssetStore } from "@/store/store";
+import { Search, BackArrow, ILaptop, IAsset } from "@/store/icons";
+import { useAuth } from "@/auth/auth";
+import { filterAssets } from "@/utils/functions";
 import Sessionexpired from "../error/sessionexpired";
-import Otherassets from "../othersasets/otherassets";
-import { BsLaptop } from "react-icons/bs";
-import Laptops from "./laptops";
+import Otherassets from "./othersasets/otherassets";
 import { Toaster } from "../ui/toaster";
-import CustomSelect from "../reusable/customselect";
-import { Searchby } from "@/store/data";
+import Unexpected from "../error/unexpected";
+import Loader from "../ui/load";
+import Laptops from "./laptops/laptops";
 
 const Asset = () => {
-  const { userData, isAuthenticated } = useAuth();
+  const location = useLocation();
+
+  const { userData } = useAuth();
+  const { fetchOthers, others } = useOtherAssetStore();
+  const { addAsset, fetchAssets, assets } = useAssetStore();
+
   const [load, SetLoad] = useState<boolean>(true);
-  const [count, setCount] = useState<number>(10);
   const [error, setError] = useState<boolean>(false);
   const [expired, setExpired] = useState<boolean>(false);
-  const { addAsset, fetchAssets, assets } = useAssetStore();
-  const { fetchOthers, others } = useOtherAssetStore();
 
-  const [value, setValue] = useState<string | null>("laptop");
-
-  const location = useLocation();
+  const [search, setSearch] = useState<string>(""); //for search
+  const [value, setValue] = useState<string>("laptop"); //for segment
 
   const path = location.pathname;
 
@@ -46,7 +43,6 @@ const Asset = () => {
     const data = async () => {
       try {
         await userData;
-        // await fetchAssets();
         await fetchOthers();
         const data = await fetchAssets();
         if ("res" in data && data.res === 401) {
@@ -65,90 +61,12 @@ const Asset = () => {
     }, 1000);
   }, []);
 
-  useEffect(() => {
-    let timer: number;
-
-    if (error && count > 0) {
-      timer = setInterval(() => {
-        setCount((prevCount) => prevCount - 1);
-      }, 1000);
-    }
-
-    if (count === 0) {
-      window.location.reload();
-    }
-
-    // Cleanup function to clear interval
-    return () => {
-      if (timer) {
-        clearInterval(timer);
-      }
-    };
-  }, [error, count]);
-
-  const [search, setSearch] = useState<string>("");
-  const [searchBy, setSearchBy] = useState<string>(Searchby[0]);
-
-  const filterAssets = (assets: any[], searchTerm: string) => {
-    if (!searchTerm) return assets;
-
-    return assets.filter((asset) => {
-      const searchFields = [
-        asset.user,
-        asset.tag,
-        asset.serial_no,
-        asset.model,
-        asset.createdAt,
-      ];
-
-      return searchFields.some((field) =>
-        field?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
-  };
-
   if (load) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        left={0}
-        top={0}
-        h={"full"}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
-  }
-
-  if (!isAuthenticated) {
-    window.location.replace("../login");
-    return;
+    return <Loader />;
   }
 
   if (error) {
-    return (
-      <VStack
-        w={"full"}
-        bg={"gray.400"}
-        spaceX={4}
-        align="center"
-        justify="center"
-        height="100vh"
-      >
-        <Text fontSize="3xl">An unexpected error occurred.</Text>
-        <Text fontSize="lg">
-          {count > 0
-            ? `Retrying in ${count} second${count !== 1 ? "s" : ""}...`
-            : "Reloading..."}
-        </Text>
-      </VStack>
-    );
+    return <Unexpected error={error} />;
   }
 
   return (
@@ -200,14 +118,7 @@ const Asset = () => {
               >
                 <Link to={"newothers"}>Add New Other Asset</Link>
               </Button>
-              <Box mr={5}>
-                <CustomSelect
-                  defaultValue="SEARCH BY"
-                  onChange={(value) => setSearchBy(value)}
-                  value={searchBy}
-                  options={Searchby}
-                />
-              </Box>
+
               <Field.Root w={"max-content"}>
                 <HStack pos={"relative"} mr={5}>
                   <Input
@@ -218,7 +129,7 @@ const Asset = () => {
                     onChange={(e) => setSearch(e.target.value)}
                   />
                   <Icon pos={"absolute"} right={0} size={"lg"}>
-                    <IoSearch />
+                    <Search />
                   </Icon>
                 </HStack>
               </Field.Root>
@@ -227,7 +138,7 @@ const Asset = () => {
           {path.includes("new") && (
             <Link to={"/assets"}>
               <Button colorPalette={"gray"} variant={"surface"} rounded={"md"}>
-                <IoCaretBack />
+                <BackArrow />
                 Back
               </Button>
             </Link>
@@ -236,7 +147,7 @@ const Asset = () => {
             <SegmentGroup.Root
               value={value}
               onValueChange={(e) => {
-                setValue(e.value);
+                setValue(e.value!);
               }}
             >
               <SegmentGroup.Indicator />
@@ -246,7 +157,7 @@ const Asset = () => {
                     value: "laptop",
                     label: (
                       <HStack>
-                        <BsLaptop />
+                        <ILaptop />
                         Laptop
                       </HStack>
                     ),
@@ -255,7 +166,7 @@ const Asset = () => {
                     value: "others",
                     label: (
                       <HStack>
-                        <MdImportantDevices />
+                        <IAsset />
                         Other Assets
                       </HStack>
                     ),

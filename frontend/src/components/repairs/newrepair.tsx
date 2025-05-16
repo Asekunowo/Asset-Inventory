@@ -1,30 +1,32 @@
 import { useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { Box, Text, Input, Button, HStack } from "@chakra-ui/react";
 import { Bank, Branch, equipmentTypes, Fault, Vendors } from "@/store/data";
 import CustomSelect from "../reusable/customselect";
 import { toaster } from "../ui/toaster";
-import { useOutletContext } from "react-router-dom";
 import Spin from "../ui/spinner";
-import { repairData } from "@/utils/types";
-import { serialCheck, tagCheck } from "@/utils/functions";
-import { DEFAULT_REPAIR_DATA } from "@/utils/definitions";
+import { repairData } from "@/types/types";
+import { numCheck, serialCheck, tagCheck } from "@/utils/functions";
+import { DEFAULT_REPAIR_DATA } from "@/types/definitions";
 
 type OutletContextType = {
   userData: { firstname: string; lastname: string };
   addRepair: any;
+  setExpired: any;
 };
 
 const Newrepair = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
 
   const [repairData, setRepairData] = useState<repairData>(DEFAULT_REPAIR_DATA);
 
-  const { userData, addRepair } = useOutletContext<OutletContextType>();
+  const { userData, addRepair, setExpired } =
+    useOutletContext<OutletContextType>();
 
   const validateForm = () => {
     const requiredFields: (keyof repairData)[] = [
       "type",
-
       "tag",
       "serial_no",
       "branch",
@@ -35,14 +37,17 @@ const Newrepair = () => {
     ];
 
     const emptyFields = requiredFields.filter(
-      (field) => !repairData[field] || repairData[field].includes("--")
+      (field) =>
+        !repairData[field] ||
+        (typeof repairData[field] === "string" &&
+          repairData[field].includes("--"))
     );
 
     if (emptyFields.length > 0) {
       toaster.create({
         type: "error",
         title: "Required fields are empty",
-        description: `Please fill in: ${emptyFields.join(", ")}`,
+        description: `Please fill in all fields`,
         duration: 3000,
       });
       return false;
@@ -52,7 +57,7 @@ const Newrepair = () => {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: `Tags must be at least 6 NUMERIC characters.`,
+        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
         duration: 5000,
       });
       return false;
@@ -62,7 +67,17 @@ const Newrepair = () => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description: "Serial number must be at least 6 alphanumeric characters",
+        description:
+          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
+      });
+      return false;
+    }
+
+    if (!numCheck(repairData.costofrepair)) {
+      toaster.create({
+        type: "error",
+        title: "Invalid Cost of Repair ",
+        description: "Cost of repair may only contain numbers",
       });
       return false;
     }
@@ -80,12 +95,17 @@ const Newrepair = () => {
 
       const { success, message } = await addRepair(repairData);
 
+      if (!message) {
+        setExpired(true);
+        return;
+      }
+
       toaster.create({
         type: success ? "success" : "error",
         description: message,
       });
 
-      success && window.location.replace("../repairs");
+      success && navigate("../");
       success && handleClear();
     } catch (error) {
       console.error(error);
@@ -142,7 +162,10 @@ const Newrepair = () => {
             placeholder="Asset Tag"
             value={repairData.tag}
             onChange={(e) =>
-              setRepairData({ ...repairData, tag: e.target.value })
+              setRepairData({
+                ...repairData,
+                tag: e.target.value.toUpperCase(),
+              })
             }
           />
         </div>

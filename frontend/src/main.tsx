@@ -1,12 +1,12 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "@/components/ui/provider";
-import { AuthProvider } from "./utils/auth.tsx";
-import "./index.css";
-import App from "./App.tsx";
+import { AuthProvider } from "@/auth/auth";
 import { BrowserRouter } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import Rooterror from "./components/error/rooterror.tsx";
+import App from "./App.tsx";
+import "./index.css";
 import { Buffer } from "buffer";
 
 declare global {

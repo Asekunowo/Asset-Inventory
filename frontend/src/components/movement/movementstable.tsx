@@ -10,16 +10,18 @@ import {
   TableColumnHeader,
   TableHeader,
   TableRow,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { movementData } from "@/utils/types";
+import { movementData } from "@/types/types";
 import { IoSearch } from "react-icons/io5";
 
 const MovementsTable = ({ movements, handlePrint, setSearch }: any) => {
   return (
     <div>
       <Flex m={3} justify={"space-between"} alignItems={"center"}>
-        <Heading>MOVEMENTS</Heading>
+        <Heading>MOVEMENTS </Heading>
         <HStack pos={"relative"} mr={5}>
           <Input
             minW={"14rem"}
@@ -67,13 +69,18 @@ const MovementsTable = ({ movements, handlePrint, setSearch }: any) => {
                     }}
                   >
                     <Link to={"form"}>Print</Link>
-                  </Button>{" "}
+                  </Button>
                 </TableColumnHeader>
               </TableRow>
             ))}
           </TableBody>
         </Table.Root>
       </Table.ScrollArea>
+      <VStack m={3} p={3}>
+        <Text color={"gray.500"}>
+          **Only movements created today will be displayed**
+        </Text>
+      </VStack>
     </div>
   );
 };

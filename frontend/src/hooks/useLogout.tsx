@@ -1,7 +1,8 @@
-import { useAuth } from "@/utils/auth";
+import { useAuth } from "@/auth/auth";
+import { SERVER_URI as url } from "@/utils/secrets";
 
 const useLogout = () => {
-  const { url, logout } = useAuth();
+  const { logout } = useAuth();
   const logoutUser = async () => {
     try {
       const res = await fetch(`${url}/api/auth/logout`, {
@@ -20,8 +21,10 @@ const useLogout = () => {
 
       if (res.status === 200) {
         logout();
-        return { success: false, message: data.message };
+        return { success: data.success, message: data.message };
       }
+
+      return { success: false, message: "Server Error" };
     } catch (error: any) {
       console.error(error);
       return { success: false, message: "An unexpected Error occurred" };

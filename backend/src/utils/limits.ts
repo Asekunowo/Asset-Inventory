@@ -15,7 +15,7 @@ export const loginLimit = rateLimit({
 });
 
 export const passwordChangeLimit = rateLimit({
-  max: 2,
+  max: 1,
   windowMs: 60 * 60 * 1000 * 24,
   handler: (req: Request, res: Response) => {
     res.status(429).json({

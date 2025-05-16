@@ -9,15 +9,24 @@ export const getAssets = async (req: Request, res: Response) => {
 
   try {
     await dbConn();
-    const assets = await Asset.find().populate({
+    const assets = await Asset.find().lean().populate({
       path: "custodian",
       select: " firstname lastname",
     });
 
+    const assetData = assets.map((assets: any) => ({
+      ...assets,
+      createdAt: assets.createdAt!.toLocaleDateString("en-US", {
+        month: "2-digit",
+        day: "2-digit",
+        year: "numeric",
+      }),
+    }));
+
     res.status(200).json({
       success: true,
       message: "Successfully fetched data",
-      assets,
+      assets: assetData,
     });
     return;
   } catch (error) {

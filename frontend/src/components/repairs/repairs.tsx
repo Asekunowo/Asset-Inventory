@@ -7,52 +7,31 @@ import {
   HStack,
   Icon,
   Input,
-  Table,
-  TableBody,
-  TableColumnHeader,
-  TableHeader,
-  TableRow,
+  Loader,
   VStack,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/utils/auth";
-import Spin from "../ui/spinner";
 import { useRepairStore } from "@/store/store";
-import { Outlet } from "react-router-dom";
-import { Link, useLocation } from "react-router-dom";
-import { IoCaretBack, IoSearch } from "react-icons/io5";
+import { Outlet, Link, useLocation } from "react-router-dom";
+import { Search, BackArrow } from "@/store/icons";
 import Sessionexpired from "../error/sessionexpired";
 import { Toaster } from "../ui/toaster";
+import Repairstable from "./repairstable";
+import { filterRepairs } from "@/utils/functions";
+import Unexpected from "../error/unexpected";
+import { useAuth } from "@/auth/auth";
 
 const Repairs = () => {
   const { userData } = useAuth();
-  const [load, SetLoad] = useState<boolean>(true);
-  const [expired, setExpired] = useState<boolean>(false);
-  const [search, setSearch] = useState<string>("");
   const { addRepair, repairs, fetchRepairs } = useRepairStore();
-
   const location = useLocation();
 
+  const [load, SetLoad] = useState<boolean>(true);
+  const [expired, setExpired] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>("");
+
   const path = location.pathname;
-
-  const filterRepairs = (repairs: any[], searchTerm: string) => {
-    if (!searchTerm) return repairs;
-
-    return repairs.filter((repair) => {
-      const searchFields = [
-        repair.vendor,
-        repair.tag,
-        repair.serial_no,
-        repair.group,
-        repair.branch,
-        repair.createdAt,
-      ];
-
-      return searchFields.some((field) =>
-        field?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
-  };
 
   useEffect(() => {
     const data = async () => {
@@ -64,32 +43,22 @@ const Repairs = () => {
         }
       } catch (error) {
         console.log(error);
+        setError(true);
       } finally {
         SetLoad(false);
       }
     };
-
     setTimeout(() => {
       data();
-    }, 700);
+    }, 200);
   }, []);
 
   if (load) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        top={0}
-        left={0}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
+    return <Loader />;
+  }
+
+  if (error) {
+    return <Unexpected error={error} />;
   }
   return (
     <VStack textAlign={"left"} alignItems={"left"}>
@@ -141,7 +110,7 @@ const Repairs = () => {
                     onChange={(e) => setSearch(e.target.value)}
                   />
                   <Icon pos={"absolute"} right={0} size={"lg"}>
-                    <IoSearch />
+                    <Search />
                   </Icon>
                 </HStack>
               </Field.Root>
@@ -150,81 +119,16 @@ const Repairs = () => {
           {path.includes("new") && (
             <Link to={"/repairs"}>
               <Button colorPalette={"gray"} variant={"surface"} rounded={"md"}>
-                <IoCaretBack />
+                <BackArrow />
                 Back
               </Button>
             </Link>
           )}
           {!path.includes("new") && (
-            <Table.ScrollArea
-              borderWidth="1px"
-              maxW="9xl"
-              colorPalette={"gray"}
-            >
-              <Table.Root
-                borderRadius={"md"}
-                stickyHeader
-                variant={"outline"}
-                showColumnBorder
-              >
-                <TableHeader>
-                  <TableRow>
-                    <TableColumnHeader minW={"13px"}>S/N</TableColumnHeader>
-                    <TableColumnHeader>TYPE</TableColumnHeader>
-                    <TableColumnHeader>TAG</TableColumnHeader>
-                    <TableColumnHeader>SERIAL NO</TableColumnHeader>
-                    <TableColumnHeader>VENDOR</TableColumnHeader>
-                    <TableColumnHeader>FAULT</TableColumnHeader>
-                    <TableColumnHeader>COST OF REPAIR</TableColumnHeader>
-
-                    <TableColumnHeader>BANK</TableColumnHeader>
-                    <TableColumnHeader textAlign={"end"}>
-                      DATE ADDED
-                    </TableColumnHeader>
-                    <TableColumnHeader>CUSTODIAN</TableColumnHeader>
-                  </TableRow>
-                </TableHeader>
-                <TableBody cursor={"text"}>
-                  {filterRepairs(repairs, search).map(
-                    (repair: any, index: number) => {
-                      const repairDate = new Date(
-                        repair.createdAt
-                      ).toLocaleDateString();
-
-                      return (
-                        <TableRow key={index}>
-                          <TableColumnHeader>{index + 1}</TableColumnHeader>
-                          <TableColumnHeader>{repair.type}</TableColumnHeader>
-                          <TableColumnHeader>{repair.tag}</TableColumnHeader>
-                          <TableColumnHeader>
-                            {repair.serial_no}
-                          </TableColumnHeader>
-                          <TableColumnHeader>{repair.vendor}</TableColumnHeader>
-                          <TableColumnHeader>{repair.fault}</TableColumnHeader>
-                          <TableColumnHeader>
-                            {repair.costofrepair}
-                          </TableColumnHeader>
-                          <TableColumnHeader>{repair.bank}</TableColumnHeader>
-                          <TableColumnHeader>{repairDate}</TableColumnHeader>
-                          <TableColumnHeader
-                            bg={"gray.300"}
-                            fontWeight={"bold"}
-                            color={"gray.500"}
-                          >
-                            {repair.custodian.firstname +
-                              " " +
-                              repair.custodian.lastname}
-                          </TableColumnHeader>
-                        </TableRow>
-                      );
-                    }
-                  )}
-                </TableBody>
-              </Table.Root>
-            </Table.ScrollArea>
+            <Repairstable repairs={filterRepairs(repairs, search)} />
           )}
 
-          <Outlet context={{ addRepair, userData }} />
+          <Outlet context={{ addRepair, userData, setExpired }} />
         </Box>
       </VStack>
     </VStack>

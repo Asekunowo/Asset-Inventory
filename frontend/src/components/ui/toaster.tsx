@@ -13,7 +13,7 @@ export const toaster = createToaster({
   placement: "top",
   pauseOnPageIdle: true,
   overlap: true,
-  max: 2,
+  max: 3,
 });
 
 export const Toaster = () => {
@@ -27,6 +27,7 @@ export const Toaster = () => {
             ) : (
               <Toast.Indicator />
             )}
+
             <Stack gap="1" flex="1" maxWidth="100%">
               {toast.title && <Toast.Title>{toast.title}</Toast.Title>}
               {toast.description && (

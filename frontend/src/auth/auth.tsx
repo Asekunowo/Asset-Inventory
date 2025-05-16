@@ -1,9 +1,7 @@
 import { useContext, createContext, useState, useEffect } from "react";
+import { SERVER_URI as url } from "@/utils/secrets";
 
 const AuthContext = createContext<any>(null);
-// const url = 'https://product-store-back.onrender.com';
-// const url: String = "http://localhost:5000";
-const url: String = "https://itassetmanagementsystem.onrender.com";
 
 interface Props {
   children: React.ReactNode;

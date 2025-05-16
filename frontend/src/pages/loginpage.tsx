@@ -1,6 +1,5 @@
-import Spin from "@/components/ui/spinner";
-import { Toaster, toaster } from "@/components/ui/toaster";
-import useLogin from "@/hooks/useLogin";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -9,27 +8,35 @@ import {
   Heading,
   HStack,
   Input,
+  Loader,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { BsEyeFill, BsEyeSlash } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
+import { IEyeOpen, IEyeClose } from "@/store/icons";
+import { Toaster, toaster } from "@/components/ui/toaster";
+import Spin from "@/components/ui/spinner";
+import useLogin from "@/hooks/useLogin";
+import { InvalidLoginData, LoginData } from "@/types/types";
 
 const LoginPage = () => {
-  const { loading, loginUser } = useLogin();
   const navigate = useNavigate();
-  const [load, setLoad] = useState(true);
-  const [pass, showPass] = useState(false);
-  const [LoginData, setLoginData] = useState({
+  const { loading, loginUser } = useLogin();
+
+  const [load, setLoad] = useState<boolean>(true);
+  const [pass, showPass] = useState<boolean>(false);
+
+  const [LoginData, setLoginData] = useState<LoginData>({
     email: "",
     password: "",
   });
 
-  const [invalid, setInvalid] = useState({
+  const [invalid, setInvalid] = useState<InvalidLoginData>({
     password: true,
     email: false,
   });
 
+  useEffect(() => {
+    setTimeout(() => setLoad(false), 2500);
+  });
   useEffect(() => {
     const login = (e: any) => {
       if (e.key === "Enter" && !invalid.password) {
@@ -44,12 +51,6 @@ const LoginPage = () => {
   });
 
   useEffect(() => {
-    setTimeout(() => {
-      setLoad(false);
-    }, 1000);
-  }, []);
-
-  useEffect(() => {
     if (LoginData.email.includes("@") && LoginData.email.includes(".")) {
       setInvalid({ ...invalid, email: false });
     } else if (LoginData.email === "") {
@@ -57,7 +58,7 @@ const LoginPage = () => {
     } else {
       setInvalid({ ...invalid, email: true });
     }
-  }, [LoginData]);
+  }, [LoginData.email]);
 
   useEffect(() => {
     if (LoginData.password === "") {
@@ -65,7 +66,7 @@ const LoginPage = () => {
     } else {
       setInvalid({ ...invalid, password: false });
     }
-  }, [LoginData]);
+  }, [LoginData.password]);
 
   async function handleSignIn() {
     if (invalid.email) {
@@ -90,22 +91,7 @@ const LoginPage = () => {
   }
 
   if (load) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        left={0}
-        top={0}
-        h={"full"}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
+    return <Loader />;
   }
 
   return (
@@ -140,7 +126,10 @@ const LoginPage = () => {
                   placeholder="Provide Your Email"
                   value={LoginData.email}
                   onChange={(e) =>
-                    setLoginData({ ...LoginData, email: e.target.value })
+                    setLoginData({
+                      ...LoginData,
+                      email: e.target.value.toLowerCase(),
+                    })
                   }
                 />
                 <Field.ErrorText>Enter a valid email address</Field.ErrorText>
@@ -160,22 +149,20 @@ const LoginPage = () => {
                   />
 
                   <Button
-                    bg={"transparent"}
                     pos={"absolute"}
-                    variant={"solid"}
+                    variant={"surface"}
                     zIndex={2}
                     right={0}
                     bottom={0}
                     onClick={() => showPass((prevPass) => !prevPass)}
                   >
-                    {pass ? <BsEyeSlash size={20} /> : <BsEyeFill size={20} />}
+                    {pass ? <IEyeClose size={20} /> : <IEyeOpen size={20} />}
                   </Button>
                 </HStack>
-                {/* <Field.ErrorText>Password is required</Field.ErrorText> */}
               </Field.Root>
 
               <Button
-                disabled={loading || invalid.password}
+                disabled={loading || invalid.password || invalid.email}
                 w={"full"}
                 mt={5}
                 outlineColor={"white"}

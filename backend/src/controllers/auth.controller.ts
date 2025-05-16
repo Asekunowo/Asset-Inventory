@@ -1,8 +1,7 @@
 import { dbConn } from "../config/dbconfig";
 import { sign } from "jsonwebtoken";
 import { SECRET_KEY } from "../secrets";
-import { compare } from "bcrypt";
-import { default as mongoose } from "mongoose";
+import { compareSync } from "bcrypt";
 import { Request, Response } from "express";
 import User from "../models/user.model";
 
@@ -21,7 +20,7 @@ export const login = async (req: Request, res: Response) => {
       return;
     }
 
-    if (!compare(password, userExists.password)) {
+    if (!compareSync(password, userExists.password)) {
       res.status(401).json({ success: false, message: "Invalid Credentials" });
       return;
     }
@@ -36,9 +35,9 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie("authToken", token, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax", // Or 'lax', depending on your needs,
-      maxAge: 2 * 60 * 60 * 1000, // 1 hour (in milliseconds)
+      secure: true,
+      sameSite: "none", // Or 'lax', depending on your needs,
+      maxAge: 2.8 * 60 * 60 * 1000, // 1 hour (in milliseconds)
     });
 
     res.status(200).json({ success: true, message: "Welcome Back", user });
@@ -52,8 +51,6 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = async (req: Request, res: Response) => {
   try {
-    await dbConn();
-
     res.clearCookie("authToken");
     res.status(200).json({ success: true, message: "Logged out" });
     return;

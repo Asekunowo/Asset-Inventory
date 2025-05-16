@@ -1,4 +1,4 @@
-import { useAuth } from "@/utils/auth";
+import { useAuth } from "@/auth/auth";
 import { HStack, Text, VStack } from "@chakra-ui/react";
 import { Toaster } from "../ui/toaster";
 import { useState, useEffect } from "react";
@@ -22,7 +22,7 @@ const Topbar = () => {
 
     setTimeout(() => {
       data();
-    }, 700);
+    }, 300);
   }, []);
 
   if (load) {

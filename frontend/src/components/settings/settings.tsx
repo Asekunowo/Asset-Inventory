@@ -1,26 +1,37 @@
-"use client";
 import { Box, Button, Heading, HStack, VStack } from "@chakra-ui/react";
-import { Link, Outlet } from "react-router-dom";
-import Spin from "../ui/spinner";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/utils/auth";
-import Notauthorized from "../error/notauthorized";
-import { useLocation } from "react-router-dom";
-import { FaChevronLeft } from "react-icons/fa";
+import { useAuth } from "@/auth/auth";
+import { BackArrow } from "@/store/icons";
 import { Tooltip } from "../ui/tooltip";
+import Loader from "../ui/load";
+import Sessionexpired from "../error/sessionexpired";
+import { useAssetStore } from "@/store/store";
+import Unexpected from "../error/unexpected";
 
 const Settings = () => {
-  const { userData, isAuthenticated } = useAuth();
-  const [load, SetLoad] = useState(true);
-  const [path, setPath] = useState("");
   const location = useLocation();
+
+  const { userData } = useAuth();
+  const { fetchAssets } = useAssetStore();
+
+  const [load, SetLoad] = useState<boolean>(true);
+  const [expired, setExpired] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
+  const path = location.pathname;
 
   useEffect(() => {
     const data = async () => {
       try {
         await userData;
+        const data = await fetchAssets();
+        if ("res" in data && data.res === 401) {
+          setExpired(true);
+        }
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        setError(true);
       } finally {
         SetLoad(false);
       }
@@ -28,51 +39,20 @@ const Settings = () => {
 
     setTimeout(() => {
       data();
-    }, 500);
+    }, 300);
   }, []);
 
-  useEffect(() => {
-    const l_path = location.pathname;
-    setPath(l_path);
-  }, [location.pathname]);
-
   if (load) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        left={0}
-        top={0}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
+    return <Loader />;
   }
 
-  if (!isAuthenticated) {
-    return (
-      <VStack
-        className="backdrop-brightness-50"
-        position={"absolute"}
-        left={0}
-        top={2}
-        h={"full"}
-        minH={"100vh"}
-        minW={"full"}
-        bg={"blue.900"}
-        justifyContent={"center"}
-      >
-        <Notauthorized />;
-      </VStack>
-    );
+  if (error) {
+    return <Unexpected error={error} />;
   }
+
   return (
     <Box bg={"white"} rounded={"md"} mt={5} minH={"80vh"} p={2}>
+      {expired && <Sessionexpired />}
       <VStack textAlign={"left"} alignItems={"flex-start"}>
         <Heading
           display={"block"}
@@ -87,7 +67,7 @@ const Settings = () => {
       {path.includes("pass") && (
         <Link to={"/settings"}>
           <Button ml={4} float={"left"}>
-            <FaChevronLeft /> Back
+            <BackArrow /> Back
           </Button>
         </Link>
       )}
@@ -107,7 +87,7 @@ const Settings = () => {
         </HStack>
       )}
       <VStack mt={20}>
-        <Outlet context={[userData._id]} />
+        <Outlet />
       </VStack>
     </Box>
   );

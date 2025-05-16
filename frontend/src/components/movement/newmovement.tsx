@@ -4,12 +4,12 @@ import { useState } from "react";
 import CustomSelect from "../reusable/customselect";
 import { Bank, Branch, equipmentTypes } from "@/store/data";
 import Spin from "../ui/spinner";
-import { movementData } from "@/utils/types";
+import { movementData } from "@/types/types";
 
 import { toaster } from "../ui/toaster";
 
 import { useMovementStore } from "@/store/store";
-import { DEFAULT_MOVEMENT_DATA } from "@/utils/definitions";
+import { DEFAULT_MOVEMENT_DATA } from "@/types/definitions";
 import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
 
 const NewMovement = ({ loading, setLoading }: any) => {
@@ -32,15 +32,10 @@ const NewMovement = ({ loading, setLoading }: any) => {
       "to_location",
     ];
 
-    const emptyFields = requiredFields.filter(
-      (field) => {
-        const value = movementData[field];
-        return (
-          !value ||
-          (typeof value === "string" && value.includes("--"))
-        );
-      }
-    );
+    const emptyFields = requiredFields.filter((field) => {
+      const value = movementData[field];
+      return !value || (typeof value === "string" && value.includes("--"));
+    });
 
     if (emptyFields.length > 0) {
       toaster.create({
@@ -56,7 +51,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
       toaster.create({
         type: "error",
         title: "Invalid Tag",
-        description: `Tags cannot must be at least 6 NUMERIC characters`,
+        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
       });
       return false;
     }
@@ -66,7 +61,8 @@ const NewMovement = ({ loading, setLoading }: any) => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description: "Serial number must be at least 6 alphanumeric characters",
+        description:
+          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
       });
       return false;
     }
@@ -90,6 +86,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
 
   const handleSubmitRegister = async (): Promise<void> => {
     setLoad(true);
+
     try {
       if (!validateForm()) {
         setLoading(false);
@@ -223,7 +220,6 @@ const NewMovement = ({ loading, setLoading }: any) => {
             minW={"5.6rem"}
             colorPalette={"green"}
             onClick={() => {
-              //   setLoading(true);
               handleSubmitRegister();
             }}
           >

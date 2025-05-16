@@ -1,3 +1,4 @@
+import { Asset } from "@/types/types";
 import {
   Table,
   TableBody,
@@ -6,7 +7,7 @@ import {
   TableColumnHeader,
 } from "@chakra-ui/react";
 
-const Otherassets: React.FC<any> = ({ others }) => {
+const Laptops = ({ laptops }: any) => {
   return (
     <Table.ScrollArea borderWidth="1px" maxW="9xl" colorPalette={"gray"}>
       <Table.Root
@@ -18,25 +19,33 @@ const Otherassets: React.FC<any> = ({ others }) => {
         <TableHeader>
           <TableRow>
             <TableColumnHeader maxW={"10px"}>S/N</TableColumnHeader>
+            <TableColumnHeader w={"12rem"}>USER</TableColumnHeader>
             <TableColumnHeader>TYPE</TableColumnHeader>
             <TableColumnHeader>TAG</TableColumnHeader>
             <TableColumnHeader>SERIAL NO</TableColumnHeader>
-            <TableColumnHeader>BRANCH</TableColumnHeader>
+            <TableColumnHeader>MODEL</TableColumnHeader>
+            <TableColumnHeader>GROUP</TableColumnHeader>
+
+            <TableColumnHeader textAlign={"end"}>BRANCH</TableColumnHeader>
             <TableColumnHeader>DATE</TableColumnHeader>
             <TableColumnHeader>CUSTODIAN</TableColumnHeader>
           </TableRow>
         </TableHeader>
         <TableBody cursor={"text"}>
-          {others.map((asset: any, index: number) => {
-            const recordDate = new Date(asset.createdAt).toDateString();
+          {laptops.map((asset: Asset, index: number) => {
             return (
               <TableRow key={index}>
                 <TableColumnHeader>{index + 1}</TableColumnHeader>
+                <TableColumnHeader>{asset.user}</TableColumnHeader>
                 <TableColumnHeader>{asset.type}</TableColumnHeader>
                 <TableColumnHeader>{asset.tag}</TableColumnHeader>
                 <TableColumnHeader>{asset.serial_no}</TableColumnHeader>
-                <TableColumnHeader>{asset.branch}</TableColumnHeader>
-                <TableColumnHeader>{recordDate}</TableColumnHeader>
+                <TableColumnHeader>{asset.model}</TableColumnHeader>
+                <TableColumnHeader>{asset.group}</TableColumnHeader>
+                <TableColumnHeader textAlign={"end"}>
+                  {asset.branch}
+                </TableColumnHeader>
+                <TableColumnHeader>{asset.createdAt}</TableColumnHeader>
                 <TableColumnHeader>
                   {asset.custodian.firstname + " " + asset.custodian.lastname}
                 </TableColumnHeader>
@@ -49,4 +58,4 @@ const Otherassets: React.FC<any> = ({ others }) => {
   );
 };
 
-export default Otherassets;
+export default Laptops;

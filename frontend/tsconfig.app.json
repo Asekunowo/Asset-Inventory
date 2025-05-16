@@ -10,7 +10,16 @@
       "@/*": ["./src/*"],
       "@store/*": ["./src/store"],
       "@components/*": ["./src/components"],
-      "@utils/*": ["./src/utils"]
+      "@utils/*": ["./src/utils"],
+      "@types": ["./src/types"],
+      "@auth": ["./src/auth"],
+      "@reusable": ["./src/components/reusable"],
+      "@error": ["./src/components/error"],
+      "@exitregister": ["./src/components/exitregister"],
+      "@laptops": ["./src/components/assets/laptops"],
+      "@movement": ["./src/components/movement"],
+      "@otherasset": ["./src/components/otherassets"],
+      "@repairs": ["./src/components/repairs"]
     },
 
     /* Bundler mode */

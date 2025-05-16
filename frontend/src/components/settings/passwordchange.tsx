@@ -1,4 +1,5 @@
-import { userStore } from "@/store/store";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -8,59 +9,37 @@ import {
   Field,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { BsEyeFill, BsEyeSlash } from "react-icons/bs";
-import { Toaster, toaster } from "../ui/toaster";
-import { useNavigate } from "react-router-dom";
+import { userStore } from "@/store/store";
+import { IEyeOpen, IEyeClose } from "@/store/icons";
+import { toaster } from "../ui/toaster";
 import Sessionexpired from "../error/sessionexpired";
-interface PasswordState {
-  oldPassword: string;
-  newPassword: string;
-  confirmNewPassword: string;
-}
-
-interface ErrorState {
-  same: boolean;
-  notmatch: boolean;
-}
-
-interface ChangePassword {
-  changePass: (password: {
-    oldPassword: string;
-    newPassword: string;
-    confirmNewPassword: string;
-  }) => Promise<{ success: boolean; message: string }>;
-}
-
-const DEFAULT_PASSWORD_STATE: PasswordState = {
-  oldPassword: "",
-  newPassword: "",
-  confirmNewPassword: "",
-};
+import { ErrorState } from "@/types/types";
+import {
+  DEFAULT_ERROR_STATE,
+  DEFAULT_PASSWORD_STATE,
+} from "@/types/definitions";
 
 const Passwordchange = () => {
   const navigate = useNavigate();
-  const [expired, setExpired] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [loading, SetLoad] = useState(false);
-  const [password, setPassword] = useState(DEFAULT_PASSWORD_STATE);
-  const [error, setError] = useState<ErrorState>({
-    same: false,
-    notmatch: false,
-  });
 
-  const { changePass }: ChangePassword = userStore();
+  const [expired, setExpired] = useState<boolean>(false);
+  const [loading, SetLoad] = useState<boolean>(false);
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [password, setPassword] = useState(DEFAULT_PASSWORD_STATE);
+  const [error, setError] = useState<ErrorState>(DEFAULT_ERROR_STATE);
+
+  const { changePass } = userStore();
 
   useEffect(() => {
     if (password.newPassword || password.confirmNewPassword) {
-      setError((prev) => ({
-        ...prev,
+      setError({
+        ...error,
         notmatch: password.newPassword !== password.confirmNewPassword,
-      }));
+      });
     } else if (!password.newPassword && !password.confirmNewPassword) {
       setError((prev) => ({ ...prev, notmatch: false }));
-    }
-    {
+    } else {
       setError((prev) => ({ ...prev, notmatch: false }));
     }
   }, [password.newPassword, password.confirmNewPassword]);
@@ -135,7 +114,6 @@ const Passwordchange = () => {
   return (
     <Box shadow={"md"} rounded={"md"}>
       {expired && <Sessionexpired />}
-      <Toaster />
       <VStack
         spaceY={4}
         bg={"white"}
@@ -157,7 +135,7 @@ const Passwordchange = () => {
           type="password"
         />
 
-        <Field.Root invalid={error.same}>
+        <Field.Root invalid={error.same || error.notmatch}>
           <HStack position={"relative"}>
             <Input
               w={"sm"}
@@ -171,16 +149,13 @@ const Passwordchange = () => {
             <Button
               bg={"transparent"}
               pos={"absolute"}
+              ring={0}
               variant={"surface"}
               zIndex={2}
               right={0}
               onClick={() => setShowPassword((prevPass) => !prevPass)}
             >
-              {showPassword ? (
-                <BsEyeSlash size={20} />
-              ) : (
-                <BsEyeFill size={20} />
-              )}
+              {showPassword ? <IEyeClose size={20} /> : <IEyeOpen size={20} />}
             </Button>
           </HStack>
           {password.oldPassword &&
@@ -204,23 +179,23 @@ const Passwordchange = () => {
             <Button
               bg={"transparent"}
               pos={"absolute"}
+              ring={0}
               variant={"surface"}
               zIndex={2}
               right={0}
               onClick={() => setShowPassword((prevPass) => !prevPass)}
             >
-              {showPassword ? (
-                <BsEyeSlash size={20} />
-              ) : (
-                <BsEyeFill size={20} />
-              )}
+              {showPassword ? <IEyeClose size={20} /> : <IEyeOpen size={20} />}
             </Button>
           </HStack>
 
           <Field.ErrorText>Passwords do not match</Field.ErrorText>
         </Field.Root>
 
-        <Button disabled={loading} onClick={() => handlePassChange()}>
+        <Button
+          disabled={loading || error.same || error.notmatch}
+          onClick={() => handlePassChange()}
+        >
           Change Password
         </Button>
       </VStack>

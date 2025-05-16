@@ -1,83 +1,53 @@
-import { Box, Button, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import Spin from "../ui/spinner";
-import { Outlet } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { Outlet, useLocation, Link } from "react-router-dom";
+import { Box, Button, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useExitRegisterStore } from "@/store/store";
-import { ExitRegisterData } from "@/utils/types";
+import { BackArrow } from "@/store/icons";
+import { filterExits } from "@/utils/functions";
+import Loader from "../ui/load";
 import Sessionexpired from "../error/sessionexpired";
+import Unexpected from "../error/unexpected";
 import ExitRegisterTable from "./exitregistertable";
-import { Link } from "react-router-dom";
-import { IoCaretBack } from "react-icons/io5";
 
 const ExitRegister = () => {
-  const { fetchExits, exits } = useExitRegisterStore();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [expired, setExpired] = useState(false);
-  const [search, setSearch] = useState<string>("");
-
   const location = useLocation();
+
+  const { fetchExits, exits } = useExitRegisterStore();
+
+  const [load, setLoad] = useState<boolean>(true);
+  const [expired, setExpired] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+
+  const [search, setSearch] = useState<string>(""); //for search
 
   const path = location.pathname;
 
   useEffect(() => {
     const data = async () => {
       try {
-        // setLoading(true);
         const data = await fetchExits();
         if ("res" in data && data.res === 401) {
           setExpired(true);
         }
       } catch (error) {
         console.error(error);
+        setError(true);
       } finally {
-        setLoading(false);
+        setLoad(false);
       }
     };
     setTimeout(() => {
       data();
-    }, 1500);
+    }, 300);
   }, []);
 
-  const filterExits = (exits: ExitRegisterData[], searchTerm: string) => {
-    if (!searchTerm) return exits;
-
-    return exits.filter((exit) => {
-      const searchFields = [
-        exit.tag,
-        exit.serial_no,
-        exit.location,
-        exit.name,
-        exit.date_Of_Exit,
-        exit.current_custodian,
-        exit.supervisor,
-      ];
-
-      return searchFields.some((field) =>
-        field?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    });
-  };
-
-  if (loading) {
-    return (
-      <VStack
-        className="backdrop-brightness-25"
-        position={"absolute"}
-        left={0}
-        top={0}
-        h={"full"}
-        minH={"100vh"}
-        minW={"full"}
-        justifyContent={"center"}
-      >
-        <div className="scale-150">
-          <Spin />
-        </div>
-      </VStack>
-    );
+  if (load) {
+    return <Loader />;
   }
 
+  if (error) {
+    <Unexpected error={error} />;
+  }
   return (
     <VStack
       id="print"
@@ -118,7 +88,7 @@ const ExitRegister = () => {
           {path.includes("new") && (
             <Link to={"/exit"}>
               <Button colorPalette={"gray"} variant={"surface"} rounded={"md"}>
-                <IoCaretBack />
+                <BackArrow />
                 Back
               </Button>
             </Link>

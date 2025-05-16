@@ -1,14 +1,12 @@
-import { HStack, Input, Button, Text, Box, VStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-
+import { HStack, Input, Button, Text, Box } from "@chakra-ui/react";
 import Spin from "../ui/spinner";
-import { ExitRegisterData } from "@/utils/types";
-
 import { toaster } from "../ui/toaster";
-
+import Loader from "../ui/load";
+import { ExitRegisterData } from "@/types/types";
 import { useExitRegisterStore } from "@/store/store";
-import { DEFAULT_EXIT_DATA } from "@/utils/definitions";
-import { serialCheck, tagCheck } from "@/utils/functions";
+import { DEFAULT_EXIT_DATA } from "@/types/definitions";
+import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
 import {
   Bank,
   laptopModels,
@@ -17,7 +15,7 @@ import {
   Status,
 } from "@/store/data";
 import CustomSelect from "../reusable/customselect";
-import { useAuth } from "@/utils/auth";
+import { useAuth } from "@/auth/auth";
 
 const NewExit = () => {
   const { url } = useAuth();
@@ -112,7 +110,7 @@ const NewExit = () => {
       toaster.create({
         type: "error",
         title: "Invalid Tag",
-        description: `Tags cannot must be at least 6 NUMERIC characters`,
+        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
       });
       return false;
     }
@@ -122,7 +120,17 @@ const NewExit = () => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description: "Serial number must be at least 6 alphanumeric characters",
+        description:
+          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
+      });
+      return false;
+    }
+
+    if (!nameCheck(exitData.current_custodian)) {
+      toaster.create({
+        title: "Input Error",
+        description: "Current Custodian Field cannot have a NUMERIC character",
+        type: "error",
       });
       return false;
     }
@@ -168,22 +176,7 @@ const NewExit = () => {
 
   return (
     <Box>
-      {staff && (
-        <VStack
-          className="backdrop-brightness-25"
-          position={"fixed"}
-          left={0}
-          top={0}
-          h={"full"}
-          minH={"100vh"}
-          minW={"full"}
-          justifyContent={"center"}
-        >
-          <div className="scale-150">
-            <Spin />
-          </div>
-        </VStack>
-      )}
+      {staff && <Loader />}
 
       <Box
         rounded={"md"}
@@ -198,11 +191,11 @@ const NewExit = () => {
       </Box>
       {!staff && (
         <form className="grid p-5 grid-cols-3 gap-6 w-full">
-          <div className=" gap-2 flex">
+          <div className=" gap-10 flex">
             <div>
               <b>Staff ID:</b>
               <Input
-                w={"10rem"}
+                minW={"10rem"}
                 type="text"
                 disabled={exitData.name.length > 0}
                 _disabled={{
@@ -328,7 +321,7 @@ const NewExit = () => {
               placeholder="Tag"
               value={exitData.tag}
               onChange={(e) =>
-                setExitData({ ...exitData, tag: e.target.value })
+                setExitData({ ...exitData, tag: e.target.value.toUpperCase() })
               }
             />
           </div>
@@ -392,7 +385,10 @@ const NewExit = () => {
               placeholder="Current Custodian"
               value={exitData.current_custodian}
               onChange={(e) =>
-                setExitData({ ...exitData, current_custodian: e.target.value })
+                setExitData({
+                  ...exitData,
+                  current_custodian: e.target.value.toUpperCase(),
+                })
               }
             />
           </div>
