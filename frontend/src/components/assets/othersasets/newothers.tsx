@@ -9,6 +9,7 @@ import { DEFAULT_OTHERASSET_DATA } from "@/types/definitions";
 import { OtherAssets as Assets } from "@/types/types";
 import { serialCheck, tagCheck } from "@/utils/functions";
 import { useOtherAssetStore } from "@/store/store";
+import { errorMessages } from "@/types/definitions";
 
 const Newothers = ({}) => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -54,7 +55,7 @@ const Newothers = ({}) => {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
+        description: errorMessages.tag,
         duration: 5000,
       });
       return false;
@@ -64,8 +65,7 @@ const Newothers = ({}) => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description:
-          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
+        description: errorMessages.serialNumber,
       });
       return false;
     }

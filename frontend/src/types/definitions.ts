@@ -82,3 +82,10 @@ export const DEFAULT_ERROR_STATE: ErrorState = {
   same: false,
   notmatch: false,
 };
+
+export const errorMessages = {
+  tag: "Please remove any special characters",
+  serialNumber: "Please remove any special characters.",
+  number: "This field may contain only digits",
+  name: "This field may contain only alphabets",
+};

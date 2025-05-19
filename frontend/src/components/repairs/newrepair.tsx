@@ -8,6 +8,7 @@ import Spin from "../ui/spinner";
 import { repairData } from "@/types/types";
 import { numCheck, serialCheck, tagCheck } from "@/utils/functions";
 import { DEFAULT_REPAIR_DATA } from "@/types/definitions";
+import { errorMessages } from "@/types/definitions";
 
 type OutletContextType = {
   userData: { firstname: string; lastname: string };
@@ -57,7 +58,7 @@ const Newrepair = () => {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
+        description: errorMessages.tag,
         duration: 5000,
       });
       return false;
@@ -67,8 +68,7 @@ const Newrepair = () => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description:
-          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
+        description: errorMessages.serialNumber,
       });
       return false;
     }
@@ -77,7 +77,7 @@ const Newrepair = () => {
       toaster.create({
         type: "error",
         title: "Invalid Cost of Repair ",
-        description: "Cost of repair may only contain numbers",
+        description: errorMessages.number,
       });
       return false;
     }

@@ -12,6 +12,8 @@ import { useMovementStore } from "@/store/store";
 import { DEFAULT_MOVEMENT_DATA } from "@/types/definitions";
 import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
 
+import { errorMessages } from "@/types/definitions";
+
 const NewMovement = ({ loading, setLoading }: any) => {
   const [movementData, setMovementData] = useState<movementData>(
     DEFAULT_MOVEMENT_DATA
@@ -50,8 +52,8 @@ const NewMovement = ({ loading, setLoading }: any) => {
     if (!tagCheck(movementData.tag)) {
       toaster.create({
         type: "error",
-        title: "Invalid Tag",
-        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
+        title: "Invalid Tag Number",
+        description: errorMessages.tag,
       });
       return false;
     }
@@ -61,8 +63,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description:
-          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
+        description: errorMessages.serialNumber,
       });
       return false;
     }
@@ -72,7 +73,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
       toaster.create({
         type: "error",
         title: "Invalid Recipient Name",
-        description: "Recipient name should contain only letters",
+        description: errorMessages.name,
       });
       return false;
     }

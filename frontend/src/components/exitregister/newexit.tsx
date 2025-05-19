@@ -17,6 +17,8 @@ import {
 import CustomSelect from "../reusable/customselect";
 import { useAuth } from "@/auth/auth";
 
+import { errorMessages } from "@/types/definitions";
+
 const NewExit = () => {
   const { url } = useAuth();
   const [exitData, setExitData] = useState<ExitRegisterData>(DEFAULT_EXIT_DATA);
@@ -110,7 +112,7 @@ const NewExit = () => {
       toaster.create({
         type: "error",
         title: "Invalid Tag",
-        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
+        description: errorMessages.tag,
       });
       return false;
     }
@@ -120,8 +122,7 @@ const NewExit = () => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description:
-          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
+        description: errorMessages.serialNumber,
       });
       return false;
     }
@@ -129,8 +130,8 @@ const NewExit = () => {
     if (!nameCheck(exitData.current_custodian)) {
       toaster.create({
         title: "Input Error",
-        description: "Current Custodian Field cannot have a NUMERIC character",
         type: "error",
+        description: errorMessages.name,
       });
       return false;
     }

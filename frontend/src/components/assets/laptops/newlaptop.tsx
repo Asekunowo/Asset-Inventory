@@ -8,6 +8,7 @@ import CustomSelect from "../../reusable/customselect";
 import { Assets } from "@/types/types";
 import { DEFAULT_ASSET_DATA } from "@/types/definitions";
 import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
+import { errorMessages } from "@/types/definitions";
 
 const Newasset = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -54,7 +55,7 @@ const Newasset = () => {
       toaster.create({
         type: "error",
         title: "Invalid Name",
-        description: "Name should contain only letters",
+        description: errorMessages.name,
       });
       return false;
     }
@@ -63,7 +64,7 @@ const Newasset = () => {
       toaster.create({
         type: "error",
         title: "Invalid Name",
-        description: "Group should contain only letters",
+        description: errorMessages.name,
       });
       return false;
     }
@@ -72,7 +73,7 @@ const Newasset = () => {
       toaster.create({
         type: "error",
         title: "Invalid Name",
-        description: "Role should contain only letters",
+        description: errorMessages.name,
       });
       return false;
     }
@@ -80,7 +81,7 @@ const Newasset = () => {
       toaster.create({
         type: "error",
         title: "Invalid Tag Number",
-        description: `Tags can only have 3 ALPHA characters and 6 NUMERIC characters.`,
+        description: errorMessages.tag,
         duration: 5000,
       });
       return false;
@@ -90,8 +91,7 @@ const Newasset = () => {
       toaster.create({
         type: "error",
         title: "Invalid Serial Number",
-        description:
-          "Serial number must be a combination of at least 10 ALPHA-NUMERIC characters.",
+        description: errorMessages.serialNumber,
       });
       return false;
     }
