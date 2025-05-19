@@ -69,13 +69,10 @@ const ExitRegisterTable = ({ exits, setSearch }: any) => {
                   <TableColumnHeader>{rowIdx + 1}</TableColumnHeader>
                   {columns.map((col) => (
                     <TableColumnHeader as="td" key={col}>
-                      {exit[
-                        col.includes("RAM")
-                          ? "ram"
-                          : col.includes("monitor")
-                          ? "Entity"
-                          : col
-                      ].replace("_", " ")}
+                      {exit[col.includes("RAM") ? "ram" : col].replace(
+                        "_",
+                        " "
+                      )}
                     </TableColumnHeader>
                   ))}
                 </TableRow>
