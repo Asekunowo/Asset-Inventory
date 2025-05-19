@@ -19,14 +19,14 @@ A modern, responsive web application for managing and tracking physical and digi
 ## 📁 Project Structure
 
 src/
-├── assets/ # Images
-├── auth/ # Authentication
-├── components/ # Reusable UI components
-├── hooks/ # Custom React hooks
-├── types/ # Global TypeScript types/interfaces
-├── utils/ # Helper functions
-├── App.tsx # Root component
-└── main.tsx # Entry point
+- ├── assets/ # Images
+- ├── auth/ # Authentication
+- ├── components/ # Reusable UI components
+- ├── hooks/ # Custom React hooks
+- ├── types/ # Global TypeScript types/interfaces
+- ├── utils/ # Helper functions
+- ├── App.tsx # Root component
+- └── main.tsx # Entry point
 
 ## 🛠️ Tech Stack
 
