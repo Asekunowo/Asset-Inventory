@@ -5,7 +5,7 @@ export const tagCheck = (str: string): boolean => {
 };
 
 export const serialCheck = (str: string): boolean => {
-  return /^[A-Z0-9]{10,20}$/.test(str);
+  return /^[A-Z0-9]{1,30}$/.test(str);
 };
 
 export const nameCheck = (str: string): boolean => {

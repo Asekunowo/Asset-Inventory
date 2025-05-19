@@ -26,7 +26,7 @@ function App() {
   return (
     <LightMode>
       <Toaster />
-      <Box display={{ base: "block", xl: "none" }}>
+      <Box display={{ base: "block", md: "none" }}>
         <VStack minH={"90vh"} justifyContent={"center"} spaceY={10}>
           <Icon boxSize={"150px"} color={"white"} size={"2xl"}>
             <FullScreen />
@@ -41,7 +41,7 @@ function App() {
         bg={"#2c3e50"}
         minW={"3xl"}
         overflow={"hidden"}
-        display={{ base: "none", xl: "block" }}
+        display={{ base: "none", md: "block" }}
       >
         <Routes>
           <Route path="/login" element={<LoginPage />} />
