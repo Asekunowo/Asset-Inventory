@@ -42,13 +42,14 @@ src/
 
 ## 📬 API Endpoints
 
-**Auth**
+**AUTH**
 
 POST /api/auth/login — Login and set cookie
 
 POST /api/auth/logout - Logout and clear cookie
 
-**Users**
+**USERS**
+
 GET /api/users/getoneuser/:id — Get user profile
 
 GET /api/users/getusers — Get Users
@@ -57,7 +58,8 @@ POST /api/users/createuser — Create user
 
 PUT /api/users/passchg — Change Password
 
-**Assets**
+**ASSETS**
+
 GET /api/assets/get — Fetch all Laptops
 
 PUT /api/assets/edit/:id - Update a laptops details
@@ -70,13 +72,13 @@ POST /api/assets/addother — Add other assets
 
 GET /api/assets/others — Fetch other assets
 
-**Repairs**
+**REPAIRS**
 
 GET /api/repairs/get — Get repairs
 
 POST /api/repairs/add — Add a new repair
 
-**Movements**
+**MOVEMENTS**
 
 GET /api/movements/get - Follow a user
 
