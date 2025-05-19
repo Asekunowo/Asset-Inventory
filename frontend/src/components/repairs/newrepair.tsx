@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import { Box, Text, Input, Button, HStack } from "@chakra-ui/react";
-import { Bank, Branch, equipmentTypes, Fault, Vendors } from "@/store/data";
+import { Bank, Branch, equipmentTypes, Vendors } from "@/store/data";
 import CustomSelect from "../reusable/customselect";
 import { toaster } from "../ui/toaster";
 import Spin from "../ui/spinner";
@@ -215,11 +215,15 @@ const Newrepair = () => {
         </div>
         <div>
           <b>Fault:</b>
-          <CustomSelect
-            defaultValue="FAULT"
-            value={repairData.fault || "FAULT"}
-            onChange={(value) => setRepairData({ ...repairData, fault: value })}
-            options={Fault}
+          <Input
+            placeholder="Fault"
+            value={repairData.fault}
+            onChange={(e) =>
+              setRepairData({
+                ...repairData,
+                fault: e.target.value.toUpperCase(),
+              })
+            }
           />
         </div>
         <div>
