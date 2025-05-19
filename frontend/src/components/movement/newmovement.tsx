@@ -148,7 +148,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
           onChange={(e) =>
             setMovementData({
               ...movementData,
-              tag: e.target.value,
+              tag: e.target.value.toUpperCase(),
             })
           }
         />
