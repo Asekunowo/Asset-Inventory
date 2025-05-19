@@ -31,14 +31,14 @@ A TypeScript-based RESTful backend for a Asset Inventory application, built with
 ## 📁 Project Structure
 
 src/
-├── config/ // Database connection
-├── controllers/ // Route handlers
-├── middlewares/ // Authentication
-├── models/ // Mongoose models
-├── routes/ // Express routers
-├── utils/ // Helper functions
-├── app.ts/ // App Entry Point
-└── server.ts // Server Entry Point
+- ├── config/ // Database connection
+- ├── controllers/ // Route handlers
+- ├── middlewares/ // Authentication
+- ├── models/ // Mongoose models
+- ├── routes/ // Express routers
+- ├── utils/ // Helper functions
+- ├── app.ts/ // App Entry Point
+- └── server.ts // Server Entry Point
 
 ## 📬 API Endpoints
 
