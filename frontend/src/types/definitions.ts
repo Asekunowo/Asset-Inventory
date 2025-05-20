@@ -16,7 +16,7 @@ export const DEFAULT_MOVEMENT_DATA: movementData = {
   from_location: "TECHNOLOGY / ITSM",
   to_location: "",
   bank: "",
-  recipient: "",
+  newCustodian: "",
 };
 
 export const DEFAULT_EXIT_DATA: ExitRegisterData = {
