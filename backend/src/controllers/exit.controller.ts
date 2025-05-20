@@ -4,13 +4,22 @@ import { Request, Response } from "express";
 import Exit, { Exits } from "../models/exit.models";
 import { dbConn } from "../config/dbconfig";
 import Staff from "../models/staff.model";
+import mongoose from "mongoose";
 
 interface AddExitRequest extends Request {
   body: Exits;
 }
 
 export const addExit = async (req: AddExitRequest, res: Response) => {
-  console.log(req.body);
+  const userId = req.user!.id;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({
+      success: false,
+      message: "You are not authorized to perform this action",
+    });
+    return;
+  }
 
   try {
     await dbConn();
@@ -49,11 +58,18 @@ export const addExit = async (req: AddExitRequest, res: Response) => {
       ...exitdata,
       date_Of_Exit: new Date(req.body.date_Of_Exit),
       retrieval_Date: new Date(req.body.retrieval_Date),
+      createdBy: userId,
+      lastEditedBy: userId,
     });
 
     await newExit.save();
 
-    const exit: any = await Exit.findOne({ staffId: req.body.staffId }).lean();
+    const exit: any = await Exit.findOne({ staffId: req.body.staffId })
+      .lean()
+      .populate([
+        { path: "createdBy", select: "firstname lastname email" },
+        { path: "lastEditedBy", select: "firstname lastname email" },
+      ]);
 
     if (!exit) {
       res.status(400).json({ success: false, message: "An error occured" });
@@ -98,7 +114,12 @@ export const addExit = async (req: AddExitRequest, res: Response) => {
 export const getExits = async (req: Request, res: Response) => {
   try {
     await dbConn();
-    const exits: any = await Exit.find().lean();
+    const exits: any = await Exit.find()
+      .lean()
+      .populate([
+        { path: "createdBy", select: "firstname lastname email" },
+        { path: "lastEditedBy", select: "firstname lastname email" },
+      ]);
 
     const exitData = exits.map((exit: any) => ({
       ...exit,
@@ -120,6 +141,86 @@ export const getExits = async (req: Request, res: Response) => {
     }));
 
     res.status(200).json({ success: true, exits: exitData });
+    return;
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ success: false, message: "Internal server error.", error });
+    return;
+  }
+};
+
+export const updateExit = async (req: Request, res: Response) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    res.status(400).json({ success: false, message: "Invalid exit ID." });
+    return;
+  }
+
+  const userId = req.user!.id;
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({
+      success: false,
+      message: "You are not authorized to perform this action",
+    });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const { id } = req.params;
+    const updateData = { ...req.body, lastEditedBy: userId };
+
+    // Convert date fields if present
+    if (updateData.date_Of_Exit) {
+      updateData.date_Of_Exit = new Date(updateData.date_Of_Exit);
+    }
+    if (updateData.retrieval_Date) {
+      updateData.retrieval_Date = new Date(updateData.retrieval_Date);
+    }
+
+    const updatedExit = await Exit.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    })
+      .lean()
+      .populate({ path: "lastEditedBy", select: "firstname lastname email" });
+
+    if (!updatedExit) {
+      res.status(404).json({ success: false, message: "Exit not found." });
+      return;
+    }
+
+    const exitData = {
+      ...updatedExit,
+      retrieval_Date: updatedExit.retrieval_Date
+        ? updatedExit.retrieval_Date.toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })
+        : null,
+      date_Of_Exit: updatedExit.date_Of_Exit
+        ? updatedExit.date_Of_Exit.toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })
+        : null,
+      createdAt: updatedExit.createdAt
+        ? updatedExit.createdAt.toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })
+        : null,
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "Exit updated successfully.",
+      exit: exitData,
+    });
     return;
   } catch (error: any) {
     res

@@ -35,7 +35,7 @@ export const styles = StyleSheet.create({
   },
   bottom: {
     height: "60px",
-    paddingTop: "5px",
+    paddingTop: "10px",
   },
   largesection: {
     height: "270px",
@@ -74,5 +74,13 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: "10px",
     marginTop: "30px",
+  },
+  dotted: {
+    marginLeft: "5px",
+    marginTop: "35px",
+    borderBottomStyle: "dotted",
+    borderBottomColor: "black",
+    borderBottomWidth: "2px",
+    width: "60%",
   },
 });

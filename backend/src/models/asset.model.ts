@@ -1,11 +1,34 @@
 import mongoose, { Types } from "mongoose";
+import { newType } from "../types/modeltypes";
 
 const { Schema, model, models } = mongoose;
 
-const AssetSchema = new Schema(
+export interface IAsset {
+  custodian: Types.ObjectId;
+  type: string;
+  user: string;
+  tag: string;
+  serial_no: string;
+  model: string;
+  group: string;
+  role: string;
+  bank: string;
+  branch: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  createdBy?: newType;
+  lastEditedBy?: newType;
+}
+
+const AssetSchema = new Schema<IAsset>(
   {
-    custodian: {
-      type: Types.ObjectId,
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    lastEditedBy: {
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
@@ -20,7 +43,6 @@ const AssetSchema = new Schema(
     tag: {
       type: String,
       required: true,
-      unique: [true, "Assets cannot have the same tags"],
     },
     serial_no: {
       type: String,

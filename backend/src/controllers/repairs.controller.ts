@@ -2,23 +2,28 @@ import { Request, Response } from "express";
 import Repairs from "../models/repairs.model";
 import { dbConn } from "../config/dbconfig";
 import { Types } from "mongoose";
+import { changeDate } from "../utils/helpers";
 
 export const getRepairs = async (req: Request, res: Response) => {
   try {
     await dbConn();
 
-    const repairs = await Repairs.find().lean().populate({
-      path: "custodian",
-      select: "firstname lastname email",
-    });
+    const repairs = await Repairs.find()
+      .lean()
+      .populate([
+        {
+          path: "createdBy",
+          select: "firstname lastname email",
+        },
+        {
+          path: "lastEditedBy",
+          select: "firstname lastname email",
+        },
+      ]);
 
     const repairData = repairs.map((repair: any) => ({
       ...repair,
-      createdAt: repair.createdAt!.toLocaleDateString("en-US", {
-        month: "2-digit",
-        day: "2-digit",
-        year: "numeric",
-      }),
+      createdAt: changeDate(repair.createdAt),
     }));
 
     res.status(200).json({
@@ -37,32 +42,116 @@ export const getRepairs = async (req: Request, res: Response) => {
 export const addNewRepairs = async (req: Request, res: Response) => {
   const userId = req.user!.id;
 
-  if (!Types.ObjectId.isValid(userId)) {
-    res.status(400).json({ success: false, message: "Not Authorized" });
-    return;
-  }
   const data = req.body;
 
   if (!data) {
     res.status(400).json({ success: false, message: "No data provided" });
     return;
   }
-  const newData = new Repairs({ ...data, custodian: userId });
 
   try {
     await dbConn();
+
+    const newData = new Repairs({
+      ...data,
+      createdBy: userId,
+      lastEditedBy: userId,
+    });
+
+    const existingTag = await Repairs.findOne({ tag: data.tag });
+    if (existingTag) {
+      res.status(400).json({
+        success: false,
+        message: "A record with this tag already exists",
+      });
+      return;
+    }
+
+    const existingSerial = await Repairs.findOne({
+      serialNumber: data.serialNumber,
+    });
+    if (existingSerial) {
+      res.status(400).json({
+        success: false,
+        message: "A record with this serial number already exists",
+      });
+      return;
+    }
+
     await newData.save();
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "New Repair Record Created",
-        repair: newData,
-      });
+    const newRepair: any = await Repairs.findOne({ _id: newData._id })
+      .lean()
+      .populate([
+        { path: "createdBy", select: "firstname lastname email" },
+        { path: "lastEditedBy", select: "firstname lastname email" },
+      ]);
+
+    res.status(200).json({
+      success: true,
+      message: "New Repair Record Created",
+      repair: {
+        ...newRepair,
+        createdAt: changeDate(newRepair.createdAt),
+      },
+    });
     return;
   } catch (err: any) {
     res.status(500).json({ success: false, message: err.message });
+    return;
+  }
+};
+
+export const updateRepair = async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+  const { id } = req.params;
+  const updateData = req.body;
+
+  if (!Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid repair ID" });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const repair = await Repairs.findById(id);
+    if (!repair) {
+      res.status(404).json({ success: false, message: "Repair not found" });
+      return;
+    }
+
+    updateData.lastEditedBy = userId;
+
+    const updatedRepair: any = await Repairs.findByIdAndUpdate(
+      id,
+      { $set: updateData },
+      { new: true }
+    )
+      .lean()
+      .populate([
+        { path: "createdBy", select: "firstname lastname email" },
+        { path: "lastEditedBy", select: "firstname lastname email" },
+      ]);
+
+    if (!updatedRepair) {
+      res
+        .status(404)
+        .json({ success: false, message: "Repair not found after update" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Repair updated successfully",
+      repair: {
+        ...updatedRepair,
+        createdAt: changeDate(updatedRepair.createdAt),
+      },
+    });
+    return;
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
     return;
   }
 };

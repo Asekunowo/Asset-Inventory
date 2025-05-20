@@ -1,7 +1,7 @@
 import { dbConn } from "../config/dbconfig";
 import { sign } from "jsonwebtoken";
 import { SECRET_KEY } from "../secrets";
-import { compareSync } from "bcrypt";
+import { compareSync, hashSync } from "bcrypt";
 import { Request, Response } from "express";
 import User from "../models/user.model";
 
@@ -12,10 +12,12 @@ export const login = async (req: Request, res: Response) => {
     await dbConn();
 
     const userExists = await User.findOne({ email });
+    console.log(userExists);
+
     if (!userExists) {
       res.status(404).json({
         success: false,
-        message: "Invalid Credentials",
+        message: "Inval!d Credentials",
       });
       return;
     }

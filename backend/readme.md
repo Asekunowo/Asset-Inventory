@@ -60,7 +60,7 @@ PUT /api/users/passchg — Change Password
 **Assets**
 GET /api/assets/get — Fetch all Laptops
 
-PUT /api/assets/edit/:id - Update a laptops details
+PUT /api/assets/update/:id - Update a laptops details
 
 POST /api/assets/add — Add a new laptop
 
@@ -76,11 +76,23 @@ GET /api/repairs/get — Get repairs
 
 POST /api/repairs/add — Add a new repair
 
+PUT /api/repairs/update/:id — Update a repair
+
 **Movements**
 
-GET /api/movements/get - Follow a user
+GET /api/movements/get - Get all movements
 
-POST /api/movements/add - Unfollow a user
+POST /api/movements/add - Add a movemenent
+
+PUT /api/movements/update/:id - Update a movement
+
+**EXITS**
+
+GET /api/exits/get - Get all exits
+
+POST /api/exits/add - Add a new exit
+
+PUT /api/exits/update/:id - Update an exit
 
 ## 🧪 Endpoint Testing
 

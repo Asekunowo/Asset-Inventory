@@ -5,7 +5,7 @@ import { loginLimit } from "../utils/limits";
 
 const router: Router = Router();
 
-router.post("/login", loginLimit, login);
+router.post("/login", login);
 
 router.post("/logout", logout);
 

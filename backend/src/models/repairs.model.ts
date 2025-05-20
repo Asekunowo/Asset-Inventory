@@ -1,8 +1,24 @@
 import mongoose, { Types } from "mongoose";
+import { newType } from "../types/modeltypes";
 
 const { Schema, model, models } = mongoose;
 
-const RepairsSchema = new Schema(
+export interface IRepair {
+  type: string;
+  tag: string;
+  serial_no: string;
+  branch: string;
+  vendor: string;
+  fault: string;
+  costofrepair: string;
+  bank: string;
+  createdBy: newType;
+  lastEditedBy: newType;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+const RepairsSchema = new Schema<IRepair>(
   {
     type: {
       type: String,
@@ -36,8 +52,13 @@ const RepairsSchema = new Schema(
       type: String,
       required: true,
     },
-    custodian: {
-      type: Types.ObjectId,
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    lastEditedBy: {
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },

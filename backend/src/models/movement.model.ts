@@ -1,8 +1,9 @@
 import mongoose, { Types } from "mongoose";
+import { IMovement } from "../types/modeltypes";
 
 const { Schema, model, models } = mongoose;
 
-const MovementSchema = new Schema(
+const MovementSchema = new Schema<IMovement>(
   {
     serial_no: {
       type: String,
@@ -20,6 +21,7 @@ const MovementSchema = new Schema(
       type: String,
       required: true,
     },
+    newCustodian: { type: String, required: true },
     type: {
       type: String,
       required: true,
@@ -28,9 +30,9 @@ const MovementSchema = new Schema(
       type: String,
       required: true,
     },
-    recipient: { type: String, required: true },
     reason: { type: String, required: true },
-    custodian: { type: Types.ObjectId, required: true, ref: "User" },
+    createdBy: { type: Types.ObjectId, required: true, ref: "User" },
+    lastEditedBy: { type: Types.ObjectId, required: true, ref: "User" },
   },
   {
     timestamps: true,

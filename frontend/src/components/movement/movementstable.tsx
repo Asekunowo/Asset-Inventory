@@ -49,23 +49,23 @@ const MovementsTable = ({ movements, handlePrint, setSearch }: any) => {
               <TableColumnHeader>Tag</TableColumnHeader>
               <TableColumnHeader>Serial Number</TableColumnHeader>
               <TableColumnHeader>TO</TableColumnHeader>
-              <TableColumnHeader>Recipient</TableColumnHeader>
+              <TableColumnHeader>New Custodian</TableColumnHeader>
               <TableColumnHeader w={"15px"}>Action</TableColumnHeader>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {movements.map((exit: movementData, index: number) => (
+            {movements.map((movement: movementData, index: number) => (
               <TableRow key={index}>
                 <TableColumnHeader w={"3px"}>{index + 1}</TableColumnHeader>
-                <TableColumnHeader>{exit.type}</TableColumnHeader>
-                <TableColumnHeader>{exit.tag}</TableColumnHeader>
-                <TableColumnHeader>{exit.serial_no}</TableColumnHeader>
-                <TableColumnHeader>{exit.to_location}</TableColumnHeader>
-                <TableColumnHeader>{exit.recipient}</TableColumnHeader>
+                <TableColumnHeader>{movement.type}</TableColumnHeader>
+                <TableColumnHeader>{movement.tag}</TableColumnHeader>
+                <TableColumnHeader>{movement.serial_no}</TableColumnHeader>
+                <TableColumnHeader>{movement.to_location}</TableColumnHeader>
+                <TableColumnHeader>{movement.newCustodian}</TableColumnHeader>
                 <TableColumnHeader>
                   <Button
                     onClick={() => {
-                      handlePrint(exit);
+                      handlePrint(movement);
                     }}
                   >
                     <Link to={"form"}>Print</Link>

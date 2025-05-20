@@ -39,11 +39,17 @@ export interface movementData {
   from_location: string;
   to_location: string;
   reason: string;
-  recipient: string;
+  newCustodian: string;
   bank: string;
-  custodian?: {
+  createdBy?: {
     firstname: string;
     lastname: string;
+    email: string;
+  };
+  lastEditedBy?: {
+    firstname: string;
+    lastname: string;
+    email: string;
   };
 }
 
@@ -101,9 +107,15 @@ export type repairData = {
   costofrepair: string;
   bank: string;
   createdAt?: string;
-  custodian?: {
+  createdBy?: {
     firstname: string;
     lastname: string;
+    email: string;
+  };
+  lastEditedBy?: {
+    firstname: string;
+    lastname: string;
+    email: string;
   };
 };
 
@@ -120,10 +132,15 @@ export type Asset = {
   branch: string;
   bank: string;
   createdAt: string;
-  custodian: {
-    _id: string;
+  createdBy?: {
     firstname: string;
     lastname: string;
+    email: string;
+  };
+  lastEditedBy?: {
+    firstname: string;
+    lastname: string;
+    email: string;
   };
 };
 
@@ -153,15 +170,21 @@ export type Laptop = {
 
 //other assets
 export interface OtherAsset {
-  _id: string;
+  _id?: string;
   type: string;
   tag: string;
   serial_no: string;
   branch: string;
-  custodian: {
-    _id: string;
+  createdAt?: string;
+  createdBy?: {
     firstname: string;
     lastname: string;
+    email: string;
+  };
+  lastEditedBy?: {
+    firstname: string;
+    lastname: string;
+    email: string;
   };
 }
 

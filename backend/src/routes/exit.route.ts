@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addExit, getExits } from "../controllers/exit.controller";
+import { addExit, getExits, updateExit } from "../controllers/exit.controller";
 
 const router = Router();
 
@@ -10,5 +10,7 @@ router.use(verifyToken);
 router.post("/add", addExit);
 
 router.get("/get", getExits);
+
+router.put("/update/:id", updateExit);
 
 export default router;

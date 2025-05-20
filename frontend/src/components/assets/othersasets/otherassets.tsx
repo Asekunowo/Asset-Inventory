@@ -1,3 +1,4 @@
+import { OtherAsset } from "@/types/types";
 import {
   Table,
   TableBody,
@@ -23,11 +24,11 @@ const Otherassets: React.FC<any> = ({ others }) => {
             <TableColumnHeader>SERIAL NO</TableColumnHeader>
             <TableColumnHeader>BRANCH</TableColumnHeader>
             <TableColumnHeader>DATE</TableColumnHeader>
-            <TableColumnHeader>CUSTODIAN</TableColumnHeader>
+            <TableColumnHeader>CREATED BY</TableColumnHeader>
           </TableRow>
         </TableHeader>
         <TableBody cursor={"text"}>
-          {others.map((asset: any, index: number) => {
+          {others.map((asset: OtherAsset, index: number) => {
             return (
               <TableRow key={index}>
                 <TableColumnHeader>{index + 1}</TableColumnHeader>
@@ -37,7 +38,7 @@ const Otherassets: React.FC<any> = ({ others }) => {
                 <TableColumnHeader>{asset.branch}</TableColumnHeader>
                 <TableColumnHeader>{asset.createdAt}</TableColumnHeader>
                 <TableColumnHeader>
-                  {asset.custodian.firstname + " " + asset.custodian.lastname}
+                  {asset.createdBy!.firstname + " " + asset.createdBy!.lastname}
                 </TableColumnHeader>
               </TableRow>
             );

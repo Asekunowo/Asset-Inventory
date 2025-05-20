@@ -79,7 +79,7 @@ export const filterMovements = (
       movement.tag,
       movement.serial_no,
       movement.to_location,
-      movement.recipient,
+      movement.newCustodian,
     ];
 
     return searchFields.some((field) =>

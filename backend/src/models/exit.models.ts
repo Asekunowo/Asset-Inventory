@@ -1,6 +1,8 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Types } from "mongoose";
 
 const { Schema, model, models } = mongoose;
+
+type NewType = Types.ObjectId;
 
 export interface Exits extends Document {
   staffId: string;
@@ -23,6 +25,8 @@ export interface Exits extends Document {
   retrieval_Date: Date; //    date of reassignment
   reassignment: "NEW_ASSIGNMENT" | "REFRESH" | "STOP_GAP" | "OBSOLETE";
   createdAt?: Date;
+  createdBy: NewType;
+  lastEditedBy: NewType;
 }
 
 const ExitSchema = new Schema<Exits>(
@@ -104,6 +108,16 @@ const ExitSchema = new Schema<Exits>(
     current_custodian: {
       type: String,
       required: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    lastEditedBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
     },
   },
   { timestamps: true }

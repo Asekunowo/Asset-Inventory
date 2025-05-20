@@ -1,11 +1,16 @@
 import mongoose, { Types } from "mongoose";
-
+import { IOther } from "../types/modeltypes";
 const { Schema, model, models } = mongoose;
 
-const OtherSchema = new Schema(
+const OtherSchema = new Schema<IOther>(
   {
-    custodian: {
-      type: Types.ObjectId,
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User",
+    },
+    lastEditedBy: {
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
@@ -16,7 +21,6 @@ const OtherSchema = new Schema(
     tag: {
       type: String,
       required: true,
-      unique: [true, "Assets cannot have the same tags"],
     },
     serial_no: {
       type: String,

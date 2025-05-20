@@ -3,6 +3,8 @@ import Others from "../models/others.model";
 import mongoose, { Types } from "mongoose";
 import { dbConn } from "../config/dbconfig";
 import User from "../models/user.model";
+import { IOther } from "../types/modeltypes";
+import { changeDate } from "../utils/helpers";
 
 interface OtherRequest extends Request {
   type?: string;
@@ -10,34 +12,22 @@ interface OtherRequest extends Request {
   serial_no?: string;
   model?: string;
   branch?: string;
+  createdAt?: string;
 }
 
 export const addNewOther = async (req: OtherRequest, res: Response) => {
   const userId = req.user!.id;
 
-  if (!Types.ObjectId.isValid(userId)) {
-    res.status(401).json({
-      success: false,
-      message: "You are not authorized to perform this action",
-    });
-    return;
-  }
+  const { tag, serial_no } = req.body;
 
-  const { type, tag, serial_no, model, branch } = req.body;
+  const newData = new Others<IOther>({
+    ...req.body,
+    createdBy: userId,
+    lastEditedBy: userId,
+  });
 
-  const newData = new Others({ ...req.body, custodian: userId });
   try {
     await dbConn();
-
-    const custodian = await User.findById(userId);
-
-    if (!custodian) {
-      res.status(404).json({
-        success: false,
-        message: "Custodian not found",
-      });
-      return;
-    }
 
     const existingAsset_tag = await Others.findOne({ tag });
 
@@ -61,9 +51,18 @@ export const addNewOther = async (req: OtherRequest, res: Response) => {
 
     await newData.save();
 
-    res
-      .status(200)
-      .json({ success: true, message: "Successfully added new other asset" });
+    const newOther: any = await Others.findOne({ tag })
+      .lean()
+      .populate([
+        { path: "createdBy", select: "firstname lastname email" },
+        { path: "lastEditedBy", select: "firstname lastname email" },
+      ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully added new other asset",
+      other: { ...newOther, createdAt: changeDate(newOther.createdAt) },
+    });
     return;
   } catch (error: any) {
     console.error(error);
@@ -73,44 +72,76 @@ export const addNewOther = async (req: OtherRequest, res: Response) => {
 };
 
 export const getOtherAssets = async (req: Request, res: Response) => {
-  const userId = req.user!.id;
-
-  if (!Types.ObjectId.isValid(userId)) {
-    res.status(404).json({ success: false, message: "Invalid User Id" });
-    return;
-  }
-
   try {
     await dbConn();
 
-    const isUserExists = await User.findOne({ _id: userId });
-
-    if (!isUserExists) {
-      res.status(403).json({
-        success: false,
-        message: "You don't have access to view this record",
-      });
-      return;
-    }
-
-    const others = await Others.find().lean().populate({
-      path: "custodian",
-      select: "firstname lastname",
-    });
+    const others = await Others.find()
+      .lean()
+      .populate([
+        { path: "createdBy", select: "firstname lastname email" },
+        { path: "lastEditedBy", select: "firstname lastname email" },
+      ]);
 
     const othersData = others.map((other) => ({
       ...other,
-      createdAt: other.createdAt.toLocaleDateString("en-US", {
-        month: "2-digit",
-        day: "2-digit",
-        year: "numeric",
-      }),
+      createdAt: changeDate(other.createdAt),
     }));
 
     res.status(200).json({
       success: true,
       message: "Successfully fetched other assets",
       others: othersData,
+    });
+    return;
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+    return;
+  }
+};
+
+export const updateOtherAsset = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user?.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid other asset ID" });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const updateData = {
+      ...req.body,
+      lastEditedBy: userId,
+    };
+
+    if (!updateData.tag) {
+      res.status(400).json({ success: false, message: "No data provided" });
+      return;
+    }
+
+    const updatedOther: any = await Others.findByIdAndUpdate(id, updateData, {
+      new: true,
+    })
+      .lean()
+      .populate([
+        { path: "createdBy", select: "firstname lastname email" },
+        { path: "lastEditedBy", select: "firstname lastname email" },
+      ]);
+
+    if (!updatedOther) {
+      res
+        .status(404)
+        .json({ success: false, message: "Other Asset not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully updated other asset",
+      other: { ...updatedOther, createdAt: changeDate(updatedOther.createdAt) },
     });
     return;
   } catch (error: any) {

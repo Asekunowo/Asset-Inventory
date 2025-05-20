@@ -13,7 +13,7 @@ export const DEFAULT_MOVEMENT_DATA: movementData = {
   tag: "",
   serial_no: "",
   reason: "",
-  from_location: "HEAD OFFICE",
+  from_location: "TECHNOLOGY / ITSM",
   to_location: "",
   bank: "",
   recipient: "",

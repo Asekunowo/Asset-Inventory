@@ -25,7 +25,7 @@ const Form = ({ data }: data) => (
         <View style={[styles.aside]}>
           <Text style={[styles.text]}>Move from Current Location:</Text>
           <Text style={[styles.text]}>(Branch/Unit/Floor/Room):</Text>
-          <Text style={styles.dataText}>{data.from_location}</Text>
+          <Text style={styles.dataText}>Technology / ITSM</Text>
         </View>
         <View>
           <Text style={[styles.to, styles.textBold]}>TO:</Text>
@@ -36,37 +36,48 @@ const Form = ({ data }: data) => (
         <Text style={styles.text}>Reason for Allocation/Relocation</Text>
         <Text style={styles.dataText}>{data.reason} </Text>
       </View>
-      <View style={styles.section}>
-        <Text style={styles.text}>Old Custodian (Name/Branch/Sign)</Text>
-        <Text style={styles.dataText}>
-          {data.custodian!.firstname + " " + data.custodian!.lastname}
-        </Text>
+      <View style={[styles.flex, styles.section]}>
+        <View style={[styles.aside]}>
+          <Text style={[styles.text]}>Old Custodian (Name/Branch/Sign)</Text>
+          <Text style={styles.dataText}>Technology / ITSM</Text>
+        </View>
+        <View>
+          <Text style={[styles.text]}>New Custodian:</Text>
+          <Text style={styles.dataText}>{data.newCustodian}</Text>
+        </View>
       </View>
       <View style={styles.largesection}>
         <View style={styles.bottom}>
           <Text style={[styles.text, styles.textBold]}>
             Recipient (Name, Signature & Date) :
           </Text>
-          <Text style={styles.dataText}>{data.recipient}</Text>
+          <Text style={styles.dotted}></Text>
         </View>
         <View style={styles.bottom}>
           <Text style={[styles.text, styles.textBold]}>
             Authorized by (Name, Signature & Date)
           </Text>
-          <Text style={styles.dataText}>Tolulope Balogun</Text>
           <Text style={styles.dataText}>
-            {new Date().toLocaleDateString("en-UK")}
+            Tolulope Balogun{" "}
+            {new Date().toLocaleDateString("en-UK", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+            })}
           </Text>
         </View>
         <View style={styles.bottom}>
           <Text style={[styles.text, styles.textBold]}>
             12th Floor Security (Name, Signature & Date)
           </Text>
+          <Text style={styles.dotted}></Text>
         </View>
         <View style={styles.bottom}>
           <Text style={[styles.text, styles.textBold]}>
             Security Unit (Name, Signature & Date)
           </Text>
+
+          <Text style={styles.dotted}></Text>
         </View>
       </View>
       <View>

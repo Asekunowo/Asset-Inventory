@@ -29,7 +29,7 @@ const Repairstable: React.FC<any> = ({ repairs }) => {
 
             <TableColumnHeader>BANK</TableColumnHeader>
             <TableColumnHeader textAlign={"end"}>DATE ADDED</TableColumnHeader>
-            <TableColumnHeader>CUSTODIAN</TableColumnHeader>
+            <TableColumnHeader>CREATED BY</TableColumnHeader>
           </TableRow>
         </TableHeader>
         <TableBody cursor={"text"}>
@@ -50,9 +50,9 @@ const Repairstable: React.FC<any> = ({ repairs }) => {
                   fontWeight={"bold"}
                   color={"gray.500"}
                 >
-                  {repair.custodian!.firstname +
+                  {repair.createdBy!.firstname +
                     " " +
-                    repair.custodian!.lastname}
+                    repair.createdBy!.lastname}
                 </TableColumnHeader>
               </TableRow>
             );

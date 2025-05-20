@@ -29,7 +29,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
       "bank",
       "serial_no",
       "reason",
-      "recipient",
+      "newCustodian",
       "from_location",
       "to_location",
     ];
@@ -68,8 +68,8 @@ const NewMovement = ({ loading, setLoading }: any) => {
       return false;
     }
 
-    // Validate recipient name (only letters and spaces)
-    if (!nameCheck(movementData.recipient)) {
+    // Validate newCustodian name (only letters and spaces)
+    if (!nameCheck(movementData.newCustodian)) {
       toaster.create({
         type: "error",
         title: "Invalid Recipient Name",
@@ -181,14 +181,14 @@ const NewMovement = ({ loading, setLoading }: any) => {
         />
       </div>
       <div>
-        Recipient
+        New Custodian
         <Input
-          placeholder="Recipient"
-          value={movementData.recipient}
+          placeholder="New Custodian"
+          value={movementData.newCustodian}
           onChange={(e) =>
             setMovementData({
               ...movementData,
-              recipient: e.target.value.toUpperCase(),
+              newCustodian: e.target.value.toUpperCase(),
             })
           }
         />

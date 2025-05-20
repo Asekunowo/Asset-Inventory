@@ -1,31 +1,12 @@
 import { Types } from "mongoose";
 import { dbConn } from "../config/dbconfig";
 import { Request, Response } from "express";
-import User from "../models/user.model";
-import Movement from "../models/movement.model";
 
-interface MovementRequest extends Request {
-  body: {
-    type: string;
-    tag: string;
-    serial_no: string;
-    from_location: string;
-    to_location: string;
-    recipient: string;
-    reason: string;
-  };
-}
+import Movement from "../models/movement.model";
+import { IMovement } from "../types/modeltypes";
 
 export const getMovements = async (req: Request, res: Response) => {
   const userId = req.user!.id;
-
-  if (!Types.ObjectId.isValid(userId)) {
-    res.status(403).json({
-      success: false,
-      message: "Not Authorized",
-    });
-    return;
-  }
 
   const start = new Date();
   start.setHours(0, 0, 0, 0);
@@ -36,25 +17,21 @@ export const getMovements = async (req: Request, res: Response) => {
   try {
     await dbConn();
 
-    const userExists = await User.findOne({ _id: userId });
-
-    if (!userExists) {
-      res.status(404).json({
-        success: false,
-        message: "You do not have access to this resource",
-      });
-      return;
-    }
-
     const movements = await Movement.find({
       createdAt: { $gte: start, $lte: end },
-    }).populate({
-      path: "custodian",
-      select: "firstname lastname",
-    });
+    }).populate([
+      {
+        path: "createdBy",
+        select: "firstname lastname",
+      },
+      {
+        path: "lastEditedBy",
+        select: "firstname lastname",
+      },
+    ]);
     res
       .status(200)
-      .json({ success: true, message: "Fetched Exits", movements });
+      .json({ success: true, message: "Fetched Movements", movements });
     return;
   } catch (error) {
     console.error(error);
@@ -63,54 +40,31 @@ export const getMovements = async (req: Request, res: Response) => {
   }
 };
 
-export const addMovement = async (req: MovementRequest, res: Response) => {
+export const addMovement = async (req: Request, res: Response) => {
   const userId = req.user!.id;
-
-  if (!Types.ObjectId.isValid(userId)) {
-    res.status(403).json({
-      success: false,
-      message: "You are not authorized to perform this action",
-    });
-    return;
-  }
-
-  const {
-    type,
-    tag,
-    serial_no,
-    from_location,
-    to_location,
-    recipient,
-    reason,
-  } = req.body;
-
-  if (
-    !type ||
-    !tag ||
-    !serial_no ||
-    !from_location ||
-    !to_location ||
-    !recipient ||
-    !reason
-  ) {
-    res.status(400).json({
-      success: false,
-      message: "All fields are required",
-    });
-    return;
-  }
+  const newMovmeentData = req.body;
 
   try {
     await dbConn();
 
-    const newMovement = new Movement({ ...req.body, custodian: userId });
+    const newMovement = new Movement<IMovement>({
+      ...newMovmeentData,
+      createdBy: userId,
+      lastEditedBy: userId,
+    });
 
     await newMovement.save();
 
-    const data = await Movement.findById({ _id: newMovement._id }).populate({
-      path: "custodian",
-      select: "firstname lastname",
-    });
+    const data = await Movement.findById({ _id: newMovement._id }).populate([
+      {
+        path: "createdBy",
+        select: "firstname lastname",
+      },
+      {
+        path: "lastEditedBy",
+        select: "firstname lastname",
+      },
+    ]);
 
     res.status(201).json({
       success: true,
@@ -123,6 +77,64 @@ export const addMovement = async (req: MovementRequest, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Failed to create movement record",
+    });
+    return;
+  }
+};
+
+export const updateMovement = async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+  const { id } = req.params;
+
+  const newMovement = req.body;
+
+  if (!Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid movement ID" });
+    return;
+  }
+
+  if (!newMovement.tag) {
+    res.status(400).json({ success: false, message: "No data found" });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const updatedMovement = await Movement.findByIdAndUpdate(
+      id,
+      {
+        ...newMovement,
+        lastEditedBy: userId,
+      },
+      { new: true }
+    ).populate([
+      {
+        path: "createdBy",
+        select: "firstname lastname",
+      },
+      {
+        path: "lastEditedBy",
+        select: "firstname lastname",
+      },
+    ]);
+
+    if (!updatedMovement) {
+      res.status(404).json({ success: false, message: "Movement not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Movement updated successfully",
+      movement: updatedMovement,
+    });
+    return;
+  } catch (error) {
+    console.error("Error updating movement record:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to update movement record",
     });
     return;
   }

@@ -8,18 +8,24 @@ import {
 } from "../controllers/assets.controller";
 
 import { verifyToken } from "../middlewares/auth";
-import { addNewOther, getOtherAssets } from "../controllers/others.controller";
+import {
+  addNewOther,
+  getOtherAssets,
+  updateOtherAsset,
+} from "../controllers/others.controller";
 
 const router: Router = Router();
 
 router.use(verifyToken);
 
 router.get("/get", getAssets);
-router.put("/edit/:id", updateAsset);
 router.post("/add", addNewAsset);
+router.put("/update/:id", updateAsset);
+
 router.delete("/delete/:id", deleteAsset);
 
 router.post("/addother", addNewOther);
+router.put("/updateother/:id", updateOtherAsset);
 router.get("/others", getOtherAssets);
 
 export default router;

@@ -28,7 +28,7 @@ const Laptops = ({ laptops }: any) => {
 
             <TableColumnHeader textAlign={"end"}>BRANCH</TableColumnHeader>
             <TableColumnHeader>DATE</TableColumnHeader>
-            <TableColumnHeader>CUSTODIAN</TableColumnHeader>
+            <TableColumnHeader>CREATED BY</TableColumnHeader>
           </TableRow>
         </TableHeader>
         <TableBody cursor={"text"}>
@@ -47,7 +47,7 @@ const Laptops = ({ laptops }: any) => {
                 </TableColumnHeader>
                 <TableColumnHeader>{asset.createdAt}</TableColumnHeader>
                 <TableColumnHeader>
-                  {asset.custodian.firstname + " " + asset.custodian.lastname}
+                  {asset.createdBy!.firstname + " " + asset.createdBy!.lastname}
                 </TableColumnHeader>
               </TableRow>
             );
