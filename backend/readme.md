@@ -31,24 +31,26 @@ A TypeScript-based RESTful backend for a Asset Inventory application, built with
 ## 📁 Project Structure
 
 src/
-├── config/ // Database connection
-├── controllers/ // Route handlers
-├── middlewares/ // Authentication
-├── models/ // Mongoose models
-├── routes/ // Express routers
-├── utils/ // Helper functions
-├── app.ts/ // App Entry Point
-└── server.ts // Server Entry Point
+
+- ├── config/ // Database connection
+- ├── controllers/ // Route handlers
+- ├── middlewares/ // Authentication
+- ├── models/ // Mongoose models
+- ├── routes/ // Express routers
+- ├── utils/ // Helper functions
+- ├── app.ts/ // App Entry Point
+- └── server.ts // Server Entry Point
 
 ## 📬 API Endpoints
 
-**Auth**
+**AUTH**
 
 POST /api/auth/login — Login and set cookie
 
 POST /api/auth/logout - Logout and clear cookie
 
-**Users**
+**USERS**
+
 GET /api/users/getoneuser/:id — Get user profile
 
 GET /api/users/getusers — Get Users
@@ -57,7 +59,8 @@ POST /api/users/createuser — Create user
 
 PUT /api/users/passchg — Change Password
 
-**Assets**
+**ASSETS**
+
 GET /api/assets/get — Fetch all Laptops
 
 PUT /api/assets/update/:id - Update a laptops details
@@ -70,7 +73,7 @@ POST /api/assets/addother — Add other assets
 
 GET /api/assets/others — Fetch other assets
 
-**Repairs**
+**REPAIRS**
 
 GET /api/repairs/get — Get repairs
 
@@ -78,7 +81,9 @@ POST /api/repairs/add — Add a new repair
 
 PUT /api/repairs/update/:id — Update a repair
 
-**Movements**
+PUT /api/repairs/update/:id — Update a repair
+
+**MOVEMENTS**
 
 GET /api/movements/get - Get all movements
 
