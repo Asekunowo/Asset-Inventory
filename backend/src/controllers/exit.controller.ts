@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 // Example Exit type/interface
 import Exit, { Exits } from "../models/exit.models";
 import { dbConn } from "../config/dbconfig";
-import Staff from "../models/staff.model";
 import mongoose from "mongoose";
 
 interface AddExitRequest extends Request {
@@ -23,15 +22,6 @@ export const addExit = async (req: AddExitRequest, res: Response) => {
 
   try {
     await dbConn();
-
-    const { staffId } = req.body;
-
-    const staffExists = await Staff.findOne({ staffId: staffId });
-
-    if (!staffExists) {
-      res.status(404).json({ success: false, message: "User does not exit" });
-      return;
-    }
 
     const tagExists = await Exit.findOne({ tag: req.body.tag });
     if (tagExists) {
@@ -64,7 +54,10 @@ export const addExit = async (req: AddExitRequest, res: Response) => {
 
     await newExit.save();
 
-    const exit: any = await Exit.findOne({ staffId: req.body.staffId })
+    const exit: any = await Exit.findOne(
+      { employee_id: req.body.employee_id },
+      { __v: 0, updatedAt: 0 }
+    )
       .lean()
       .populate([
         { path: "createdBy", select: "firstname lastname email" },
@@ -114,7 +107,7 @@ export const addExit = async (req: AddExitRequest, res: Response) => {
 export const getExits = async (req: Request, res: Response) => {
   try {
     await dbConn();
-    const exits: any = await Exit.find()
+    const exits: any = await Exit.find({}, { __v: 0, updatedAt: 0 })
       .lean()
       .populate([
         { path: "createdBy", select: "firstname lastname email" },
@@ -220,6 +213,37 @@ export const updateExit = async (req: Request, res: Response) => {
       success: true,
       message: "Exit updated successfully.",
       exit: exitData,
+    });
+    return;
+  } catch (error: any) {
+    res
+      .status(500)
+      .json({ success: false, message: "Internal server error.", error });
+    return;
+  }
+};
+
+export const deleteExit = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid exit ID." });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const deletedExit = await Exit.findByIdAndDelete(id);
+
+    if (!deletedExit) {
+      res.status(404).json({ success: false, message: "Exit not found." });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Exit deleted successfully.",
     });
     return;
   } catch (error: any) {

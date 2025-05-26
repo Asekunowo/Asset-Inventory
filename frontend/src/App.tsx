@@ -21,6 +21,8 @@ import NewExit from "./components/exitregister/newexit";
 import ExitRegister from "./components/exitregister/exitregister";
 import Protected from "./auth/protected";
 import { Toaster } from "./components/ui/toaster";
+import Reports from "./components/reports/reports";
+import GenerateReports from "./components/reports/generatereport";
 
 function App() {
   return (
@@ -72,6 +74,17 @@ function App() {
               <Route
                 path="newothers"
                 element={<Newothers />}
+                errorElement={<Rooterror />}
+              />
+            </Route>
+            <Route
+              path="reports"
+              element={<Reports />}
+              errorElement={<Rooterror />}
+            >
+              <Route
+                path="gen"
+                element={<GenerateReports />}
                 errorElement={<Rooterror />}
               />
             </Route>

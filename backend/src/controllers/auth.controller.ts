@@ -12,7 +12,6 @@ export const login = async (req: Request, res: Response) => {
     await dbConn();
 
     const userExists = await User.findOne({ email });
-    console.log(userExists);
 
     if (!userExists) {
       res.status(404).json({
@@ -59,6 +58,18 @@ export const logout = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: "Server Error" });
+    return;
+  }
+};
+
+export const checkSession = async (req: Request, res: Response) => {
+  try {
+    res.status(200).json({ success: true, message: "Session Valid" });
+    return;
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Server Error", error: error });
     return;
   }
 };

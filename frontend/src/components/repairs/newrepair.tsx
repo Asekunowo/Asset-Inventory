@@ -34,7 +34,7 @@ const Newrepair = () => {
       "vendor",
       "fault",
       "costofrepair",
-      "bank",
+      "entity",
     ];
 
     const emptyFields = requiredFields.filter(
@@ -170,11 +170,13 @@ const Newrepair = () => {
           />
         </div>
         <div>
-          <b>Bank:</b>
+          <b>Entity:</b>
           <CustomSelect
-            defaultValue="BANK"
-            value={repairData.bank || "BANK"}
-            onChange={(value) => setRepairData({ ...repairData, bank: value })}
+            defaultValue="Entity"
+            value={repairData.entity || "Entity"}
+            onChange={(value) =>
+              setRepairData({ ...repairData, entity: value })
+            }
             options={Bank}
           />
         </div>

@@ -203,9 +203,10 @@ export const Searchby = [
   "DATE",
 ];
 
-export const Gender = ["Male", "Female"];
+export const Gender = ["MALE", "FEMALE"];
 
 export const Reassignment = [
+  "NONE",
   "NEW_ASSIGNMENT",
   "REFRESH",
   "STOP_GAP",
@@ -221,3 +222,18 @@ export const Status = [
 ];
 
 export const Response = ["Mail Sent", "Received"];
+
+export const Months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];

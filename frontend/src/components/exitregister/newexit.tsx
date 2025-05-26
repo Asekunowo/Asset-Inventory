@@ -6,9 +6,10 @@ import Loader from "../ui/load";
 import { ExitRegisterData } from "@/types/types";
 import { useExitRegisterStore } from "@/store/store";
 import { DEFAULT_EXIT_DATA } from "@/types/definitions";
-import { nameCheck, serialCheck, tagCheck } from "@/utils/functions";
+import { formatDate } from "@/utils/functions";
+import { validateExitForm, ValidationResult } from "./exitfunctions";
 import {
-  Bank,
+  Gender,
   laptopModels,
   Reassignment,
   Response,
@@ -17,26 +18,30 @@ import {
 import CustomSelect from "../reusable/customselect";
 import { useAuth } from "@/auth/auth";
 
-import { errorMessages } from "@/types/definitions";
+import { useNavigate } from "react-router-dom";
 
 const NewExit = () => {
+  const navigate = useNavigate();
   const { url } = useAuth();
   const [exitData, setExitData] = useState<ExitRegisterData>(DEFAULT_EXIT_DATA);
 
-  const [load, setLoad] = useState(false);
-  const [staff, setStaff] = useState(false);
+  const [load, setLoad] = useState<boolean>(false);
+  const [staff, setStaff] = useState<
+    { isExists: boolean; load: boolean } | any
+  >({
+    isExists: true,
+    load: false,
+  });
   const { addExit } = useExitRegisterStore();
 
   const fetchStaffDetails = async () => {
     try {
       const res = await fetch(
-        `${url}/api/staffs/getstaff/${exitData.staffId}`,
+        `${url}/api/staffs/getstaff/${exitData.employee_id}`,
         { credentials: "include" }
       );
 
       const data = await res.json();
-
-      data.success && setStaff(false);
 
       return {
         success: data.success,
@@ -44,100 +49,41 @@ const NewExit = () => {
         staff: data.staff,
       };
     } catch (error: any) {
+      setStaff({ ...staff, load: false });
       console.error(error);
     }
   };
 
   useEffect(() => {
-    if (exitData.staffId.length === 3) {
-      setStaff(true);
+    if (exitData.employee_id.length === 3) {
+      setStaff({ ...staff, load: true });
       const data = async () => {
         const d = await fetchStaffDetails();
+        if (d?.success === false) {
+          setStaff({ isExists: false, load: false });
+          return toaster.create({
+            type: "error",
+            title: "Staff Details not found",
+            description: "Proceed to enter staff details",
+          });
+        }
         setExitData({
           ...exitData,
-          name: d?.staff.name,
+          employee_name: d?.staff.employee_name,
           role: d?.staff.role,
           gender: d?.staff.gender,
           classification: d?.staff.classification,
           supervisor: d?.staff.supervisor,
           location: d?.staff.location,
         });
+        d?.success && setStaff({ isExists: true, load: false });
+
         return d;
       };
 
       data();
     }
-  }, [exitData.staffId]);
-
-  const validateForm = (): boolean => {
-    const requiredFields: (keyof ExitRegisterData)[] = [
-      "staffId",
-      "name",
-      "gender",
-      "classification",
-      "role",
-      "location",
-      "supervisor",
-      "date_Of_Exit",
-      "type",
-      "model_type",
-      "serial_no",
-      "tag",
-      "ram",
-      "monitor_At",
-      "response",
-      "status",
-      "current_custodian",
-      "retrieval_Date",
-      "reassignment",
-    ];
-
-    const emptyFields = requiredFields.filter(
-      (field) =>
-        !exitData[field] ||
-        (typeof exitData[field] === "string" && exitData[field].includes("--"))
-    );
-
-    if (emptyFields.length > 0) {
-      toaster.create({
-        type: "error",
-        title: "Required fields are empty",
-        description: `Please fill in all fields`,
-        duration: 5000,
-      });
-      return false;
-    }
-
-    if (!tagCheck(exitData.tag)) {
-      toaster.create({
-        type: "error",
-        title: "Invalid Tag",
-        description: errorMessages.tag,
-      });
-      return false;
-    }
-
-    // Validate serial number format
-    if (!serialCheck(exitData.serial_no)) {
-      toaster.create({
-        type: "error",
-        title: "Invalid Serial Number",
-        description: errorMessages.serialNumber,
-      });
-      return false;
-    }
-
-    if (!nameCheck(exitData.current_custodian)) {
-      toaster.create({
-        title: "Input Error",
-        type: "error",
-        description: errorMessages.name,
-      });
-      return false;
-    }
-
-    return true;
-  };
+  }, [exitData.employee_id]);
 
   const handleClear = () => {
     setExitData(DEFAULT_EXIT_DATA);
@@ -146,7 +92,25 @@ const NewExit = () => {
   const handleSubmitRegister = async (): Promise<void> => {
     setLoad(true);
     try {
-      if (!validateForm()) {
+      const handleValidationAndToast = (): boolean => {
+        const result: ValidationResult = validateExitForm(exitData);
+
+        if (!result.isValid) {
+          toaster.create({
+            type: "error",
+            title: `Invalid Input`, // Generic title
+            description:
+              `Please check the ${result.field
+                ?.replace(/(?<=[a-zA-Z])_/g, " ")
+                .toUpperCase()} field ` || "Please check your form.",
+            duration: 3000,
+          });
+          return false;
+        }
+        return true;
+      };
+
+      if (!handleValidationAndToast()) {
         setLoad(false);
         return;
       }
@@ -160,7 +124,7 @@ const NewExit = () => {
       });
 
       if (success) {
-        window.location.replace("../exit");
+        navigate("../");
         handleClear();
       }
     } catch (error) {
@@ -177,7 +141,7 @@ const NewExit = () => {
 
   return (
     <Box>
-      {staff && <Loader />}
+      {staff.load && <Loader />}
 
       <Box
         rounded={"md"}
@@ -190,37 +154,52 @@ const NewExit = () => {
       >
         <Text fontWeight={"bold"}>Add New Record</Text>
       </Box>
-      {!staff && (
-        <form className="grid p-5 grid-cols-3 gap-6 w-full">
-          <div className=" gap-10 flex">
-            <div>
-              <b>Staff ID:</b>
+      {!staff.load && (
+        <form className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 p-5 gap-8 w-full">
+          <div className=" gap-4 flex justify-between col-span-full xl:col-span-1">
+            <div className="">
+              <b>Period:</b>
               <Input
-                minW={"10rem"}
+                minW={"5rem"}
                 type="text"
-                disabled={exitData.name.length > 0}
-                _disabled={{
-                  bg: "gray.300",
-                  fontWeight: "bold",
-                }}
-                value={exitData.staffId}
-                placeholder="Staff ID"
+                value={exitData.period}
+                placeholder="Period"
                 onChange={(e) =>
-                  setExitData({ ...exitData, staffId: e.target.value })
+                  setExitData({
+                    ...exitData,
+                    period: e.target.value.toUpperCase(),
+                  })
                 }
               />
             </div>
-            <div>
-              <b>Gender:</b>
-
+            <div className="">
+              <b>Employee ID:</b>
               <Input
+                minW={"7rem"}
                 type="text"
-                disabled
+                disabled={exitData.employee_name.length > 0}
                 _disabled={{
                   bg: "gray.300",
                   fontWeight: "bold",
                 }}
-                value={exitData.gender}
+                value={exitData.employee_id}
+                placeholder="Staff ID"
+                onChange={(e) =>
+                  setExitData({ ...exitData, employee_id: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <b>Gender:</b>
+              <CustomSelect
+                disabled={staff.isExists}
+                defaultValue="GENDER"
+                value={exitData.gender || "GENDER"}
+                onChange={(value) =>
+                  setExitData({ ...exitData, gender: value })
+                }
+                options={Gender}
               />
             </div>
           </div>
@@ -228,14 +207,14 @@ const NewExit = () => {
             <b>Employee name:</b>
             <Input
               type="text"
-              disabled
+              disabled={staff.isExists}
               _disabled={{
                 bg: "gray.300",
                 fontWeight: "bold",
               }}
-              value={exitData.name}
+              value={exitData.employee_name}
               onChange={(e) =>
-                setExitData({ ...exitData, name: e.target.value })
+                setExitData({ ...exitData, employee_name: e.target.value })
               }
             />
           </div>
@@ -243,7 +222,7 @@ const NewExit = () => {
             <b>Classification:</b>
             <Input
               type="text"
-              disabled
+              disabled={staff.isExists}
               _disabled={{
                 bg: "gray.300",
                 fontWeight: "bold",
@@ -255,7 +234,7 @@ const NewExit = () => {
             <b>Role:</b>
             <Input
               type="text"
-              disabled
+              disabled={staff.isExists}
               _disabled={{
                 bg: "gray.300",
                 fontWeight: "bold",
@@ -264,10 +243,10 @@ const NewExit = () => {
             />
           </div>
           <div>
-            <b>Supervisor</b>
+            <b>Supervisor:</b>
             <Input
               type="text"
-              disabled
+              disabled={staff.isExists}
               _disabled={{
                 bg: "gray.300",
                 fontWeight: "bold",
@@ -277,10 +256,10 @@ const NewExit = () => {
           </div>
 
           <div>
-            <b>Location;</b>
+            <b>Location:</b>
             <Input
               type="text"
-              disabled
+              disabled={staff.isExists}
               _disabled={{
                 bg: "gray.300",
                 fontWeight: "bold",
@@ -288,69 +267,102 @@ const NewExit = () => {
               value={exitData.location}
             />
           </div>
+          <div className=" gap-4 flex justify-between">
+            <div>
+              <b>System Type:</b>
 
-          <div>
-            <b>Type:</b>
+              <CustomSelect
+                defaultValue="TYPE" //laptop by default
+                value={exitData.system_type || "TYPE"}
+                onChange={(value: any) =>
+                  setExitData({ ...exitData, system_type: value })
+                }
+                options={["LAPTOP", "DESKTOP"]}
+              />
+            </div>
 
-            <CustomSelect
-              defaultValue="TYPE" //laptop by default
-              value={exitData.type || "TYPE"}
-              onChange={(value: any) =>
-                setExitData({ ...exitData, type: value })
-              }
-              options={["LAPTOP", "DESKTOP"]}
-            />
+            <div>
+              <b>Model:</b>
+
+              <CustomSelect
+                defaultValue="MODEL"
+                value={exitData.model || "MODEL"}
+                onChange={(value) => setExitData({ ...exitData, model: value })}
+                options={laptopModels}
+              />
+            </div>
+          </div>
+          <div className=" gap-4 flex justify-between">
+            <div className="">
+              <b>Ram Size:</b>
+              <Input
+                minW={"5rem"}
+                maxW={"7rem"}
+                type="text"
+                placeholder="Ram"
+                value={exitData.ram_size}
+                onChange={(e) =>
+                  setExitData({ ...exitData, ram_size: e.target.value })
+                }
+              />
+            </div>
+            <div className="w-44">
+              <b>Tag:</b>
+              <Input
+                type="text"
+                placeholder="Tag"
+                value={exitData.tag}
+                onChange={(e) =>
+                  setExitData({
+                    ...exitData,
+                    tag: e.target.value.toUpperCase(),
+                  })
+                }
+              />
+            </div>
+            <div>
+              <b>Serial No:</b>
+              <Input
+                type="text"
+                placeholder="Serial No"
+                value={exitData.serial_no}
+                onChange={(e) =>
+                  setExitData({
+                    ...exitData,
+                    serial_no: e.target.value.toUpperCase(),
+                  })
+                }
+              />
+            </div>
           </div>
 
           <div>
-            <b>Model Type:</b>
-
-            <CustomSelect
-              defaultValue="MODEL_TYPE"
-              value={exitData.model_type || "MODEL_TYPE"}
-              onChange={(value) =>
-                setExitData({ ...exitData, model_type: value })
-              }
-              options={laptopModels}
-            />
-          </div>
-
-          <div>
-            <b>Tag:</b>
+            <b>Monitor Asset Tag:</b>
             <Input
               type="text"
-              placeholder="Tag"
-              value={exitData.tag}
-              onChange={(e) =>
-                setExitData({ ...exitData, tag: e.target.value.toUpperCase() })
-              }
-            />
-          </div>
-          <div>
-            <b>Serial No:</b>
-            <Input
-              type="text"
-              placeholder="Serial No"
-              value={exitData.serial_no}
+              placeholder="Monitor Asset Tag"
+              value={exitData.monitor_At?.toString()}
               onChange={(e) =>
                 setExitData({
                   ...exitData,
-                  serial_no: e.target.value.toUpperCase(),
+                  monitor_At: e.target.value.toUpperCase(),
                 })
               }
             />
           </div>
 
           <div>
-            <b>Monitor At:</b>
-
-            <CustomSelect
-              defaultValue="MONITOR_AT"
-              value={exitData.monitor_At || "MONITOR_AT"}
-              onChange={(value) =>
-                setExitData({ ...exitData, monitor_At: value })
+            <b>Monitor Serial Number:</b>
+            <Input
+              type="text"
+              placeholder="Monitor SERIAL NUMBER"
+              value={exitData.monitor_serial_number}
+              onChange={(e) =>
+                setExitData({
+                  ...exitData,
+                  monitor_serial_number: e.target.value.toUpperCase(),
+                })
               }
-              options={Bank}
             />
           </div>
 
@@ -368,19 +380,7 @@ const NewExit = () => {
           </div>
 
           <div>
-            <b>Ram (GB):</b>
-            <Input
-              type="text"
-              placeholder="Ram"
-              value={exitData.ram}
-              onChange={(e) =>
-                setExitData({ ...exitData, ram: e.target.value })
-              }
-            />
-          </div>
-
-          <div>
-            <b>Current Custodian</b>
+            <b>Current Custodian:</b>
             <Input
               type="text"
               placeholder="Current Custodian"
@@ -397,7 +397,7 @@ const NewExit = () => {
             <b>Date of Exit:</b>
             <Input
               type="Date"
-              value={exitData.date_Of_Exit.toISOString().substring(0, 10)}
+              value={formatDate(exitData.date_Of_Exit)}
               onChange={(e) =>
                 setExitData({
                   ...exitData,
@@ -410,7 +410,7 @@ const NewExit = () => {
             <b>Retrieval Date:</b>
             <Input
               type="Date"
-              value={exitData.retrieval_Date.toISOString().substring(0, 10)}
+              value={formatDate(exitData.retrieval_Date)}
               onChange={(e) =>
                 setExitData({
                   ...exitData,
@@ -435,9 +435,9 @@ const NewExit = () => {
             <b>Reassignment:</b>
             <CustomSelect
               defaultValue="Reassignment"
-              value={exitData.reassignment || "REASSIGNMENT"}
+              value={exitData.reassignment_type || "REASSIGNMENT"}
               onChange={(value: any) =>
-                setExitData({ ...exitData, reassignment: value })
+                setExitData({ ...exitData, reassignment_type: value })
               }
               options={Reassignment}
             />

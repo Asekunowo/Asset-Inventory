@@ -1,4 +1,30 @@
 import { ExitRegisterData, movementData } from "../types/types";
+import { SERVER_URI } from "./secrets";
+
+export const CheckSession = async (): Promise<{
+  success: boolean;
+  res?: number;
+  message: string;
+}> => {
+  try {
+    const res = await fetch(`${SERVER_URI}/api/auth/session`, {
+      credentials: "include",
+    });
+
+    if (!res) {
+      return { success: false, message: " Unable to communicate with server" };
+    }
+    const data = await res.json();
+
+    if (res.status === 401) {
+      return { success: data.success, res: 401, message: data.message };
+    }
+    return { success: data.success, message: data.message };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "An unexpected error occurred" };
+  }
+};
 
 export const tagCheck = (str: string): boolean => {
   return /^[A-Z]{3}[0-9]{6}$/.test(str);
@@ -55,6 +81,7 @@ export const filterRepairs = (repairs: any[], searchTerm: string) => {
   return repairs.filter((repair) => {
     const searchFields = [
       repair.vendor,
+      repair.type,
       repair.tag,
       repair.serial_no,
       repair.group,
@@ -96,7 +123,8 @@ export const filterExits = (exits: ExitRegisterData[], searchTerm: string) => {
       exit.tag,
       exit.serial_no,
       exit.location,
-      exit.name,
+      exit.employee_id,
+      exit.employee_name,
       exit.date_Of_Exit,
       exit.current_custodian,
       exit.supervisor,
@@ -112,3 +140,34 @@ export const handlePrint = (movement: movementData) => {
   sessionStorage.setItem("movement", JSON.stringify(movement));
   return;
 };
+
+export const formatDate = (date: Date) => {
+  return date.toISOString().split("T")[0];
+};
+
+export const firstDay = (date: Date) => {
+  const firstDay = new Date(Date.UTC(date.getFullYear(), date.getMonth(), 1));
+
+  return firstDay.toLocaleDateString("en-CA");
+};
+
+export const lastDay = (date: Date) => {
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+
+  return lastDay.toLocaleDateString("en-CA");
+};
+
+export const formatMonth = (date: Date) => {
+  return date.toLocaleDateString("en-CA", { month: "long" });
+};
+
+export function getDateFromMonthName(
+  monthName: string,
+  year = new Date().getFullYear()
+) {
+  const date = new Date(`${monthName} 2, ${year}`);
+  if (isNaN(date.getTime())) {
+    throw new Error("Invalid month name");
+  }
+  return date;
+}

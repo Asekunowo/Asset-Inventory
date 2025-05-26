@@ -5,6 +5,8 @@ import {
   movementData,
   PasswordState,
   repairData,
+  ReportPeriod,
+  ReportRange,
 } from "./types";
 import { OtherAssets } from "./types";
 
@@ -20,25 +22,27 @@ export const DEFAULT_MOVEMENT_DATA: movementData = {
 };
 
 export const DEFAULT_EXIT_DATA: ExitRegisterData = {
-  staffId: "",
-  name: "",
+  period: "",
+  employee_id: "",
+  employee_name: "",
   gender: "", //gender
   classification: "", //job description itself
   role: "", //departmemt
   location: "", //branch
   supervisor: "", //reports to...
   date_Of_Exit: new Date(), //  mm/dd/yyyy
-  type: "LAPTOP", //system_type
-  model_type: "",
+  system_type: "LAPTOP", //system_type
+  model: "",
   serial_no: "",
   tag: "",
-  ram: "", //in GB
+  ram_size: "", //in GB
   monitor_At: "", //sterling / alternative bank
   response: "", //mail sent / received
   status: "REASSIGNED",
   current_custodian: "", // reassing to...
   retrieval_Date: new Date(), //    date of reassignment
-  reassignment: "NEW_ASSIGNMENT",
+  reassignment_type: "NONE",
+  monitor_serial_number: "",
 };
 
 export const DEFAULT_ASSET_DATA: Laptop = {
@@ -69,7 +73,7 @@ export const DEFAULT_REPAIR_DATA: repairData = {
   vendor: "",
   fault: "",
   costofrepair: "",
-  bank: "",
+  entity: "",
 };
 
 export const DEFAULT_PASSWORD_STATE: PasswordState = {
@@ -84,8 +88,20 @@ export const DEFAULT_ERROR_STATE: ErrorState = {
 };
 
 export const errorMessages = {
-  tag: "Please remove any special characters",
-  serialNumber: "Please remove any special characters.",
+  tag: "Please check the",
+  serialNumber: "Please remove any special characters",
   number: "This field may contain only digits",
   name: "This field may contain only alphabets",
+};
+
+export const DEFAULT_REPORT_RANGE: ReportRange = {
+  from: new Date(),
+  to: new Date(),
+  month: new Date(),
+  byMonth: true,
+};
+
+export const DEFAULT_REPORT_PERIOD: ReportPeriod = {
+  timerange: false,
+  month: true,
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, Link } from "react-router-dom";
-import { Box, Button, Heading, HStack, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, HStack, VStack } from "@chakra-ui/react";
 import { useExitRegisterStore } from "@/store/store";
 import { BackArrow } from "@/store/icons";
 import { filterExits } from "@/utils/functions";
@@ -8,15 +8,20 @@ import Loader from "../ui/load";
 import Sessionexpired from "../error/sessionexpired";
 import Unexpected from "../error/unexpected";
 import ExitRegisterTable from "./exitregistertable";
+import UpdateExitRegister from "./updatedexitregister";
+import { ExitRegisterData } from "@/types/types";
+import { DEFAULT_EXIT_DATA } from "@/types/definitions";
 
 const ExitRegister = () => {
   const location = useLocation();
 
-  const { fetchExits, exits } = useExitRegisterStore();
+  const { fetchExits, exits, updateExit, deleteExit } = useExitRegisterStore();
 
   const [load, setLoad] = useState<boolean>(true);
   const [expired, setExpired] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+
+  const [editData, setEditData] = useState<ExitRegisterData>(DEFAULT_EXIT_DATA);
 
   const [search, setSearch] = useState<string>(""); //for search
 
@@ -78,7 +83,6 @@ const ExitRegister = () => {
               size={"2xl"}
               padding={"1rem"}
               textTransform={"uppercase"}
-              // w={"full"}
               display={"block"}
               ml={-2}
             >
@@ -94,9 +98,17 @@ const ExitRegister = () => {
             </Link>
           )}
           {!path.includes("new") && (
-            <Button colorPalette={"blue"} variant={"solid"}>
-              <Link to={"new"}>Add New </Link>
-            </Button>
+            <Flex justify={"space-between"}>
+              <Button colorPalette={"blue"} variant={"solid"}>
+                <Link to={"new"}>Add New </Link>
+              </Button>
+              <UpdateExitRegister
+                editData={editData}
+                setEditData={setEditData}
+                updateExit={updateExit}
+                deleteExit={deleteExit}
+              />
+            </Flex>
           )}
 
           <Box>
@@ -106,8 +118,11 @@ const ExitRegister = () => {
           {!path.includes("new") && (
             <Box w={"full"}>
               <ExitRegisterTable
+                search={search}
                 setSearch={setSearch}
                 exits={filterExits(exits, search)}
+                editData={editData}
+                setEditData={setEditData}
               />
             </Box>
           )}

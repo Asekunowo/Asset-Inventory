@@ -40,6 +40,40 @@ export const getMovements = async (req: Request, res: Response) => {
   }
 };
 
+export const getAllMovements = async (req: Request, res: Response) => {
+  const userId = req.user!.id;
+
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  try {
+    await dbConn();
+
+    const movements = await Movement.find().populate([
+      {
+        path: "createdBy",
+        select: "firstname lastname",
+      },
+      {
+        path: "lastEditedBy",
+        select: "firstname lastname",
+      },
+    ]);
+
+    res
+      .status(200)
+      .json({ success: true, message: "Fetched All Movements", movements });
+    return;
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+    return;
+  }
+};
+
 export const addMovement = async (req: Request, res: Response) => {
   const userId = req.user!.id;
   const newMovmeentData = req.body;
@@ -135,6 +169,40 @@ export const updateMovement = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: "Failed to update movement record",
+    });
+    return;
+  }
+};
+
+export const deleteMovement = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid movement ID" });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const deletedMovement = await Movement.findByIdAndDelete(id);
+
+    if (!deletedMovement) {
+      res.status(404).json({ success: false, message: "Movement not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Movement deleted successfully",
+      movement: deletedMovement,
+    });
+    return;
+  } catch (error) {
+    console.error("Error deleting movement record:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to delete movement record",
     });
     return;
   }

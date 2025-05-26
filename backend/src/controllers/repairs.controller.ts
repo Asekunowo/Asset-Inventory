@@ -8,7 +8,7 @@ export const getRepairs = async (req: Request, res: Response) => {
   try {
     await dbConn();
 
-    const repairs = await Repairs.find()
+    const repairs = await Repairs.find({}, { __v: 0, updatedAt: 0 })
       .lean()
       .populate([
         {
@@ -68,7 +68,7 @@ export const addNewRepairs = async (req: Request, res: Response) => {
     }
 
     const existingSerial = await Repairs.findOne({
-      serialNumber: data.serialNumber,
+      serial_no: data.serial_no,
     });
     if (existingSerial) {
       res.status(400).json({
@@ -80,7 +80,10 @@ export const addNewRepairs = async (req: Request, res: Response) => {
 
     await newData.save();
 
-    const newRepair: any = await Repairs.findOne({ _id: newData._id })
+    const newRepair: any = await Repairs.findOne(
+      { _id: newData._id },
+      { __v: 0, updatedAt: 0 }
+    )
       .lean()
       .populate([
         { path: "createdBy", select: "firstname lastname email" },
@@ -148,6 +151,36 @@ export const updateRepair = async (req: Request, res: Response) => {
         ...updatedRepair,
         createdAt: changeDate(updatedRepair.createdAt),
       },
+    });
+    return;
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+    return;
+  }
+};
+
+export const deleteRepair = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid repair ID" });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const deletedRepair = await Repairs.findByIdAndDelete(id);
+
+    if (!deletedRepair) {
+      res.status(404).json({ success: false, message: "Repair not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Repair deleted successfully",
+      repair: deletedRepair,
     });
     return;
   } catch (error: any) {

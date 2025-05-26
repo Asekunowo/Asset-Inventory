@@ -11,7 +11,7 @@ export interface IRepair {
   vendor: string;
   fault: string;
   costofrepair: string;
-  bank: string;
+  entity: string;
   createdBy: newType;
   lastEditedBy: newType;
   createdAt?: Date;
@@ -48,7 +48,7 @@ const RepairsSchema = new Schema<IRepair>(
       type: String,
       required: true,
     },
-    bank: {
+    entity: {
       type: String,
       required: true,
     },

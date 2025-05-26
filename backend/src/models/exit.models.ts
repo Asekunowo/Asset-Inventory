@@ -4,26 +4,28 @@ const { Schema, model, models } = mongoose;
 
 type NewType = Types.ObjectId;
 
-export interface Exits extends Document {
-  staffId: string;
-  name: string;
+export interface Exits {
+  period: string;
+  employee_id: string;
+  employee_name: string;
   gender: string; //gender
   classification: string; //job description itself
   role: string; //departmemt
   location: string; //branch
   supervisor: string; //reports to...
   date_Of_Exit: Date; //  mm/dd/yyyy
-  type: "LAPTOP" | "DESKTOP"; //system_type
-  model_type: string;
+  system_type: "LAPTOP" | "DESKTOP"; //system_type
+  model: string;
   serial_no: string;
   tag: string;
-  ram: string; //in GB
-  monitor_At: string; //sterling / alternative bank
+  ram_size: string; //in GB
+  monitor_At: string | null; //sterling / alternative bank
+  monitor_serial_number: string | null;
   response: string; //mail sent / received
   status: "REASSIGNED" | "STOP_GAP" | "STORE" | "ITAM_STORE" | "INBRANCH";
   current_custodian: string; // reassing to...
-  retrieval_Date: Date; //    date of reassignment
-  reassignment: "NEW_ASSIGNMENT" | "REFRESH" | "STOP_GAP" | "OBSOLETE";
+  retrieval_Date: Date; //    date of reassignment_type
+  reassignment_type: "NEW_ASSIGNMENT" | "REFRESH" | "STOP_GAP" | "OBSOLETE";
   createdAt?: Date;
   createdBy: NewType;
   lastEditedBy: NewType;
@@ -31,11 +33,11 @@ export interface Exits extends Document {
 
 const ExitSchema = new Schema<Exits>(
   {
-    staffId: {
+    employee_id: {
       type: String,
       required: true,
     },
-    name: {
+    employee_name: {
       type: String,
       required: true,
     },
@@ -63,11 +65,11 @@ const ExitSchema = new Schema<Exits>(
       type: Date,
       required: true,
     },
-    type: {
+    system_type: {
       type: String,
       required: true,
     },
-    model_type: {
+    model: {
       type: String,
       required: true,
     },
@@ -81,13 +83,17 @@ const ExitSchema = new Schema<Exits>(
       unique: true,
       required: true,
     },
-    ram: {
+    ram_size: {
       type: String,
       required: true,
     },
     monitor_At: {
       type: String,
-      required: true,
+      default: null,
+    },
+    monitor_serial_number: {
+      type: String,
+      default: null,
     },
     response: {
       type: String,
@@ -101,7 +107,7 @@ const ExitSchema = new Schema<Exits>(
       type: Date,
       required: true,
     },
-    reassignment: {
+    reassignment_type: {
       type: String,
       required: true,
     },

@@ -9,6 +9,7 @@ import {
   IMovement,
   ILogout,
   IRegister,
+  IReport,
 } from "@/store/icons";
 
 import { Toaster, toaster } from "./ui/toaster";
@@ -30,6 +31,7 @@ const Sidebar = () => {
     { link: "movement", title: "Movement Form", icon: <IMovement /> },
     { link: "exit", title: "Exit Register", icon: <IRegister /> },
     { link: "settings", title: "settings", icon: <ISettings /> },
+    { link: "reports", title: "reports", icon: <IReport /> },
   ];
 
   const handleLogOut = async () => {

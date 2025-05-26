@@ -150,3 +150,35 @@ export const updateOtherAsset = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const deleteOtherAsset = async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    res.status(400).json({ success: false, message: "Invalid other asset ID" });
+    return;
+  }
+
+  try {
+    await dbConn();
+
+    const deletedOther = await Others.findByIdAndDelete(id);
+
+    if (!deletedOther) {
+      res
+        .status(404)
+        .json({ success: false, message: "Other Asset not found" });
+      return;
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Successfully deleted other asset",
+    });
+    return;
+  } catch (error: any) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+    return;
+  }
+};

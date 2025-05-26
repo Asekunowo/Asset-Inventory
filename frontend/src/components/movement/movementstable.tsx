@@ -50,7 +50,10 @@ const MovementsTable = ({ movements, handlePrint, setSearch }: any) => {
               <TableColumnHeader>Serial Number</TableColumnHeader>
               <TableColumnHeader>TO</TableColumnHeader>
               <TableColumnHeader>New Custodian</TableColumnHeader>
-              <TableColumnHeader w={"15px"}>Action</TableColumnHeader>
+              <TableColumnHeader>Bank</TableColumnHeader>
+              <TableColumnHeader textAlign={"end"} w={"20px"}>
+                Action
+              </TableColumnHeader>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -62,7 +65,9 @@ const MovementsTable = ({ movements, handlePrint, setSearch }: any) => {
                 <TableColumnHeader>{movement.serial_no}</TableColumnHeader>
                 <TableColumnHeader>{movement.to_location}</TableColumnHeader>
                 <TableColumnHeader>{movement.newCustodian}</TableColumnHeader>
-                <TableColumnHeader>
+                <TableColumnHeader>{movement.bank}</TableColumnHeader>
+                <TableColumnHeader textAlign={"end"} spaceX={"2rem"}>
+                  <Button colorPalette={"green"}>Edit</Button>
                   <Button
                     onClick={() => {
                       handlePrint(movement);

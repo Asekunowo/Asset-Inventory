@@ -1,35 +1,31 @@
-import {
-  Box,
-  Button,
-  Field,
-  Flex,
-  Heading,
-  HStack,
-  Icon,
-  Input,
-  Loader,
-  VStack,
-} from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Loader, VStack } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { useRepairStore } from "@/store/store";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Search, BackArrow } from "@/store/icons";
+import { BackArrow } from "@/store/icons";
 import Sessionexpired from "../error/sessionexpired";
 import { Toaster } from "../ui/toaster";
 import Repairstable from "./repairstable";
 import { filterRepairs } from "@/utils/functions";
 import Unexpected from "../error/unexpected";
 import { useAuth } from "@/auth/auth";
+import { DEFAULT_REPAIR_DATA } from "@/types/definitions";
+import { repairData } from "@/types/types";
+
+import UpdateRepair from "./updaterepair";
 
 const Repairs = () => {
   const { userData } = useAuth();
-  const { addRepair, repairs, fetchRepairs } = useRepairStore();
+  const { addRepair, repairs, fetchRepairs, updateRepair, deleteRepair } =
+    useRepairStore();
   const location = useLocation();
 
   const [load, SetLoad] = useState<boolean>(true);
   const [expired, setExpired] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
+
+  const [editData, setEditData] = useState<repairData>(DEFAULT_REPAIR_DATA);
 
   const path = location.pathname;
 
@@ -100,20 +96,12 @@ const Repairs = () => {
               <Button colorPalette={"blue"} variant={"solid"}>
                 <Link to={"new"}>Add New Repair</Link>
               </Button>
-              <Field.Root w={"max-content"}>
-                <HStack pos={"relative"} mr={5}>
-                  <Input
-                    minW={"14rem"}
-                    p={2}
-                    placeholder="Search"
-                    variant={"flushed"}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  <Icon pos={"absolute"} right={0} size={"lg"}>
-                    <Search />
-                  </Icon>
-                </HStack>
-              </Field.Root>
+              <UpdateRepair
+                editData={editData}
+                setEditData={setEditData}
+                deleteRepair={deleteRepair}
+                updateRepair={updateRepair}
+              />
             </Flex>
           )}
           {path.includes("new") && (
@@ -124,8 +112,15 @@ const Repairs = () => {
               </Button>
             </Link>
           )}
+
           {!path.includes("new") && (
-            <Repairstable repairs={filterRepairs(repairs, search)} />
+            <Repairstable
+              repairs={filterRepairs(repairs, search)}
+              editData={editData}
+              setEditData={setEditData}
+              search={search}
+              setSearch={setSearch}
+            />
           )}
 
           <Outlet context={{ addRepair, userData, setExpired }} />

@@ -120,7 +120,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
   return (
     <form className="grid p-5 grid-cols-2 gap-6 w-full">
       <div>
-        <b>Type:</b>
+        <b>Type</b>
         <CustomSelect
           defaultValue="TYPE"
           value={movementData.type || "TYPE"}
@@ -131,7 +131,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
         />
       </div>
       <div className="gap-2">
-        <b>Bank:</b>
+        <b>Bank</b>
         <CustomSelect
           defaultValue="BANK"
           value={movementData.bank || "BANK"}
@@ -142,7 +142,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
         />
       </div>
       <div>
-        <b>Tag:</b>
+        <b>Tag</b>
         <Input
           placeholder="Asset Tag"
           value={movementData.tag}
@@ -155,7 +155,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
         />
       </div>
       <div className="gap-2">
-        <b>Serial No:</b>
+        <b>Serial No</b>
         <Input
           placeholder="Serial Number"
           value={movementData.serial_no}
@@ -168,7 +168,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
         />
       </div>
       <div>
-        Reason for allocation
+        <b>Reason for allocation</b>
         <Input
           placeholder="Reason for allocation"
           value={movementData.reason}
@@ -181,7 +181,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
         />
       </div>
       <div>
-        New Custodian
+        <b>New Custodian</b>
         <Input
           placeholder="New Custodian"
           value={movementData.newCustodian}
@@ -194,7 +194,7 @@ const NewMovement = ({ loading, setLoading }: any) => {
         />
       </div>
       <div>
-        <b>Old Location:</b>
+        <b>Old Location</b>
         <Input
           disabled
           _disabled={{ bg: "gray.400", fontWeight: "700" }}

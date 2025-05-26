@@ -258,7 +258,7 @@ export const useRepairStore: any = create((set) => ({
     return { success: data.success, message: data.message };
   },
   updateRepair: async (pid: string, updatedRepair: {}) => {
-    const res = await fetch(`${url}/api/repairs/edit/${pid}`, {
+    const res = await fetch(`${url}/api/repairs/update/${pid}`, {
       method: "PUT",
       credentials: "include",
       headers: {
@@ -289,7 +289,7 @@ export const useRepairStore: any = create((set) => ({
     //updates UI immediately without refresh
     set((state: any) => ({
       repairs: state.repairs.map((repair: any) =>
-        repair._id === pid ? data.data : repair
+        repair._id === pid ? data.repair : repair
       ),
     }));
     return { success: data.success, message: data.message };
@@ -614,7 +614,7 @@ export const useExitRegisterStore: any = create((set) => ({
 
   updateExit: async (pid: string, updatedExit: any) => {
     try {
-      const res = await fetch(`${url}/api/exits/edit/${pid}`, {
+      const res = await fetch(`${url}/api/exits/update/${pid}`, {
         method: "PUT",
         credentials: "include",
         headers: {

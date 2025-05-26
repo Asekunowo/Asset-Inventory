@@ -55,26 +55,44 @@ export interface movementData {
 
 //exits
 export interface ExitRegisterData {
-  staffId: string;
-  name: string;
+  _id?: string;
+  period: string;
+  employee_id: string;
+  employee_name: string;
   gender: string; //gender
   classification: string; //job description itself
   role: string; //departmemt
   location: string; //branch
   supervisor: string; //reports to...
   date_Of_Exit: Date; //  mm/dd/yyyy
-  type: "LAPTOP" | "DESKTOP"; //system_type
-  model_type: string;
+  system_type: "LAPTOP" | "DESKTOP"; //system_type
+  model: string;
   serial_no: string;
   tag: string;
-  ram: string; //in GB
+  ram_size: string; //in GB
   monitor_At: string; //sterling / alternative bank
   response: string; //mail sent / received
   status: "REASSIGNED" | "STOP_GAP" | "STORE" | "ITAM_STORE" | "INBRANCH";
   current_custodian: string; // reassing to...
-  retrieval_Date: Date; //    date of reassignment
-  reassignment: "NEW_ASSIGNMENT" | "REFRESH" | "STOP_GAP" | "OBSOLETE";
+  retrieval_Date: Date; //    date of reassignment_type
+  reassignment_type:
+    | "NONE"
+    | "NEW_ASSIGNMENT"
+    | "REFRESH"
+    | "STOP_GAP"
+    | "OBSOLETE";
   createdAt?: Date;
+  monitor_serial_number: string;
+  createdBy?: {
+    firstname: string;
+    lastname: string;
+    email: string;
+  };
+  lastEditedBy?: {
+    firstname: string;
+    lastname: string;
+    email: string;
+  };
 }
 
 export interface ExitData {
@@ -98,6 +116,7 @@ export type resData = {
 
 //repairs
 export type repairData = {
+  _id?: string;
   type: string;
   tag: string;
   serial_no: string;
@@ -105,7 +124,7 @@ export type repairData = {
   vendor: string;
   fault: string;
   costofrepair: string;
-  bank: string;
+  entity: string;
   createdAt?: string;
   createdBy?: {
     firstname: string;
@@ -205,4 +224,16 @@ export interface Staff {
   classification: string;
   createdAt: Date;
   supervisor: string;
+}
+
+export interface ReportRange {
+  from: Date;
+  to: Date;
+  month?: Date;
+  byMonth: boolean;
+}
+
+export interface ReportPeriod {
+  timerange: boolean;
+  month: boolean;
 }

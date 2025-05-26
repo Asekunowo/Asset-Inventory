@@ -10,6 +10,7 @@ import {
 import { verifyToken } from "../middlewares/auth";
 import {
   addNewOther,
+  deleteOtherAsset,
   getOtherAssets,
   updateOtherAsset,
 } from "../controllers/others.controller";
@@ -27,5 +28,6 @@ router.delete("/delete/:id", deleteAsset);
 router.post("/addother", addNewOther);
 router.put("/updateother/:id", updateOtherAsset);
 router.get("/others", getOtherAssets);
+router.delete("/deleteothers/:id", deleteOtherAsset);
 
 export default router;

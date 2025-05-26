@@ -154,7 +154,7 @@ export const updateAsset = async (req: Request, res: Response) => {
 
 // // delete one customer
 export const deleteAsset = async (req: Request, res: Response) => {
-  const { id } = req.user!;
+  const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(400).json({ success: false, message: "Invalid ID" });
@@ -162,10 +162,17 @@ export const deleteAsset = async (req: Request, res: Response) => {
   }
 
   try {
+    await dbConn();
+
     const deleteData = await Asset.findByIdAndDelete(id);
     res
       .status(200)
-      .json({ success: true, message: "Asset deleted", data: deleteData });
+      .json({ success: true, message: "Asset deleted", asset: deleteData });
+
+    if (!deleteData) {
+      res.status(404).json({ success: false, message: "Asset not found." });
+      return;
+    }
     return;
   } catch (error: any) {
     res.status(500).json({
