@@ -5,7 +5,7 @@ const Unexpected = ({ error }: { error: boolean }) => {
   const [count, setCount] = useState<number>(10);
 
   useEffect(() => {
-    let timer: number;
+    let timer: any;
 
     if (error && count > 0) {
       timer = setInterval(() => {
