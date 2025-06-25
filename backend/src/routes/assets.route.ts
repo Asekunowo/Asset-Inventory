@@ -1,19 +1,9 @@
-import { Router } from "express";
+import {Router} from "express";
 
-import {
-  getAssets,
-  updateAsset,
-  addNewAsset,
-  deleteAsset,
-} from "../controllers/assets.controller";
+import {addMultipleAssets, addNewAsset, deleteAsset, getAssets, updateAsset} from "../controllers/assets.controller";
 
-import { verifyToken } from "../middlewares/auth";
-import {
-  addNewOther,
-  deleteOtherAsset,
-  getOtherAssets,
-  updateOtherAsset,
-} from "../controllers/others.controller";
+import {addNewOther, deleteOtherAsset, getOtherAssets, updateOtherAsset} from "../controllers/others.controller";
+import {verifyToken} from "../middlewares/auth";
 
 const router: Router = Router();
 
@@ -24,6 +14,8 @@ router.post("/add", addNewAsset);
 router.put("/update/:id", updateAsset);
 
 router.delete("/delete/:id", deleteAsset);
+
+router.post("/newbatch", addMultipleAssets);
 
 router.post("/addother", addNewOther);
 router.put("/updateother/:id", updateOtherAsset);
