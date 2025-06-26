@@ -1,13 +1,14 @@
-{"engines": {
-  "node": "18.x"
-},
+{
 	"name": "it_asset",
 	"version": "1.0.0",
 	"description": "",
 	"main": "server.js",
+	"engines": {
+		"node": "18.x"
+	},
 	"scripts": {
 		"start": "dotenv -e .env.development -- nodemon ./src/server.ts",
-		"build": "npm install",
+		"build": "tsc",
 		"prod": "node dist/server.js",
 		"dev": "ts-node-dev src/server.ts",
 		"test": "dotenv -e .env.test -- jest --detectOpenHandles --watchAll"

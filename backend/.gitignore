@@ -35,6 +35,5 @@ jest.config.js
 
 jest.setup.ts
 
-src/__tests__
-
+__tests__/
 
