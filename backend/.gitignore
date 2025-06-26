@@ -23,10 +23,15 @@ dist-ssr
 *.sln
 *.sw?
 
-.env
-
-src/__tests__
-
+# .env
 .env.test
 
 .env.development
+
+jest.config.js
+
+jest.setup.ts
+
+src/__tests__
+
+
