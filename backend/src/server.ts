@@ -16,7 +16,7 @@ app.get("/", (req: Request, res: Response) => {
 app.listen(PORT, async () => {
 	const connected = await dbConn();
 	if (connected) {
-		console.log("Server running");
+		console.log("Server running on port " + PORT);
 		logger.info(`Server listening on port ${PORT}`); // Log server start
 	} else {
 		throw new Error("Could not connect to db server");

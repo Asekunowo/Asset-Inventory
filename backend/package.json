@@ -5,7 +5,7 @@
 	"main": "server.js",
 	"scripts": {
 		"start": "dotenv -e .env.development -- nodemon ./src/server.ts",
-		"build": "npm install && tsc",
+		"build": "npm install",
 		"prod": "node dist/server.js",
 		"dev": "ts-node-dev src/server.ts",
 		"test": "dotenv -e .env.test -- jest --detectOpenHandles --watchAll"
