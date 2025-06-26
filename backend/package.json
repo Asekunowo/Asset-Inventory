@@ -3,12 +3,9 @@
 	"version": "1.0.0",
 	"description": "",
 	"main": "server.js",
-	"engines": {
-		"node": "18.x"
-	},
 	"scripts": {
 		"start": "dotenv -e .env.development -- nodemon ./src/server.ts",
-		"build": "tsc",
+		"build": "npm install @types/node @types/express && tsc",
 		"prod": "node dist/server.js",
 		"dev": "ts-node-dev src/server.ts",
 		"test": "dotenv -e .env.test -- jest --detectOpenHandles --watchAll"
@@ -36,11 +33,11 @@
 		"@types/bcrypt": "^5.0.2",
 		"@types/cookie-parser": "^1.4.8",
 		"@types/cors": "^2.8.17",
-		"@types/express": "^5.0.1",
+		"@types/express": "^5.0.3",
 		"@types/jest": "^30.0.0",
 		"@types/jsonwebtoken": "^9.0.9",
 		"@types/morgan": "^1.9.9",
-		"@types/node": "^22.15.12",
+		"@types/node": "^22.15.33",
 		"@types/supertest": "^6.0.3",
 		"nodemon": "^3.1.9",
 		"supertest": "^7.1.1",
