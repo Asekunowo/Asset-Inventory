@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 
 .env
+
+src/__tests__
+
+.env.test
+
+.env.development

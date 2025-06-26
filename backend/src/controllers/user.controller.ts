@@ -1,4 +1,4 @@
-import {compare, hashSync} from "bcrypt";
+import {compareSync, hashSync} from "bcrypt";
 import {Request, Response} from "express";
 import {default as mongoose} from "mongoose";
 import {dbConn} from "../config/dbconfig";
@@ -29,7 +29,7 @@ export const createUser = async (req: Request, res: Response) => {
 	const newUser = new User({...user, password: hashSync(user.password, 10)});
 
 	try {
-		await dbConn();
+		// await dbConn();
 
 		const isUserExists = await User.findOne({email: req.body.email});
 
@@ -68,7 +68,7 @@ export const getOneUser = async (req: Request, res: Response) => {
 	}
 
 	try {
-		await dbConn();
+		// await dbConn();
 		const user = await User.findById(id);
 		console.log(user);
 		if (!user) {
@@ -90,16 +90,15 @@ export const changePassword = async (req: Request, res: Response) => {
 	const {oldPassword, newPassword} = req.body;
 
 	if (!mongoose.Types.ObjectId.isValid(userId)) {
-		res.status(400).json({success: false, message: "Not Authorized"});
+		res.status(401).json({success: false, message: "Not Authorized"});
 		return;
 	}
 
 	try {
-		await dbConn();
 		const checkPassword = await User.findById(userId);
 
-		if (!compare(oldPassword, checkPassword.password)) {
-			res.status(401).json({success: false, message: "Old password incorrect"});
+		if (!compareSync(oldPassword, checkPassword.password)) {
+			res.status(400).json({success: false, message: "Old password incorrect"});
 			return;
 		}
 
@@ -128,8 +127,6 @@ export const updateUser = async (req: Request, res: Response) => {
 	}
 
 	try {
-		await dbConn();
-
 		const isAdmin = await User.findById(userId);
 
 		if (!isAdmin || !isAdmin.isAdmin) {
@@ -174,7 +171,7 @@ export const deleteUser = async (req: Request, res: Response) => {
 	}
 
 	try {
-		await dbConn();
+		// await dbConn();
 
 		const isAdmin = await User.findById(userId);
 

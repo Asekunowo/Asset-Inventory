@@ -1,7 +1,6 @@
 import {compareSync} from "bcrypt";
 import {Request, Response} from "express";
 import {sign} from "jsonwebtoken";
-import {dbConn} from "../config/dbconfig";
 import Login from "../models/login.model";
 import User from "../models/user.model";
 import {SECRET_KEY} from "../secrets";
@@ -10,8 +9,6 @@ export const login = async (req: Request, res: Response) => {
 	const {email, password} = req.body;
 
 	try {
-		await dbConn();
-
 		const userExists = await User.findOne({email});
 
 		if (!userExists) {

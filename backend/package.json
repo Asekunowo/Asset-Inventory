@@ -26,7 +26,6 @@
 		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^8.12.1",
 		"morgan": "^1.10.0",
-		"mssql": "^11.0.1",
 		"nodemon": "^3.1.9",
 		"winston": "^3.17.0"
 	},
