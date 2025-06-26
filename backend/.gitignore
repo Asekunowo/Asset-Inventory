@@ -6,6 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+logger.ts
 
 node_modules
 dist
@@ -36,4 +37,3 @@ jest.config.js
 jest.setup.ts
 
 __tests__/
-
